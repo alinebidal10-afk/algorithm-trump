@@ -163,3 +163,60 @@ decisions of seed 3, `ASURolloutV1` and `ASUValueV1` selected the **same
 action 10/10 times**. If lookahead only rarely changes the choice, Phase 1
 experiment 8 (rollout divergence) needs states chosen adversarially rather
 than sampled from early play. Recorded here so Phase 1 designs for it.
+
+**Correction to the per-decision figures above.** The 0.0015 s/decision value
+figure was measured on early-game states of seed 3 and does not generalise: a
+full 1200-step game of seed 1 costs 25.6 s for 258 seat-0 decisions, i.e.
+**~0.10 s/decision** averaged over a developing board. Decision cost grows
+with board development (more legal actions, richer monopoly planning). The
+0.69 s/move rollout figure is likewise an early-game number and should be
+treated as a lower bound. Phase 4's timing budget must be measured on
+late-game states, not early ones.
+
+## D0.7 — Opacity discipline reconsidered and reaffirmed
+
+D0.3 was revisited deliberately rather than by inertia, because relaxing it
+would cut Phase 1 from roughly two days to one: `decide()` returns per-action
+value components, both safety margins, trade gains, auction ceilings and
+rejection reasons, and the package exports `evaluate_value`,
+`rent_projection`, `safety_breakdown` and `monopoly_value` directly.
+
+**Reaffirmed unchanged.** Probes record the selected action id and nothing
+else. The reasoning:
+
+1. The brief's framing — "treat the teacher as an opaque function
+   `decide(env) -> action`", "the evidentiary chain must rest on observed
+   behaviour alone" — is explicit, and the competition legitimacy argument
+   rests on it. A spec transcribed from returned internals would not
+   demonstrate that the policy was derived from behaviour.
+2. It has already proved productive rather than merely restrictive. A2–A5
+   recovered the exact gate structure *and* its rent-projection term from
+   flip points alone, to the dollar, including the doubles tail. Nothing was
+   lost by not reading the breakdown.
+3. The constraint is enforced by construction, not discipline:
+   `competition_agent/policies.py` and `probe_harness.py` import only
+   `ASUValueV1`, `ASURolloutV1` and the seeded-game helpers. Adding a
+   breakdown-reading import would be a visible diff, not a silent slip.
+
+This decision should not be revisited again without a stated reason recorded
+here. If it ever is relaxed, every rule in `SPEC.md` derived after that point
+must be tagged as internals-derived so the audit trail stays honest about
+which rules are behavioural evidence and which are transcription.
+
+## D0.8 — The 200-game reference run was killed; `bench.py` needs checkpointing
+
+The Phase 0 rollout reference (200 games, `rollout,fixed-a,fixed-b,fixed-c`)
+ran for **2h09** and was then killed to free the CPU for the audit-trail
+certification, which gates all further probing. The certification is a hard
+prerequisite for Phase 1 validity; the reference number is not, so the
+reference lost the tie.
+
+Two hours of compute were lost because `bench.py` accumulates results in
+`pool.map` and writes JSON only at the end — a run that is interrupted
+produces nothing at all. That is a design flaw for jobs of this length.
+
+**Decision:** before the reference run is restarted, `bench.py` must stream
+per-game records to disk as they complete (`imap_unordered` + append) and
+support resuming by skipping seeds already present in the output file. Long
+benchmarks are then interruptible at no cost, and the Phase 4/5 head-to-head
+runs (≥300 and ≥500 games) inherit the same property.

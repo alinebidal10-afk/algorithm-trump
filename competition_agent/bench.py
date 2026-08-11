@@ -224,7 +224,11 @@ def main(argv=None) -> int:
     ap.add_argument("--workers", type=int, default=1,
                     help="parallel worker processes")
     ap.add_argument("--output", type=str, default=None,
-                    help="write full JSON record here")
+                    help="write full JSON record here; a .partial.jsonl "
+                         "sidecar streams games as they finish")
+    ap.add_argument("--no-resume", action="store_true",
+                    help="ignore an existing .partial.jsonl and replay all "
+                         "seeds from scratch")
     args = ap.parse_args(argv)
 
     policy_names = [p.strip() for p in args.policies.split(",")]
@@ -233,19 +237,62 @@ def main(argv=None) -> int:
                  f"got {len(policy_names)}")
 
     seeds = [args.seed + k for k in range(args.games)]
-    jobs = [(s, policy_names, args.max_steps) for s in seeds]
+
+    # Resume: a long run must survive interruption. Completed games are
+    # streamed to a JSONL sidecar as they finish, and seeds already present
+    # there are skipped. See DECISIONS.md D0.8 — a 2h09 reference run was
+    # lost because results only materialised at the end.
+    resume_path = (
+        Path(args.output).with_suffix(".partial.jsonl") if args.output
+        else None
+    )
+    records: List[Dict[str, Any]] = []
+    done_seeds: set = set()
+    if resume_path and resume_path.exists() and not args.no_resume:
+        for line in resume_path.read_text().splitlines():
+            if not line.strip():
+                continue
+            rec = json.loads(line)
+            if rec.get("policies") == policy_names:
+                records.append(rec)
+                done_seeds.add(rec["seed"])
+        if done_seeds:
+            print(f"resuming: {len(done_seeds)} game(s) already complete "
+                  f"in {resume_path.name}")
+
+    todo = [s for s in seeds if s not in done_seeds]
+    jobs = [(s, policy_names, args.max_steps) for s in todo]
 
     print(f"frozen_spec_hash: {FROZEN_SPEC_HASH[:16]}...")
     print(f"seats: {policy_names}   seeds: {seeds[0]}..{seeds[-1]}   "
-          f"workers: {args.workers}")
+          f"workers: {args.workers}   to play: {len(todo)}")
 
     wall = time.perf_counter()
-    if args.workers > 1:
-        with mp.Pool(args.workers) as pool:
-            records = pool.map(_worker, jobs)
-    else:
-        records = [_worker(j) for j in jobs]
+    sink = resume_path.open("a") if resume_path else None
+    try:
+        if args.workers > 1 and jobs:
+            with mp.Pool(args.workers) as pool:
+                stream = pool.imap_unordered(_worker, jobs)
+                for i, rec in enumerate(stream, 1):
+                    records.append(rec)
+                    if sink:
+                        sink.write(json.dumps(rec) + "\n")
+                        sink.flush()
+                    if i % 10 == 0 or i == len(jobs):
+                        print(f"  {i}/{len(jobs)} games "
+                              f"({time.perf_counter() - wall:.0f}s)", flush=True)
+        else:
+            for i, job in enumerate(jobs, 1):
+                rec = _worker(job)
+                records.append(rec)
+                if sink:
+                    sink.write(json.dumps(rec) + "\n")
+                    sink.flush()
+    finally:
+        if sink:
+            sink.close()
     wall = time.perf_counter() - wall
+    records.sort(key=lambda r: r["seed"])
 
     summary = summarise(records, policy_names)
     print_report(summary, policy_names)
