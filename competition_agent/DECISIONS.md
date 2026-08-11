@@ -1112,3 +1112,70 @@ D2.6, D2.12), which is itself a reason to expect it.
 
 Recorded now so the check is not skipped by inertia once the first fix shows a
 gain.
+
+## D2.15 — Fitted vs oracle: the model captures ~37%, and that reverses the Phase 3 decision
+
+Measured with the fitted trade model live in `spec_policy.py`, all three points
+on the same seeds (930000+) and seat rotation:
+
+| point | | win rate |
+| --- | --- | --- |
+| floor — proposals disabled (`TRADE_GATE=1e9`) | 15/80 | 18.8% [11.7, 28.7] |
+| **fitted** — the 29.86% top-1 model | 32/120 | **26.7% [19.6, 35.2]** |
+| oracle — teacher's actual proposal | 48/120 | 40.0% [31.7, 48.9] |
+
+    fitted real gain   +7.9pp
+    oracle ceiling    +21.3pp
+    CAPTURE RATIO      37.3%
+
+**The fitted model does convert to wins.** This also resolves D2.10, which
+worried that agreement rose while win rate did not: that comparison used 60
+games on different seeds and was noise. On matched seeds with more games the
+fit is worth +7.9pp over never proposing.
+
+**But it is not statistically significant on its own** — floor vs fitted gives
+z = 1.29, p = 0.196, intervals overlapping. The point estimate is the best
+available and the direction is consistent with the oracle result, but +7.9pp
+is not established. Widening this specific comparison is cheap and should
+happen before the number is leaned on hard.
+
+### This reverses D2.13's Phase 3 recommendation
+
+D2.13 deferred Phase 3 on the grounds that oracle-pinned trade reached parity,
+so targeted fixes had a ceiling of ~parity. **That ceiling assumed perfect
+trade decisions.** The fitted model reaches 37% of it, and there is no reason
+to expect a second hand-fitted rule to do better — it would use the same
+features on the same valuation.
+
+Projection if `trade_reply` is fitted with the same method and captures the
+same share:
+
+    trade_reply fitted   ~ +2.5pp   (37% of its +6.7 oracle)
+    total                ~ 29.2%    against parity of 50%
+
+So hand-fitted rules plausibly get to ~29%, not ~46%. The remaining ~21 points
+are inside the trade families but **not reachable by better weights on these
+features** — three independent refutations (D2.5, D2.6, D2.12) already showed
+the valuation, not the weighting, is the limit.
+
+**That is precisely what Phase 3's learned component is for.** A network over
+the 300-dim observation is not restricted to the four hand-chosen features
+that cap the current ranker at 29.86% top-1, and DAgger addresses the
+covariate shift flagged in D2.11 at the same time.
+
+**Revised recommendation: proceed to Phase 3, and do not fit `trade_reply` by
+hand first.** The evidence for that ordering:
+
+1. per-family hand fitting has a measured capture of 37%, giving ~29% overall;
+2. the binding constraint is the feature set, which Phase 3 replaces rather
+   than reweights;
+3. the trade families are where decisions are made (D2.13), so a learned
+   component targeted there has the largest measured headroom in the project —
+   ~21 points.
+
+D2.13's "Phase 3 deferred" is superseded. It was reasoned from the oracle
+ceiling, which is exactly the substitution this measurement was run to avoid.
+
+**Additivity check (D2.14) is deferred with it.** It only becomes meaningful
+once a second real implementation exists, and the recommendation is now not to
+build that second implementation as a hand-fitted rule.
