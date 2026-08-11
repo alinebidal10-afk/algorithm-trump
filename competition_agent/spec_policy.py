@@ -24,6 +24,7 @@ from the teacher's source or from `decide()`'s internals.
 
 from __future__ import annotations
 
+import os
 from typing import List, Optional
 
 from monopoly_game_engine.actions import (
@@ -35,9 +36,22 @@ from monopoly_game_engine.constants import (
 )
 
 from competition_agent.spec_model import (
-    MIN_CASH, auction_ceiling, deed_value, expected_rent_flow, gates_ok,
-    liquidatable_worth, marginal_monopoly_value, rent_for, worst_reachable_rent,
+    MIN_CASH, SHORT_TURNS, auction_ceiling, deed_value, expected_rent_flow,
+    gates_ok, liquidatable_worth, marginal_monopoly_value,
+    multi_turn_landings, rent_for, worst_reachable_rent,
 )
+
+# Fitted on 1,520 harvested real-play proposals, validated on 988 held out by
+# game seed: top-1 29.86% [27.09, 32.79] against 1.54% random. See D2.9.
+TRADE_W = {
+    "d_rent": 0.017832242423844513,
+    "d_price": -0.015475111970890465,
+    "completes": 3.4696527554465098,
+    "d_ours": 0.5053699404996843,
+    "off_mort": -0.6594870903815228,
+    "d_houses": -3.5409761941310096
+}
+TRADE_GATE = float(os.environ.get("TRADE_GATE", "3.92"))
 
 DO_NOTHING = int(ActionType.DO_NOTHING)
 END_TURN = int(ActionType.END_TURN)
@@ -274,16 +288,41 @@ class SpecPolicy:
         if not exch_actions:
             return None
 
-        # Value tables: O(28) per interested player, then every pair is O(1).
-        our_val = {}
-        their_val = {p: {} for p in others}
+        # I3 (revised again) — scored by the features that were MEASURED to
+        # carry signal on 2,508 real proposals (DECISIONS D2.9), not by a
+        # difference of deed values. The monopoly term is deliberately absent:
+        # D2.6 showed it decides the ordering by itself and decides it wrong.
+        facts = {}
 
-        def val(player, sq, cache):
-            if sq not in cache:
-                cache[sq] = deed_value(env, player, sq)
-            return cache[sq]
+        def f(sq):
+            if sq not in facts:
+                prop = env.properties[sq]
+                group = COLOR_GROUPS[PROPERTIES[sq]["color"]]
+                saved = prop.owner
+                prop.owner = pid
+                try:
+                    rent = 0.0
+                    for opp in env.players:
+                        if opp.player_id == pid or opp.bankrupt:
+                            continue
+                        for land, pr in multi_turn_landings(opp.position,
+                                                            SHORT_TURNS):
+                            if land == sq:
+                                rent += pr * rent_for(env, sq)
+                finally:
+                    prop.owner = saved
+                facts[sq] = {
+                    "price": PROPERTIES[sq]["price"],
+                    "rent": rent,
+                    "ours": sum(1 for t in group
+                                if env.properties[t].owner == pid),
+                    "size": len(group),
+                    "mort": prop.mortgaged,
+                    "houses": prop.houses,
+                }
+            return facts[sq]
 
-        best_action, best_gain = None, 0.0
+        best_action, best_score = None, None
         for a in exch_actions:
             loc = a - OFFSETS["exch_trade"]
             p_idx = loc // (n * (n - 1))
@@ -293,25 +332,22 @@ class SpecPolicy:
             req_idx = req_raw if req_raw < off_idx else req_raw + 1
             if p_idx >= len(others):
                 continue
-            target = others[p_idx]
-            offer_sq = PROPERTY_IDS[off_idx]
-            req_sq = PROPERTY_IDS[req_idx]
+            fo, fr = f(PROPERTY_IDS[off_idx]), f(PROPERTY_IDS[req_idx])
+            sc = (TRADE_W["d_rent"] * (fr["rent"] - fo["rent"])
+                  + TRADE_W["d_price"] * ((fr["price"] - fo["price"]) / 100.0)
+                  + TRADE_W["completes"] * (1.0 if fr["ours"] == fr["size"] - 1
+                                            else 0.0)
+                  + TRADE_W["d_ours"] * (fr["ours"] - fo["ours"])
+                  + TRADE_W["off_mort"] * (1.0 if fo["mort"] else 0.0)
+                  + TRADE_W["d_houses"] * (fr["houses"] - fo["houses"]))
+            if best_score is None or sc > best_score:
+                best_action, best_score = a, sc
 
-            # I3 — proposer gain must be strictly positive.
-            gain_us = val(pid, req_sq, our_val) - val(pid, offer_sq, our_val)
-            if gain_us <= best_gain:
-                continue
-
-            # H2 — and the counterparty must not be made worse off, the same
-            # two-sided test that governs the reply side.
-            tcache = their_val[target]
-            gain_them = (val(target, offer_sq, tcache)
-                         - val(target, req_sq, tcache))
-            if gain_them < 0:
-                continue
-
-            best_action, best_gain = a, gain_us
-
+        # I6 — the propose/don't gate. The teacher proposed in 2,508 of 6,032
+        # states where an exchange was legal (41.6%), so firing on every
+        # positive score is wrong; TRADE_GATE is the score floor.
+        if best_score is None or best_score < TRADE_GATE:
+            return None
         return best_action
 
     # ------------------------------------------------------------------

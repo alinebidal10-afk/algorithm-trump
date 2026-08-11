@@ -815,3 +815,97 @@ real measurement was run instead and is labelled as such. `ASUValueV1` was
 used rather than `ASURolloutV1` because the 200-game rollout reference has now
 run over 2.5 hours without completing a single game, so a rollout head-to-head
 is not feasible at this budget.
+
+## D2.9 — Harvesting real-play trades: the signal was there all along
+
+D2.7's rule said changes ship only on held-out play. The corollary, applied
+here, is that they should be *fitted* on the target distribution too. Instead
+of widening the synthetic generator to ~500 boards, `harvest_trades.py`
+collects the same decisions from 60 teacher-driven games:
+
+| | synthetic (p09b) | harvested (real play) |
+| --- | --- | --- |
+| decision states | 400 | **6,032** |
+| proposals | 118 | **2,508** |
+| candidates | 7,675 | **358,042** |
+| mean candidates / decision | 23.4 | 64.8 |
+
+**The synthetic pool was not merely small — it was misleading.** On it, every
+model scored ~8.5% against a 4.3% random reference, intervals overlapping, and
+D2.5's third branch ("no component carries the signal") looked live. On real
+play *every single feature* beats its 1.54% random reference, by 4× to 13×.
+The signal was never absent; it was absent from the generated boards.
+
+`analyze_trades.py` measured the decision rather than proposing a model. The
+chosen candidate has a clear profile against the pool it was drawn from:
+
+| quantity | chosen | pool avg |
+| --- | --- | --- |
+| requested deed, projected rent to us | **29.05** | 16.55 |
+| requested deed, our deeds in its group | **0.98** | 0.45 |
+| offered deed, projected rent to us | **6.51** | 11.44 |
+| offered deed, list price | **156** | 189 |
+
+It asks for high-rent deeds in groups it already holds part of, and gives away
+cheap low-rent deeds from groups it does not. Best single feature — rent
+difference — reaches 20.85% [18.43, 23.49] on its own.
+
+`fit_trade_v2.py` searched weights on 1,520 train proposals (split by game
+seed, since decisions inside a game share a board and would leak):
+
+    held-out top-1  29.86%  [27.09, 32.79]      (988 proposals)
+    rent only       20.85%
+    random           1.54%
+
+Train scored 25.72% — *below* held-out, so nothing is overfitted. The monopoly
+term is deliberately absent from these features, per D2.6.
+
+## D2.10 — Agreement up 4.1pp, win rate down: the objectives diverge
+
+Fitted ranking plus a gate threshold (3.92, fitted on harvest train, 60.1%
+held-out against a 57.4% never-propose baseline) applied to `spec_policy`:
+
+| category | before | after |
+| --- | --- | --- |
+| trade proposal | 0.2% | **8.0%** |
+| turn flow | 93.3% | **96.9%** |
+| development order | 30.3% | **54.5%** |
+| auction | 90.5% | 90.5% |
+| **TOTAL held-out agreement** | **73.4%** | **77.5%** |
+
+The gate matters more than the ranking: without it, proposals fire on every
+positive score and steal END_TURN and build decisions (turn flow falls to
+85.9%, development to 17.0%, total to 72.7%) even though trade proposal itself
+reaches 25.3%. With it, trade proposal drops to 8.0% but everything else
+recovers and the total gains 4.1pp.
+
+**The head-to-head went the other way:**
+
+| | spec wins | win rate |
+| --- | --- | --- |
+| before the trade fit | 16/60 | 26.7% [17.1, 39.0] |
+| after | 12/60 | **20.0% [11.8, 31.8]** |
+
+The intervals overlap heavily, so this is not a significant *decline* — but it
+is certainly not the improvement the agreement gain predicts. **Imitation
+fidelity and playing strength are different objectives, and this is the first
+direct evidence of them diverging in this project.** A clone can match more of
+the teacher's decisions while losing more games, because the decisions it
+still gets wrong are not weighted by how much they cost.
+
+That is worth stating plainly because Phase 2's two acceptance criteria assume
+they move together: ">= 90% agreement" and "within 5 win-rate points of the
+value teacher". At 77.5% and 20.0% the agent fails both, and closing the first
+is not on its own a route to the second.
+
+**Phase 2 status: still failing.**
+
+| criterion | target | actual |
+| --- | --- | --- |
+| held-out decision agreement | >= 90% | **77.5%** |
+| on-policy agreement (10 fresh games) | >= 85% | not yet measured |
+| win rate vs value teacher | within 5 pts | **20.0% vs 80.0%** |
+
+Remaining known defects, in order of measured cost: trade proposal is still
+8.0% on 16% of decisions; trade reply sits at 78.1% on another 15%;
+liquidation order is 23.8%; unmortgage 45.7%.
