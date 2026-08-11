@@ -436,3 +436,69 @@ Secondary, smaller gaps once trade is solved: `improve_house` at 27% (E1's
 rent ordering is right in isolation but something else outranks it in real
 positions), and `DECLINE_TRADE` at 69.5% (the clone accepts offers the teacher
 refuses — consistent with the same valuation weakness).
+
+## D2.2 — Experiment 9b: ranking calibration data, and why board diversity was mandatory
+
+The Phase 2 gap is trade, and the fault was located in `deed_value`: accurate
+enough for thresholds (buy 98.4%, auction 90.5%) but not for ranking two deeds
+against each other (`exch_trade` 0.3% over 722 held-out decisions).
+
+**Board diversity was made a design requirement of this probe, not an
+afterthought.** Two narrow samples had already produced confident, wrong
+conclusions: p08's 14-state trade cell reported 0% rollout divergence against
+Experiment 6's 92.6% (D1.3), and p09's single board shape showed 36/36
+proposals were "cheapest spare for the completing deed" — a rule that scored
+5% in real play. Both looked unambiguous at the time.
+
+p09b therefore samples 400 boards from a seeded generator randomising deed
+allocation (seat 0, one rival, and a third party so the board is not
+two-sided), all four positions, development level, bank house/hotel stock,
+mortgage flags and every player's cash. Diversity is **reported rather than
+claimed**: the sample covers 2–5 deeds a side, 0–4 development levels, 4 bank
+stock levels, 7 cash levels, 23 distinct candidate-set sizes, and **all ten
+colour groups on both the offered and the requested side**.
+
+### Result: two separate defects, not one
+
+| | |
+| --- | --- |
+| boards offering a real ranking choice | 400 |
+| teacher proposed a trade | **118 (29.5%)** |
+| teacher ended its turn instead | **282 (70.5%)** |
+| our model's top-1 accuracy | **13/118 = 11.0%** |
+| teacher's pick inside our top-3 | 21.2% |
+| teacher's pick inside our top-5 | 32.2% |
+| teacher's pick inside our top-10 | 62.7% |
+| median rank our model gives its pick | 8 (mean 10.4, worst 40) |
+
+**Defect 1 — when to propose.** The teacher proposes on fewer than a third of
+boards where a legal exchange exists. `_propose_trade` fires whenever any pair
+scores positive, which is most of the time. That is the source of the 200
+`END_TURN` disagreements: the same fault, counted in a different row. Whatever
+gate suppresses 70% of proposals is not modelled at all, and none of the
+obvious board features separate the two populations — deeds held, cash,
+candidate count and development are nearly identical across proposed and
+ended-turn boards (3.64 vs 3.48 deeds, $1,170 vs $1,153, dev 0.05 vs 0.13).
+The gate is therefore a property of the *offers available*, not of the board,
+which points at a threshold on the gain itself.
+
+**Defect 2 — which to propose.** Top-1 of 11% against a candidate set
+averaging 22 is only modestly better than the 4.5% a random pick would give,
+and top-10 at 62.7% says the correct action is usually somewhere in the upper
+half of our ordering but rarely at the top. The ordering carries signal; it is
+not calibrated.
+
+The direction is at least sane: the teacher asks for more than it gives (mean
+requested price $224 vs offered $204; requested price exceeds offered in
+70/118), and it trades across all ten colours rather than favouring any.
+
+### Next work item
+
+Fit `deed_value` against `p09b_trade_ranking.csv` as a ranking problem —
+top-1 accuracy on the 118 proposal boards is the objective, with the 282
+end-turn boards as the negative class for the propose/don't-propose gate.
+Both defects are measurable on this one file, so the fit can be validated
+without touching held-out play, and held-out agreement stays an honest test.
+
+No further change to `_propose_trade` until that fit exists. The two previous
+attempts were both made without calibration data and both regressed.

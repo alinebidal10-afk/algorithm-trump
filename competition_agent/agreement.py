@@ -49,7 +49,12 @@ PROBE_DIR = Path(__file__).resolve().parent / "probes"
 
 
 def family(action: int) -> str:
-    """Which action family an id belongs to — the unit we debug in."""
+    """Which action family an id belongs to — the unit we debug in.
+
+    Binary actions are reported individually rather than lumped together:
+    PAY_BAIL and ROLL_DICE are different decisions with different rules, and
+    collapsing them hides which rule is failing.
+    """
     best = "binary"
     for name, start in sorted(OFFSETS.items(), key=lambda kv: kv[1]):
         if action >= start:
@@ -57,6 +62,32 @@ def family(action: int) -> str:
     if best == "binary":
         return action_to_description(action)
     return best
+
+
+# Every family the policy can be asked about, so the report shows the ones
+# that never came up as explicit zero rows instead of silently omitting them.
+ALL_FAMILIES = [
+    "DO_NOTHING", "END_TURN", "ROLL_DICE", "BUY_PROPERTY", "USE_GOOJ_CARD",
+    "PAY_BAIL", "DECLARE_BANKRUPT", "ACCEPT_TRADE", "DECLINE_TRADE",
+    "mortgage", "unmortgage", "improve_house", "improve_hotel",
+    "sell_house", "sell_hotel", "sell_prop",
+    "buy_trade", "sell_trade", "exch_trade", "auction",
+]
+
+# Semantic grouping, so "development order" and "liquidation order" can be
+# read as single numbers even though each spans several action families.
+CATEGORIES = [
+    ("turn flow",        ["DO_NOTHING", "END_TURN", "ROLL_DICE"]),
+    ("buy",              ["BUY_PROPERTY"]),
+    ("auction",          ["auction"]),
+    ("jail",             ["USE_GOOJ_CARD", "PAY_BAIL"]),
+    ("development order", ["improve_house", "improve_hotel"]),
+    ("liquidation order", ["mortgage", "sell_house", "sell_hotel",
+                           "sell_prop", "DECLARE_BANKRUPT"]),
+    ("unmortgage",       ["unmortgage"]),
+    ("trade reply",      ["ACCEPT_TRADE", "DECLINE_TRADE"]),
+    ("trade proposal",   ["buy_trade", "sell_trade", "exch_trade"]),
+]
 
 
 def _run_seed(args):
@@ -135,12 +166,46 @@ def main() -> int:
 
     print(f"mode={args.mode}  seeds={args.seed_base}.."
           f"{args.seed_base + args.seeds - 1}  decisions={total}")
-    print(f"\n{'family':<22}{'agree':>8}{'n':>8}{'rate':>9}")
-    print("-" * 47)
-    for fam, (a, n) in sorted(by_fam.items(), key=lambda kv: -kv[1][1]):
-        print(f"{fam:<22}{a:>8}{n:>8}{100*a/n:>8.1f}%")
-    print("-" * 47)
-    print(f"{'TOTAL':<22}{agree:>8}{total:>8}{100*agree/total:>8.1f}%")
+
+    print(f"\n=== per action family (every family, including unseen) ===")
+    print(f"{'family':<20}{'agree':>8}{'n':>8}{'rate':>9}   {'share':>7}")
+    print("-" * 56)
+    listed = set()
+    for fam in ALL_FAMILIES:
+        a, n = by_fam.get(fam, [0, 0])
+        listed.add(fam)
+        rate = f"{100*a/n:>7.1f}%" if n else "      —"
+        share = f"{100*n/total:>6.1f}%" if n else "     —"
+        print(f"{fam:<20}{a:>8}{n:>8}{rate}   {share}")
+    extra = [f for f in by_fam if f not in listed]
+    for fam in sorted(extra):
+        a, n = by_fam[fam]
+        print(f"{fam+' *':<20}{a:>8}{n:>8}{100*a/n:>7.1f}%   "
+              f"{100*n/total:>6.1f}%")
+    if extra:
+        print("  * not a normal action family (ERROR / ILLEGAL markers)")
+
+    print(f"\n=== by decision category ===")
+    print(f"{'category':<20}{'agree':>8}{'n':>8}{'rate':>9}   {'share':>7}")
+    print("-" * 56)
+    for label, fams in CATEGORIES:
+        a = sum(by_fam.get(f, [0, 0])[0] for f in fams)
+        n = sum(by_fam.get(f, [0, 0])[1] for f in fams)
+        rate = f"{100*a/n:>7.1f}%" if n else "      —"
+        share = f"{100*n/total:>6.1f}%" if n else "     —"
+        print(f"{label:<20}{a:>8}{n:>8}{rate}   {share}")
+    print("-" * 56)
+    print(f"{'TOTAL':<20}{agree:>8}{total:>8}{100*agree/total:>7.1f}%   "
+          f"{100.0:>6.1f}%")
+
+    # What a family costs us: its share of all disagreements.
+    print(f"\n=== disagreement budget (where the missing % lives) ===")
+    losses = sorted(((n - a, f) for f, (a, n) in by_fam.items() if n - a),
+                    reverse=True)
+    miss = total - agree
+    for lost, fam in losses:
+        print(f"{fam:<20}{lost:>8} lost   {100*lost/miss:>5.1f}% of all "
+              f"disagreement   {100*lost/total:>5.1f}pp of total")
 
     target = 90 if args.mode == "heldout" else 85
     verdict = "PASS" if 100 * agree / total >= target else "FAIL"
