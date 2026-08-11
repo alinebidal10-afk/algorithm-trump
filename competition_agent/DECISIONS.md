@@ -580,3 +580,56 @@ stay untouched so the check remains honest.
 
 **Phase 2 stays open.** Neither defect is closed, `sell_house` ordering is a
 known F4 defect, and G1's correction is net-negative until the gate lands.
+
+## D2.5 — Three diagnoses, three refutations, and what they jointly imply
+
+The trade-ranking failure has now survived three separate explanations. Each
+was tested in isolation before anything was built on it, and each was refuted
+by its own test rather than by a later regression.
+
+| # | diagnosis | test | outcome |
+| --- | --- | --- | --- |
+| 1 | weights are miscalibrated | 4,000-iteration search on train | **refuted** — nothing beat the initialisation; train top-1 stayed 12.7% |
+| 2 | features are one-sided | feasibility filter alone, no tuning | **refuted** — top-1 fell (12.7%→10.1%), and the filter discarded the teacher's own pick in 60/118 cases |
+| 3 | marginals are non-separable | joint `state_value` swap delta vs difference of marginals | **refuted** — scores change by up to 23× relative, argmax identical on 40/40 boards |
+
+Refutation 3 is the informative one. Replacing a difference of marginals with a
+genuine whole-position valuation moved candidate scores by more than an order
+of magnitude and **changed which candidate ranked first exactly zero times**.
+That is not a small effect failing to help; it is a large effect that cannot
+reach the argmax.
+
+**What all three have in common.** Weight changes, feasibility filters and a
+restructured valuation all left the same candidate on top. A ranking that
+refuses to move under three independent large perturbations is being decided
+by a single dominant term, and everything else is rounding error against it.
+
+The suspect is the monopoly term. `max_group_rent(...) / 2**missing` is
+hundreds to low thousands, while list price is $60–$400 and projected rent is
+tens of dollars. Any candidate touching a group we have presence in therefore
+outranks every candidate that does not, regardless of price, rent, recipient
+gain, or group interaction — which is precisely the invariance observed.
+
+If that is right, it also explains refutation 2 without extra assumptions:
+recipient gains computed from the same dominant term would be mis-signed on
+exactly the trades where group structure changes hands, which is the ~50% of
+the teacher's picks the filter rejected.
+
+**Next test, and it is a cheap ablation, not a fit.** Rank by each component
+*alone* — price only, rent only, monopoly only — on the fixed split, and
+compare against the combined model's 12.7%/8.5%. Three outcomes, all
+informative:
+
+- monopoly-only reproduces the combined model → the term dominates as
+  suspected, and the fix is scale, not structure;
+- price-only or rent-only beats the combined model → the monopoly term is
+  actively harmful and should be down-weighted or dropped;
+- none of them reaches 12.7% → no single component carries the signal, and the
+  valuation is wrong in kind rather than in proportion, which would mean the
+  teacher is not ranking trades by a state-value difference at all.
+
+That third outcome is worth taking seriously. If it lands, the next move is
+not another valuation variant but a direct probe of *what the teacher's trade
+choice actually correlates with*, measured rather than assumed.
+
+**Phase 2 remains open.** No further valuation change until this ablation runs.
