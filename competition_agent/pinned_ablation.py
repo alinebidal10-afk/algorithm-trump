@@ -123,7 +123,8 @@ def _game(args):
     winner = active[0] if len(active) == 1 else env.winner()
     fired = sum(agents[s].fired for s in spec_seats)
     total = sum(agents[s].total for s in spec_seats)
-    return {"arm": arm, "seed": seed, "spec_win": winner in spec_seats,
+    return {"arm": arm, "seed": seed, "seats": list(spec_seats),
+            "spec_win": winner in spec_seats,
             "fired": fired, "total": total}
 
 
@@ -135,6 +136,7 @@ def main() -> int:
     ap.add_argument("--workers", type=int, default=8)
     ap.add_argument("--max-steps", type=int, default=1500)
     ap.add_argument("--seed-base", type=int, default=920000)
+    ap.add_argument("--no-resume", action="store_true")
     args = ap.parse_args()
 
     jobs = []
@@ -143,10 +145,35 @@ def main() -> int:
             jobs.append((args.seed_base + k, arm, (0, 2), args.max_steps))
             jobs.append((args.seed_base + k, arm, (1, 3), args.max_steps))
 
-    with managed_pool(args.workers) as pool:
-        rows = pool.map(_game, jobs)
-
+    # Stream results as they land and skip any already recorded. Same fix as
+    # DECISIONS D0.8 applied to bench.py: a plain pool.map leaves a long run
+    # opaque while it works and unrecoverable if it is interrupted. This run
+    # took 1h23m+ with no visibility, which is exactly the failure that fix
+    # was written for; it should have been carried over at the time.
     out = Path(__file__).resolve().parent / "probes" / "pinned_ablation.json"
+    partial = out.with_suffix(".partial.jsonl")
+    done = {}
+    if partial.exists() and not args.no_resume:
+        for line in partial.read_text().splitlines():
+            if line.strip():
+                r = json.loads(line)
+                done[(r["arm"], r["seed"], tuple(r.get("seats", ())))] = r
+        if done:
+            print(f"resuming: {len(done)} game(s) already recorded")
+
+    todo = [j for j in jobs
+            if (j[1], j[0], tuple(j[2])) not in done]
+    rows = list(done.values())
+    print(f"{len(todo)} game(s) to play, {len(rows)} reused")
+
+    with partial.open("a") as sink, managed_pool(args.workers) as pool:
+        for i, r in enumerate(pool.imap_unordered(_game, todo), 1):
+            rows.append(r)
+            sink.write(json.dumps(r) + "\n")
+            sink.flush()
+            if i % 20 == 0 or i == len(todo):
+                print(f"  {i}/{len(todo)} games", flush=True)
+
     out.write_text(json.dumps(rows, indent=1))
 
     base = None
