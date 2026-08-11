@@ -948,3 +948,56 @@ although not diagnostic of it on its own.
 instead of the teacher (the teacher still supplies the ground-truth label at
 each state), refit, and compare. That is one DAgger iteration and it directly
 tests whether the distribution is the problem.
+
+## D2.12 — Cost-weighted defect ranking: agreement was ranking the wrong things
+
+`pinned_ablation.py` pins one family at a time to the teacher's ground truth
+and measures win-rate recovery. 40 seat-rotated games per arm.
+
+**Harness validated first:** the `all` arm returns **50.0% [35.2, 64.8]** — an
+agent pinned on every family is the teacher, and scores like it. Without that
+check none of the other arms would mean anything.
+
+| pinned family | win rate | Δ vs none | fires on | agreement |
+| --- | --- | --- | --- | --- |
+| none (baseline) | 27.5% [16.1, 42.8] | — | — | — |
+| **trade_proposal** | **37.5% [24.2, 53.0]** | **+10.0** | 2.3% | 8.0% |
+| liquidation | 27.5% [16.1, 42.8] | +0.0 | 4.6% | 23.8% |
+| unmortgage | 27.5% [16.1, 42.8] | +0.0 | 0.8% | 45.7% |
+| auction | 27.5% [16.1, 42.8] | +0.0 | 3.2% | 90.5% |
+| turn_flow | 27.5% [16.1, 42.8] | +0.0 | 67.3% | 96.9% |
+| development | 25.0% [14.2, 40.2] | −2.5 | 2.3% | 54.5% |
+| trade_reply | 20.0% [10.5, 34.8] | −7.5 | 3.4% | 78.1% |
+| all (upper bound) | 50.0% [35.2, 64.8] | +22.5 | 100% | — |
+
+**The two rankings disagree, and the agreement one was wrong.**
+
+- **Liquidation, agreement's worst family at 23.8%, costs nothing.** It fires
+  on 4.6% of decisions and recovers exactly 0.0pp. Unmortgage (45.7%) the
+  same. Both were near the top of the "fix next" list by agreement and both
+  are worthless to fix. This is precisely the hypothesis that motivated the
+  ablation.
+- **Trade proposal is the only family with a positive effect**, +10.0pp on
+  2.3% of decisions — **+4.34pp per 1% of decisions touched**, the best rate
+  in the table by a wide margin.
+- The gap between `all` (+22.5) and the sum of individual arms is large, which
+  suggests the remaining loss is distributed or interactive rather than
+  sitting in one family.
+
+**Power caveat, stated before any allocation decision.** At 40 games per arm,
+*every* interval overlaps the baseline's [16.1, 42.8]; only `all` is
+distinguishable. The negative arms are almost certainly noise — pinning a
+family to ground truth should not make play worse — and four arms landing on
+exactly 11/40 indicates their changed decisions rarely flip a game rather than
+that their effect is precisely zero. **This ranking is suggestive, not
+settled.**
+
+A confirmatory run over `none, trade_proposal, trade_reply` at 60 games per
+arrangement (360 games, seeds 930000+) is in flight, using the streaming
+version so it is visible and resumable.
+
+**Provisional allocation, pending that run:** trade proposal first. It is both
+the top of the cost ranking and still the worst-agreeing family with headroom
+(8.0%), so the two rankings agree on it even though they disagree elsewhere.
+Liquidation, unmortgage and auction are explicitly **de-prioritised despite
+their agreement numbers** — that is the whole point of measuring cost.
