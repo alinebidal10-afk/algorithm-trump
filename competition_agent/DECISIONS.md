@@ -1443,3 +1443,78 @@ the two trade families, network there — and run the same floor/fitted/network
 head-to-head. If the realised gain is near +1.8pp, the honest conclusion is
 that Phase 3 bought a real but small improvement at considerable complexity,
 and Phase 5's structural work is the better remaining investment.
+
+## D3.6 — Hybrid head-to-head: +8.65pp of top-1 buys nothing, and regularisation does not move the ceiling
+
+### The head-to-head, raw
+
+`hybrid` (rules everywhere, learned head on the two trade families) against
+`ASUValueV1`, seat-rotated, seeds 930000+ — the same base as every other arm.
+
+| arm | win rate | n |
+| --- | --- | --- |
+| floor — proposals off | 18.3% [14.4, 23.1] | 300 |
+| fitted — hand-fitted ranker | 25.7% [21.1, 30.9] | 300 |
+| **hybrid — learned head** | **24.0% [18.6, 30.4]** | 200 |
+| oracle — perfect trades | 40.0% | 120 |
+
+    hybrid - fitted   -1.7pp     (projected +1.8pp)
+    z = -0.42, p = 0.673
+
+**The network did not beat the hand-fitted ranker.** The point estimate is
+negative, the difference is not significant, and the projection was wrong in
+sign. A +8.65pp improvement in held-out top-1 (29.86% → 38.51%) produced no
+measurable win-rate gain.
+
+The D3.5 projection of +1.8pp assumed top-1 maps linearly to win rate between
+the two measured anchors. It was flagged as an assumption; it is now falsified.
+Whatever decisions the network newly gets right are not the ones that decide
+games.
+
+### The regularisation iteration
+
+Run before drawing any Phase 4 conclusion, since the first head overfitted
+badly (train 97.76% vs held-out 38.51%, held-out peaking at epoch 5).
+
+| config | train top-1 | **held-out top-1** |
+| --- | --- | --- |
+| hidden 512, no dropout, no wd | 97.76% | **38.51%** |
+| hidden 256, dropout 0.3, wd 1e-4 | 81.78% | **37.98%** |
+| hidden 128, dropout 0.4, wd 1e-3 | 74.85% | **38.52%** |
+
+Regularisation works as intended on the *gap* — train accuracy falls from
+97.8% to 74.9% — and **held-out top-1 does not move at all**: 38.51, 37.98,
+38.52 across a 4x range of capacity and three regularisation strengths.
+
+That is the informative result. The first head's overfitting was real but not
+the binding constraint; ~38.5% is a genuine ceiling for this model class on
+this data, not an artefact of capacity. More regularisation, more epochs or a
+smaller head will not produce a better number.
+
+### What this establishes, and what it does not
+
+**Established:** the learned head reaches ~38.5% top-1 and that is worth
+nothing in win rate over the hand-fitted 29.86%. Two independent objectives
+have now diverged twice in this project (D2.10, and here), and the second time
+was against a specific quantitative prediction.
+
+**Not established:** that a learned approach cannot help. Untested are a
+different input representation, a value-based rather than imitation objective,
+and further DAgger iterations. What is refuted is the specific claim D2.15
+made — that swapping four hand-chosen features for the 300-dim observation
+would convert into playing strength. It converted into agreement and stopped
+there.
+
+**Phase 4 is now on solid ground.** The regularisation iteration was the
+condition for that, and it came back flat. Continuing to tune this head would
+be optimising a metric measured not to matter.
+
+### Standing correction
+
+D2.15 reversed D2.13's Phase 3 deferral on the strength of a capture-ratio
+argument. That reversal produced a working pipeline and a clear negative
+result — which is worth having — but its central prediction did not hold. The
+project's record on this is now three for three: every time agreement was used
+to predict strength (D2.10, D3.5, and the capture-ratio extrapolation itself),
+the prediction failed. Win rate must be measured directly, and no further
+agreement-based projection should be treated as load-bearing.

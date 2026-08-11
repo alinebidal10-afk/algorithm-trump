@@ -58,8 +58,14 @@ def _spec_factory(player_id: int, rng_seed: int):
     return SpecPolicy(player_id, rng_seed)
 
 
+def _hybrid_factory(player_id: int, rng_seed: int):
+    from competition_agent.hybrid_policy import HybridPolicy
+    return HybridPolicy(player_id, rng_seed)
+
+
 REGISTRY: Dict[str, Callable[[int, int], object]] = {
     "spec": _spec_factory,
+    "hybrid": _hybrid_factory,
     # The frozen teacher, both variants. "teacher" aliases the value variant
     # because it is the Phase 2 agreement target.
     "teacher": lambda pid, seed: ASUValueV1(pid),

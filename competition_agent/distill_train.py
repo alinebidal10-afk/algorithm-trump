@@ -70,11 +70,14 @@ def relevant(a: int) -> bool:
 
 
 class TradeHead(nn.Module):
-    def __init__(self, hidden: int = 512):
+    def __init__(self, hidden: int = 512, dropout: float = 0.0):
         super().__init__()
+        # Capacity and dropout are configurable because the first run
+        # overfitted hard: train 97.76% against held-out 38.51%, with held-out
+        # peaking at epoch 5 and declining after (D3.5).
         self.net = nn.Sequential(
-            nn.Linear(OBS_DIM, hidden), nn.ReLU(),
-            nn.Linear(hidden, hidden), nn.ReLU(),
+            nn.Linear(OBS_DIM, hidden), nn.ReLU(), nn.Dropout(dropout),
+            nn.Linear(hidden, hidden), nn.ReLU(), nn.Dropout(dropout),
             nn.Linear(hidden, N_OUT),
         )
 
@@ -130,6 +133,9 @@ def main() -> int:
     ap.add_argument("--bs", type=int, default=128)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--out", type=str, default=str(CKPT))
+    ap.add_argument("--hidden", type=int, default=512)
+    ap.add_argument("--dropout", type=float, default=0.0)
+    ap.add_argument("--wd", type=float, default=0.0)
     args = ap.parse_args()
 
     torch.manual_seed(20250811)
@@ -147,8 +153,10 @@ def main() -> int:
         print("not enough data")
         return 1
 
-    model = TradeHead()
-    opt = torch.optim.Adam(model.parameters(), lr=args.lr)
+    model = TradeHead(hidden=args.hidden, dropout=args.dropout)
+    opt = torch.optim.Adam(model.parameters(), lr=args.lr,
+                           weight_decay=args.wd)
+    print(f"hidden={args.hidden} dropout={args.dropout} wd={args.wd}")
     lossf = nn.CrossEntropyLoss()
 
     best = 0.0
@@ -166,7 +174,9 @@ def main() -> int:
         if acc > best:
             best = acc
             torch.save({"state_dict": model.state_dict(),
-                        "held_top1": acc, "n_held": n}, args.out)
+                        "held_top1": acc, "n_held": n,
+                        "hidden": args.hidden,
+                        "dropout": args.dropout}, args.out)
         if ep % 5 == 0 or ep == 1:
             th, tn = top1(model, train)
             print(f"  ep {ep:>3}  loss {tot/max(len(train)//args.bs,1):6.3f}  "
