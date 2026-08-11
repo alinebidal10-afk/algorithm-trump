@@ -55,6 +55,7 @@ REQUESTED = [
     (16, "our own orange piece"),
 ]
 CASH = list(range(-400, 401, 25))
+ROLLOUT_CASH = list(range(-400, 401, 100))   # 9 points per cell
 
 
 def _env(offered_sq, requested_sq, cash_to_us):
@@ -91,9 +92,11 @@ def _job(item):
     flip, monotone, points = scan_flip(
         lambda c: _accepts(offered_sq, requested_sq, c), -400, 400, 25
     )
-    # rollout agreement on the same grid (widens the Phase 4 trade sample)
+    # Rollout agreement, on a coarser grid: rollout costs ~9 s per trade state
+    # (p08), so the full $25 grid would be ~30 min of pure lookahead for a
+    # sample whose only job is to widen the Phase 4 trade evidence.
     agree = total = 0
-    for c in CASH:
+    for c in ROLLOUT_CASH:
         env = _env(offered_sq, requested_sq, c)
         if ACCEPT not in legal(env, 0):
             continue

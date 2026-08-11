@@ -437,6 +437,197 @@ so does the rent it fears). Both feed Phase 5 module 3.
 
 ---
 
+## Group E — development order (Experiment 4)
+
+Method: seat 0 holds one completed colour group and nothing else. Each chosen
+improvement is applied via `game.step`, so the engine's even-building rule and
+bank inventory bind exactly as in play; the sequence of squares is the order.
+
+### E1. The first house goes on the highest-*rent* deed, not the highest-priced
+**Observation.** In 7 of 8 groups the first improvement targets the deed with
+the largest base rent. Brown decides it: Mediterranean (sq 1) and Baltic
+(sq 3) both cost $60, so price cannot break the tie, and the teacher picks
+**sq 3**, whose base rent is 4 against Mediterranean's 2. The same holds where
+price and rent agree — lightblue → sq 9, pink → sq 14, orange → sq 19,
+red → sq 24, yellow → sq 29, green → sq 34.
+**Rule.** Development priority is ordered by rent, not by price.
+**Confidence:** certain.
+**Evidence:** `p04_development_order.csv`, `first_built` column (24 rows).
+
+### E2. Deeds identical in price *and* rent are taken in ascending square id
+**Observation.** Orange 16 and 18 are identical on every attribute; the build
+sequence is `19 → 16 → 18 → 19 → 16 → 18 → …`. Red 21 and 23 are likewise
+identical and go `24 → 21 → 23 → …`.
+**Rule.** The final tie-break is the lower square id, which corresponds to the
+lower action id within the improvement family.
+**Confidence:** certain.
+**Evidence:** `p04_development_order.csv`, `sequence` column.
+
+### E3. Darkblue inverts when unconstrained, and reverts under scarcity
+**Observation.** Darkblue is the sole exception to E1: with ample cash and
+bank stock the teacher opens on Park Place (sq 37, rent 35) rather than
+Boardwalk (sq 39, rent 50). Constrain the bank to 3 houses and no hotels — so
+only a single house can ever be placed — and it opens on **Boardwalk**.
+**Rule.** When the whole group can be built out, every ordering reaches the
+same end state, so the choice falls through to the E2 id tie-break (37 < 39).
+When only one house can be placed the end states differ and E1's rent
+ordering governs.
+**Confidence:** likely (the explanation fits both darkblue observations and is
+consistent with E1/E2, but three-deed groups also build out fully and still
+follow rent order, which the account does not fully explain).
+**Evidence:** `p04_development_order.csv`, darkblue rows.
+
+### E4. A near-empty bank suppresses building almost entirely
+**Observation.** With 3 houses and 0 hotels available, the teacher places
+**exactly one house and stops** in all 8 groups (`n_improvements = 1`),
+despite holding $5,000 and two more houses being available.
+**Rule.** Scarce bank inventory collapses the value of developing, not merely
+the reachable level.
+**Confidence:** certain for the behaviour; the mechanism is not established.
+**Evidence:** `p04_development_order.csv`, house-scarce rows.
+
+### E5. Development stops exactly at the safety floor
+**Observation.** With $400 and an unconstrained bank, brown builds 4 houses at
+$50 each — spending $200 and stopping with $200 in hand, the D1 cushion to the
+dollar. Groups nearer Go build further on the same cash (lightblue reaches 8
+improvements) because their projected rent income is larger.
+**Rule.** Building is gated by the same cushion as every other discretionary
+spend, and the gate's rent term uses actual positions.
+**Confidence:** certain (independent cross-validation of D1 and A3 from a
+different decision family).
+**Evidence:** `p04_development_order.csv`, low-cash rows.
+
+---
+
+## Group F — liquidation order under debt (Experiment 5)
+
+Method: seat 0 owes a fixed debt in post_roll with `debt_player` set, which is
+the engine's forced-rescue branch. Holdings are mixed on purpose — a developed
+orange monopoly, two railroads, and a lone Boardwalk — so the ordering has
+something to choose between. Debt is swept $50–$2,500.
+
+### F1. Mortgages come before house sales
+**Observation.** With houses on the orange group, the sequence always opens
+`mortgage(15) → mortgage(5) → …` and only reaches `sell_house` once every
+mortgageable deed is gone.
+**Rule.** Raise cash by mortgaging before selling development.
+**Confidence:** certain for the observed order — but see F2 for why this is
+weaker evidence than it looks.
+**Evidence:** `p05_liquidation_order.csv`.
+
+### F2. F1 is partly forced by legality, not preference
+**Observation.** The engine only offers `mortgage` for a deed with
+`houses == 0`. When the orange group carries houses those deeds are not
+mortgageable at all, so "railroads first" is the only legal opening.
+**Rule.** Do not read F1 as the teacher protecting its monopoly. The genuine
+preference is visible only in the `houses = 0` rows, where every deed is
+mortgageable — and there it mortgages the **orange monopoly first**
+(`18 → 16 → 19`), ahead of the railroads and Boardwalk.
+**Confidence:** certain.
+**Evidence:** `p05_liquidation_order.csv`, `houses = 0` rows compared against
+`houses = 2/4`.
+
+### F3. Cheapest asset first, by mortgage value
+**Observation.** With no houses anywhere, the mortgage order is
+`18 → 16 → 19 → 15 → 5 → 39`, whose mortgage values are
+**90, 90, 100, 100, 100, 200** — ascending, with no exception.
+**Rule.** Liquidation proceeds in ascending mortgage value, raising the least
+cash per action and so minimising over-liquidation. This is what makes the
+monopoly go first in F2: orange deeds are simply the cheapest, not specially
+protected or specially expendable.
+**Confidence:** certain.
+**Evidence:** `p05_liquidation_order.csv`.
+
+### F4. Deeds are emptied one at a time, not levelled down together
+**Observation.** At `houses = 2`, once house-selling starts the pattern is
+`sell_house(18) → sell_house(18) → mortgage(18) → sell_house(16) →
+sell_house(16) → mortgage(16) → …` — each deed is stripped and mortgaged
+before the next is touched. The opening three sales at `houses = 4`
+(`19 → 18 → 16`) are the engine's even-building constraint forcing one house
+off each before any deed may go below the others.
+**Rule.** Subject to even-building, liquidation concentrates on one deed at a
+time rather than spreading evenly.
+**Confidence:** certain.
+**Evidence:** `p05_liquidation_order.csv`, `sequence` column.
+
+### F5. Bankruptcy is declared only when nothing remains, and development is a buffer
+**Observation.** `DECLARE_BANKRUPT` appears only as the final action after
+every asset is exhausted. Depth of development changes survival: at a $1,000
+debt, `houses = 4` survives (14 actions, no bankruptcy) while `houses = 2`
+does not.
+**Rule.** Houses are liquidatable worth, so a more developed position absorbs
+a larger debt — the same quantity that relaxes the D3 safety gate.
+**Confidence:** certain (independent cross-validation of D3).
+**Evidence:** `p05_liquidation_order.csv`, `went_bankrupt` column.
+
+---
+
+## Group G — jail policy (Experiment 7)
+
+### G1. The pre-roll jail menu is a deferral, not a decision
+**Observation.** Swept over 224 pre-roll states (card × jail turn × cash ×
+rival development), the teacher chose `END_TURN` in **224/224** and never paid
+bail or played a card. In post_roll on the same states it leaves jail in
+**192/448**.
+**Rule.** In pre_roll `END_TURN` advances to post_roll rather than declining to
+leave, so the teacher defers the jail choice to the phase where it cannot be
+deferred. Any reading of the pre-roll sweep as "never leaves jail" is wrong.
+**Confidence:** certain.
+**Evidence:** `p07_jail_policy.csv` (pre-roll only, retained for this rule),
+`p07b_jail_post_roll.csv` (both phases, 896 rows).
+
+### G2. The card is spent freely; bail is not
+**Observation.** In post_roll, holding a get-out-of-jail-free card the teacher
+leaves in **141/224** (63%); without one it pays bail in **51/224** (23%) and
+otherwise rolls for doubles. Whether it owns deeds barely matters (27 vs 24
+bail payments).
+**Rule.** A free exit is taken readily; a $50 exit is treated as discretionary
+spending and usually refused.
+**Confidence:** certain.
+**Evidence:** `p07b_jail_post_roll.csv`.
+
+### G3. Bail obeys the $200 floor
+**Observation.** Without a card, bail is paid **0/32** at cash $50, $100 and
+$200, and first appears at cash $260 (6/32). Paying $50 from $200 leaves $150,
+under the floor; from $260 it leaves $210, over it. The flip is bracketed in
+($200, $260] by this grid, and the floor predicts $250.
+**Rule.** Bail is discretionary spending subject to the D1 cushion.
+**Confidence:** certain for the gating; the exact flip is bracketed, not
+located, at this grid resolution.
+**Evidence:** `p07b_jail_post_roll.csv`.
+
+### G4. Jail is treated as shelter — exit rate falls as the board gets dangerous
+**Observation.** Post-roll exit rate against rival development:
+
+| rival houses | 0 | 2 | 4 | 5 (hotel) |
+| --- | --- | --- | --- | --- |
+| leaves jail | **64.3%** | 42.9% | 32.1% | 32.1% |
+
+**Rule.** The more rent is waiting outside, the more willing the teacher is to
+stay in jail — the classic result that jail is shelter late and a waste early.
+The teacher does track it.
+**Confidence:** certain.
+**Evidence:** `p07b_jail_post_roll.csv`.
+
+### G5. It rolls for doubles first and buys out later
+**Observation.** Exit rate by jail turn: **5.4%** at turn 0, 35.7% at turn 1,
+65.2% at turns 2 and 3. Exit rate also rises with cash: 31.2% at $50–$200,
+43.8% at $400, 50.0% at $800, **75.0%** at $1,500.
+**Rule.** Rolling for doubles is free, so it is tried first; a paid exit is
+bought only as the forced-release boundary approaches, and more readily when
+cash is ample.
+**Confidence:** certain.
+**Evidence:** `p07b_jail_post_roll.csv`.
+
+**Competitive note.** G4 is the teacher playing jail correctly, so there is no
+easy edge there. G2 is more interesting: refusing a $50 bail at moderate cash
+early, when the board is cheap and deeds are still unowned, costs tempo in
+exactly the phase where buying matters most. That is a Phase 5 endgame-switch
+candidate — the value of leaving jail should be stage-dependent, and the
+teacher's gate is not.
+
+---
+
 ## Group C — rollout vs value divergence (Experiment 8, pulled forward)
 
 Both variants are deterministic given a state — the rollout uses fixed
