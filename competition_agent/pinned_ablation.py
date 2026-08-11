@@ -91,6 +91,20 @@ class PinnedPolicy:
 
     def choose_action(self, env) -> int:
         self.total += 1
+
+        # With nothing pinned this policy IS spec_policy, so the teacher call
+        # is pure waste - and it doubled the cost of the baseline arms, which
+        # are exactly the arms that need the most games. Deferred to the
+        # illegal-action fallback path, which is rare. Behaviour is unchanged.
+        if not self.pinned:
+            try:
+                a = int(self.spec.choose_action(env))
+            except Exception:                              # noqa: BLE001
+                return int(self.teacher.choose_action(env))
+            if a in {int(x) for x in env.get_allowed_actions(self.pid)}:
+                return a
+            return int(self.teacher.choose_action(env))
+
         t = int(self.teacher.choose_action(env))
         if "*" in self.pinned or family(t) in self.pinned:
             self.fired += 1
