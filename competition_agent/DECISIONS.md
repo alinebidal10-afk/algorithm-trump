@@ -1153,6 +1153,19 @@ same share:
     trade_reply fitted   ~ +2.5pp   (37% of its +6.7 oracle)
     total                ~ 29.2%    against parity of 50%
 
+> **THESE TWO NUMBERS ARE ESTIMATES, NOT MEASUREMENTS.** No fitted
+> `trade_reply` exists; +2.5pp is 37.3% of that family's *oracle* gain, and it
+> assumes the capture ratio measured for one family transfers to another. It
+> may not: the reply side is a binary accept/decline against a single offer,
+> not a ranking over ~65 candidates, so its features and its achievable
+> capture could differ in either direction. The ~29.2% total inherits the same
+> assumption and compounds it with the additivity caveat of D2.14.
+>
+> They are used here only to argue that hand-fitting is unlikely to reach
+> parity — a conclusion that holds across a wide range of plausible capture
+> ratios, since even 100% capture on `trade_reply` would give ~33.4%. Nothing
+> downstream should treat +2.5pp or 29.2% as established.
+
 So hand-fitted rules plausibly get to ~29%, not ~46%. The remaining ~21 points
 are inside the trade families but **not reachable by better weights on these
 features** — three independent refutations (D2.5, D2.6, D2.12) already showed

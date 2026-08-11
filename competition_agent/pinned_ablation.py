@@ -145,6 +145,12 @@ def main() -> int:
     ap.add_argument("--max-steps", type=int, default=1500)
     ap.add_argument("--seed-base", type=int, default=920000)
     ap.add_argument("--no-resume", action="store_true")
+    ap.add_argument("--tag", type=str, default="",
+                    help="suffix for the output/partial filenames. Needed when "
+                         "two runs share an arm name but differ in policy "
+                         "config (e.g. the same 'none' arm with proposals on "
+                         "vs off), which would otherwise collide in the "
+                         "resume file keyed on (arm, seed, seats).")
     args = ap.parse_args()
 
     jobs = []
@@ -158,7 +164,8 @@ def main() -> int:
     # opaque while it works and unrecoverable if it is interrupted. This run
     # took 1h23m+ with no visibility, which is exactly the failure that fix
     # was written for; it should have been carried over at the time.
-    out = Path(__file__).resolve().parent / "probes" / "pinned_ablation.json"
+    stem = "pinned_ablation" + (f"_{args.tag}" if args.tag else "")
+    out = Path(__file__).resolve().parent / "probes" / f"{stem}.json"
     partial = out.with_suffix(".partial.jsonl")
     done = {}
     if partial.exists() and not args.no_resume:
