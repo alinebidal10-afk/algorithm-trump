@@ -58,6 +58,14 @@ FAMILY_SETS = {
     "development": {"improve_house", "improve_hotel"},
     "auction": {"auction"},
     "turn_flow": {"END_TURN", "ROLL_DICE", "DO_NOTHING"},
+    # Both trade families together. Individually trade_proposal measured +10.0
+    # and trade_reply -7.5, and a negative from pinning to ground truth is not
+    # credible, so the two are likely interacting: proposals the clone makes
+    # are answered by replies the clone also gets wrong, and fixing one side
+    # while the other stays broken may be worse than fixing neither. This arm
+    # separates "trade_proposal is the cost" from "trade as a whole is".
+    "trade_both": {"ACCEPT_TRADE", "DECLINE_TRADE",
+                   "buy_trade", "sell_trade", "exch_trade"},
     "all": {"*"},
 }
 
