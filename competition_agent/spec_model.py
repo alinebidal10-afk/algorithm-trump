@@ -294,3 +294,73 @@ __all__ = [
     "liquidatable_worth", "marginal_monopoly_value", "max_group_rent",
     "multi_turn_landings", "rent_for", "turn_landings", "worst_reachable_rent",
 ]
+
+
+# --------------------------------------------------------------------------
+# whole-state valuation — the separability fix (see DECISIONS D2.5)
+# --------------------------------------------------------------------------
+def state_value(env, pid: int) -> float:
+    """Value of `pid`'s whole position, evaluated jointly.
+
+    `deed_value` is a *marginal*: what one more deed adds to the current
+    holding. Ranking a trade by `deed_value(req) - deed_value(offer)` treats
+    the two legs as independent, which they are not — the monopoly term is
+    `M / 2**missing`, so removing a deed can collapse a group at the same
+    moment another deed completes one. Marginals cannot see that interaction.
+
+    This evaluates the position as a whole, so a swap is scored as
+    `state_value(after) - state_value(before)` with both legs applied.
+
+    Components follow the ones the probes evidenced: unmortgaged asset value
+    (A2's price basis), projected rent from opponents' real positions
+    (A4/A6), and a per-group monopoly term discounted by missing deeds (B5).
+    """
+    me = env.players[pid]
+    assets = 0.0
+    for prop in me.properties:
+        if not prop.mortgaged:
+            assets += prop.price
+            if prop.is_real_estate and prop.houses:
+                assets += prop.houses * prop.data["house_price"]
+
+    rent = 0.0
+    for opp in env.players:
+        if opp.player_id == pid or opp.bankrupt:
+            continue
+        for sq, p in multi_turn_landings(opp.position, SHORT_TURNS):
+            prop = env.properties.get(sq)
+            if prop is not None and prop.owner == pid:
+                rent += p * rent_for(env, sq)
+
+    mono = 0.0
+    for color, squares in COLOR_GROUPS.items():
+        owned = sum(1 for s in squares if env.properties[s].owner == pid)
+        if owned == 0:                      # B5 — no presence, no term
+            continue
+        missing = len(squares) - owned
+        mono += max_group_rent(env, squares[0]) / (2 ** missing)
+
+    return assets + rent + mono
+
+
+def swap_delta(env, pid: int, give_sq: int, get_sq: int) -> float:
+    """Change in `pid`'s state value from giving `give_sq` and getting `get_sq`.
+
+    Applies both legs to the live objects, measures, then restores exactly.
+    The env is never left mutated (the harness contract).
+    """
+    give, get = env.properties[give_sq], env.properties[get_sq]
+    g_owner, t_owner = give.owner, get.owner
+    g_mono, t_mono = give.is_monopoly, get.is_monopoly
+    before = state_value(env, pid)
+    try:
+        give.owner = t_owner
+        get.owner = pid
+        env._update_monopolies()
+        after = state_value(env, pid)
+    finally:
+        give.owner = g_owner
+        get.owner = t_owner
+        give.is_monopoly, get.is_monopoly = g_mono, t_mono
+        env._update_monopolies()
+    return after - before
