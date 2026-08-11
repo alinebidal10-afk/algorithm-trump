@@ -1072,3 +1072,43 @@ after the trade work lands and its realised gain is compared against the
 fixes land materially below +19.2pp, the harvest distribution is the first
 suspect — the fit came from teacher-vs-teacher games, and this ablation shows
 trade decisions are precisely where the clone's play is decided.
+
+## D2.14 — Additivity is provisional, and fitted models are the reason to doubt it
+
+D2.13 measured `trade_both` (+19.2) against `trade_proposal` (+13.3) plus
+`trade_reply` (+6.7), a −0.8pp residual, and concluded the two families are
+independent. That conclusion is **provisional on one measurement**, and there
+is a specific mechanism by which it could fail once both fixes are real code
+rather than oracles.
+
+**Why oracle additivity need not imply fitted additivity.** The oracle arms
+substitute the teacher's *correct* action. Two correct components cannot
+generate compounding error — each independently removes its own loss, so
+additivity is close to guaranteed and the measurement mostly confirms the
+absence of a strategic interaction (e.g. "good proposals are wasted if replies
+are bad").
+
+Fitted models are different. Both sides will be **wrong in correlated ways**,
+because both are scored by the same deed-valuation features on the same board.
+A proposal the fitted ranker likes for the wrong reason is exactly the kind of
+trade the fitted reply rule is also likely to misjudge — and unlike the oracle
+case, the two errors can reinforce. Concretely: the clone proposes a trade its
+own valuation overrates, the opponent accepts because it is good *for them*,
+and the reply rule that should have refused the mirror-image offer shares the
+misvaluation that caused the proposal.
+
+**So additivity must be re-tested, not inherited.** When both fixes are
+implemented, run the three-way comparison again with fitted models in place of
+oracles:
+
+    fitted proposal only    vs floor
+    fitted reply only       vs floor
+    both fitted             vs floor
+
+If `both` falls materially short of the sum, the two share a failure mode and
+the shared component — the valuation — is the thing to fix, not either rule.
+That would be the fourth time the valuation has been the root cause (D2.5,
+D2.6, D2.12), which is itself a reason to expect it.
+
+Recorded now so the check is not skipped by inertia once the first fix shows a
+gain.
