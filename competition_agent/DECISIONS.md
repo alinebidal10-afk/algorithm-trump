@@ -1356,3 +1356,34 @@ Hand-fitting captures about one third of what perfect trade decisions are
 worth. The remaining two thirds sit inside the trade families and are not
 reachable by reweighting these features (D2.5, D2.6, D2.12). Proceeding to
 Phase 3 collection at scale.
+
+## D3.4 — Third repetition of the same instrumentation failure
+
+`distill_collect.py` was written with `pool.map`, which holds every result in
+memory and writes only on completion. A 320-game collection ran **2h11 with no
+visible progress** and was killed, discarding all of it.
+
+This is the third occurrence of one pattern:
+
+| # | harness | cost | fix |
+| --- | --- | --- | --- |
+| 1 | `bench.py` | 2h09 reference run lost | streaming + resume (D0.8) |
+| 2 | `pinned_ablation.py` | 1h24 opaque, nothing recoverable | streaming + resume |
+| 3 | `distill_collect.py` | 2h11 lost | streaming + resume (here) |
+
+Each fix was written, committed, and then **not carried to the next harness**.
+That is a habit, not three separate oversights, and the correct reading is that
+any new long-running harness in this project starts with streaming and resume
+rather than acquiring them after losing a run.
+
+**The larger cost was diagnostic, not compute.** After restarting with progress
+output the same 320 games run at 15.5 games/min — about 21 minutes total. The
+killed run had been going 2h11 on identical parameters, workers and a free
+machine. **Why it was ~6x slower is now unknowable**, because killing it
+destroyed the evidence. With progress output the anomaly would have been
+visible within five minutes and diagnosable while it was happening. The lost
+compute is replaceable; the lost explanation is not.
+
+No cause is offered here. The plausible candidates (chunking under `map`,
+memory pressure, a degenerate game) were not tested and inventing one would be
+worse than recording the gap.

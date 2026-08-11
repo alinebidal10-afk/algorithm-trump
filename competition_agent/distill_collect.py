@@ -133,19 +133,49 @@ def main() -> int:
     ap.add_argument("--seed-base", type=int, default=940000)
     ap.add_argument("--max-steps", type=int, default=1200)
     ap.add_argument("--workers", type=int, default=6)
+    ap.add_argument("--no-resume", action="store_true")
     args = ap.parse_args()
 
-    jobs = [(args.seed_base + args.iteration * 10000 + k, args.driver,
-             args.max_steps) for k in range(args.seeds)]
-    with managed_pool(args.workers) as pool:
-        batches = pool.map(_play, jobs)
-
-    rows = [r for b in batches for r in b]
     OUTDIR.mkdir(parents=True, exist_ok=True)
     out = OUTDIR / f"iter{args.iteration}_{args.driver}.jsonl"
-    with out.open("w") as fh:
-        for r in rows:
-            fh.write(json.dumps(r) + "\n")
+
+    # Stream per game and resume by seed. This is the THIRD time this harness
+    # pattern was needed (bench.py D0.8, pinned_ablation, now here) and the
+    # second time it was learned by losing work: 2h11 of collection was
+    # discarded because pool.map holds everything in memory until the end.
+    # See DECISIONS D3.4.
+    done_seeds = set()
+    if out.exists() and not args.no_resume:
+        for line in out.open():
+            if line.strip():
+                done_seeds.add(json.loads(line)["seed"])
+        if done_seeds:
+            print(f"resuming: {len(done_seeds)} seed(s) already collected",
+                  flush=True)
+
+    jobs = [(args.seed_base + args.iteration * 10000 + k, args.driver,
+             args.max_steps) for k in range(args.seeds)
+            if args.seed_base + args.iteration * 10000 + k not in done_seeds]
+    print(f"{len(jobs)} game(s) to play, {len(done_seeds)} reused", flush=True)
+
+    rows = []
+    if out.exists() and not args.no_resume:
+        rows = [json.loads(l) for l in out.open() if l.strip()]
+
+    import time
+    t0 = time.time()
+    with out.open("a") as sink, managed_pool(args.workers) as pool:
+        for i, batch in enumerate(pool.imap_unordered(_play, jobs), 1):
+            for r in batch:
+                sink.write(json.dumps(r) + "\n")
+                rows.append(r)
+            sink.flush()
+            if i % 10 == 0 or i == len(jobs):
+                el = time.time() - t0
+                rate = i / max(el / 60, 1e-9)
+                eta = (len(jobs) - i) / max(rate, 1e-9)
+                print(f"  {i}/{len(jobs)} games  {len(rows)} states  "
+                      f"{rate:.1f} g/min  ETA {eta:.0f} min", flush=True)
 
     n_prop = sum(1 for r in rows
                  if any(TRADE_LO <= a < TRADE_HI for a in r["legal"]))
