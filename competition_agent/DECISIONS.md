@@ -1260,3 +1260,55 @@ hand-fitted reference before wiring anything into `hybrid_policy.py`. If the
 network does not clear that bar with adequate data, D2.15's recommendation to
 prefer Phase 3 over further hand-fitting is itself refuted and should be
 revisited.
+
+## D2.16 — Why 300 games per arm: the power calculation behind z ≈ 2.31
+
+Recorded so "why 300?" has an answer later.
+
+**What the target represents.** z ≈ 2.31 is the two-proportion z-statistic for
+the **floor-vs-fitted win-rate comparison** — proposals disabled
+(`TRADE_GATE=1e9`) against the fitted ranker live. It corresponds to
+p ≈ 0.021, i.e. the comparison clearing the conventional 0.05 bar with a
+little margin, and the two 95% Wilson intervals separating rather than
+overlapping as they do now.
+
+**Why it was needed.** At the sizes available when D2.15 was written the
+comparison was 15/80 against 32/120: a +7.9pp point estimate but z = 1.29,
+p = 0.196, intervals overlapping. That is not enough to carry a phase-level
+decision, which is what it was being asked to do.
+
+**The calculation.** Holding the observed rates (p₁ = 0.188, p₂ = 0.267,
+difference 7.9pp) and using the pooled two-proportion standard error
+`sqrt(p̄(1-p̄)·2/n)` with p̄ = 0.2275:
+
+| n per arm | expected z | expected p |
+| --- | --- | --- |
+| 120 | 1.46 | 0.14 |
+| 180 | 1.79 | 0.073 |
+| 240 | 2.06 | 0.039 |
+| **300** | **2.31** | **0.021** |
+
+300 was chosen as the first size giving margin past 1.96 rather than landing
+on it — at 240 the projected z is 2.06, close enough that ordinary run-to-run
+variation could drop it back under the bar and leave the question open after
+paying for the games.
+
+**What it is conditional on.** The projection assumes the observed 7.9pp
+difference is the true effect. If the real difference is smaller, 300 games
+will not reach significance — and that outcome is itself informative, since it
+would mean the fitted ranker's win-rate contribution is smaller than D2.15
+estimated and the 37.3% capture ratio is optimistic.
+
+**Two different bars, not to be conflated.** This z target governs the
+*win-rate* comparison. The 29.86% figure is the hand-fitted ranker's
+*top-1 agreement* and is the bar for the Phase 3 network's held-out top-1
+(D3.3) — a different metric on a different comparison. A network beating
+29.86% top-1 would still need its own win-rate measurement before any claim
+about playing strength.
+
+**Sequencing.** The widened measurement and the Phase 3 collection run
+strictly one after the other, never sharing cores. Concurrent heavy jobs
+starved each other earlier in this project and cost a 2h09 run (D0.8); more
+importantly, win rates measured under contention are still valid but the
+timings are not, and both jobs are long enough that interleaving them would
+roughly double wall-clock for no gain.
