@@ -53,7 +53,13 @@ def _fixed_factory(index: int) -> Callable[[int, int], object]:
     return build
 
 
+def _spec_factory(player_id: int, rng_seed: int):
+    from competition_agent.spec_policy import SpecPolicy
+    return SpecPolicy(player_id, rng_seed)
+
+
 REGISTRY: Dict[str, Callable[[int, int], object]] = {
+    "spec": _spec_factory,
     # The frozen teacher, both variants. "teacher" aliases the value variant
     # because it is the Phase 2 agreement target.
     "teacher": lambda pid, seed: ASUValueV1(pid),

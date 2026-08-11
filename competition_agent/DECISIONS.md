@@ -419,10 +419,18 @@ disagreements), so no amount of tuning the covered rules reaches 90%.
 
 Attempt 3 is structurally the right shape and still scored worst, which
 locates the problem precisely: **`deed_value` is not accurate enough to rank
-exchange pairs.** It is calibrated well enough for threshold decisions — where
-only its comparison against a cash gate matters, hence 96% on buy and 91% on
-auction — but ranking two deeds against each other needs relative accuracy it
-does not have.
+exchange pairs.**
+
+> **RETRACTED (see D2.6).** This paragraph originally read "calibrated well
+> enough for threshold decisions — where only its comparison against a cash
+> gate matters, hence 96% on buy and 91% on auction". The buy half is wrong:
+> `_buy` never calls `deed_value`. It is `gates_ok(env, pid, price)` and
+> nothing else, so buy's agreement is evidence about the safety gates and says
+> nothing about the valuation, in either direction. The auction half stands as
+> a fact but not as support for "calibrated well enough" — D2.6 shows removing
+> the monopoly term *improves* auction by 5.0 points and shrinking it by 8.2.
+> The valuation is not well calibrated for thresholds either; it is merely
+> outvoted there by price and rent.
 
 **Next step, and it is a probe, not a tuning pass.** Attempts 2 and 3 were both
 made without evidence to guide them, which is why each was worse than the last.
@@ -440,7 +448,8 @@ refuses — consistent with the same valuation weakness).
 ## D2.2 — Experiment 9b: ranking calibration data, and why board diversity was mandatory
 
 The Phase 2 gap is trade, and the fault was located in `deed_value`: accurate
-enough for thresholds (buy 98.4%, auction 90.5%) but not for ranking two deeds
+enough for thresholds (buy 98.4% — RETRACTED, see D2.6: `_buy` does not call
+`deed_value`; auction 90.5%) but not for ranking two deeds
 against each other (`exch_trade` 0.3% over 722 held-out decisions).
 
 **Board diversity was made a design requirement of this probe, not an
@@ -731,3 +740,78 @@ decision that has no other term to fall back on."**
    than from the published formula. B3/B4/B5 measured *auction ceilings*, and
    ceilings constrain the term only up to the additive company it keeps —
    which is exactly the freedom that let a wrong term reproduce them.
+
+## D2.7 — Monopoly x0.1 measured on the real distribution: it does not transfer
+
+D2.6 measured scaling the monopoly term to 0.1 as worth **+8.2pp of auction
+agreement** on 402 randomly generated auction states, [83.2, 89.8] against
+[74.3, 82.3], non-overlapping. Applied and re-measured on held-out play, with
+an A/B on **identical code** (the scale is now an env var so the two arms are
+not two different commits):
+
+| | scale 1.0 | scale 0.1 | Δ |
+| --- | --- | --- | --- |
+| auction | 90.5% | 88.7% | **−1.8** |
+| turn flow | 93.3% | 88.3% | **−5.0** |
+| development order | 30.3% | 29.1% | −1.2 |
+| trade reply | 78.1% | 78.4% | +0.3 |
+| trade proposal | 0.2% | 1.6% | +1.4 |
+| **TOTAL (5,363 decisions)** | **73.4%** | **70.7%** | **−2.7** |
+
+Auction moves **−1.8pp, not +8.2pp**, and the overall figure falls 2.7pp.
+**Default reverted to 1.0.**
+
+**This is the same failure mode for the fourth time,** and it is worth naming
+plainly rather than filing as bad luck:
+
+| # | narrow sample | conclusion | refuted by |
+| --- | --- | --- | --- |
+| 1 | p08 trade cell, 14 states, one board | rollout never changes trade decisions | Exp 6: 92.6% (D1.3) |
+| 2 | p09, 80 states, one board shape | offer cheapest spare for the completing deed | held-out: 27/189 on the requested deed |
+| 3 | p07, 224 states, one setup | never leaves jail in pre_roll | p10: 106/250 (D2.3) |
+| 4 | D2.6, 402 random auction boards | monopoly x0.1 gains +8.2pp | this A/B: −1.8pp |
+
+Case 4 is the sharpest because the sample was *large* (402 states, tight
+intervals) and still wrong. Sample size was never the problem — **the
+generator's distribution was**. Random deed allocations and random positions
+do not produce the auction states that arise after teacher-driven play, and no
+amount of widening a synthetic generator fixes a mismatch with the target
+distribution.
+
+**Standing rule from here:** a change is accepted only when measured on
+held-out *play*, not on synthetically generated states. Synthetic probes stay
+useful for isolating mechanism — that is what recovered A1–A6 and D1–D5 to the
+dollar — but they do not decide whether a change ships. This should have been
+the rule after case 1.
+
+## D2.8 — First head-to-head: the clone is well short of the teacher
+
+`bench.py`, 2 seats `spec` vs 2 seats `ASUValueV1`, seat-rotated across two
+arrangements (spec on 0,2 then on 1,3), 30 games each, 60 total, all decisive.
+
+| | |
+| --- | --- |
+| spec wins | 16 |
+| teacher wins | 44 |
+| **spec win rate** | **26.7%, 95% Wilson CI [17.1, 39.0]** |
+| parity | 50.0% |
+
+The interval excludes parity, so this is a real deficit, not noise. Per-seat
+net worth tells the same story: spec averages $2.0k–$7.1k against the
+teacher's $10.7k–$14.2k, and goes bankrupt in 80–93% of games against 57–70%.
+
+This is the expected consequence of 73.4% agreement concentrated in the wrong
+place: trade proposal is 16% of decisions at 0.2% agreement, and the clone
+either proposes badly or ends its turn where the teacher trades. Phase 2's
+acceptance also asks for the spec policy to be within 5 win-rate points of the
+value teacher; at 26.7% vs 73.3% it is 46.6 points short.
+
+**Note on what was benched.** The brief asked for `HeuristicRolloutPolicy`
+from `heuristic_policy.py` with an early-denial bonus, versus `ASURolloutV1`.
+Neither exists: `heuristic_policy.py` is absent from the tree (it was one of
+the six phantom "existing starting points" recorded in D0.1) and no
+early-denial exploit was built in any of this session's commits. The nearest
+real measurement was run instead and is labelled as such. `ASUValueV1` was
+used rather than `ASURolloutV1` because the 200-game rollout reference has now
+run over 2.5 hours without completing a single game, so a rollout head-to-head
+is not feasible at this budget.

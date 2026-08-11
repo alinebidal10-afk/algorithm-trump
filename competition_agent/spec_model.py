@@ -11,6 +11,7 @@ The teacher is not consulted here at all; this module never imports
 from __future__ import annotations
 
 import functools
+import os
 from typing import Dict, List
 
 from monopoly_game_engine.constants import (
@@ -18,6 +19,26 @@ from monopoly_game_engine.constants import (
 )
 
 MIN_CASH = 200          # SPEC A2, D1 — the floor, confirmed on buy/build/unmortgage/bail
+
+# The monopoly term `max_group_rent / 2**missing` is hundreds to low thousands
+# while list price is $60-$400 and projected rent is tens of dollars, so it
+# swamps both. D2.6 measured scaling it to 0.1 as worth +8.2pp of auction
+# agreement on 402 RANDOMLY GENERATED auction states, [83.2, 89.8] against
+# [74.3, 82.3].
+#
+# **That gain does not transfer, and the default is therefore 1.0.** An A/B on
+# identical code over 5,363 held-out decisions from real play (D2.7):
+#
+#     scale 1.0 -> auction 90.5%, total 73.4%
+#     scale 0.1 -> auction 88.7%, total 70.7%
+#
+# Auction moves -1.8pp, not +8.2pp, and the total falls 2.7pp. The random
+# boards are simply a different distribution from the auction states real play
+# produces. Kept switchable so the comparison can be re-run, but 1.0 is what
+# ships until a measurement on the real distribution says otherwise.
+# Overridable via MONOPOLY_SCALE env var so the A/B can be run on identical
+# code rather than on two different commits.
+MONOPOLY_SCALE = float(os.environ.get("MONOPOLY_SCALE", "1.0"))
 SHORT_TURNS = 5         # SPEC A5 — complete-turn horizon
 GO_TO_JAIL = 30
 JAIL = 10
@@ -253,7 +274,7 @@ def marginal_monopoly_value(env, pid: int, sq: int) -> float:
     m = float(max_group_rent(env, sq))
     after = m / (2 ** (size - owned - 1))
     before = (m / (2 ** (size - owned))) if owned > 0 else 0.0
-    return after - before
+    return MONOPOLY_SCALE * (after - before)
 
 
 def deed_value(env, pid: int, sq: int) -> float:
@@ -338,7 +359,7 @@ def state_value(env, pid: int) -> float:
         if owned == 0:                      # B5 — no presence, no term
             continue
         missing = len(squares) - owned
-        mono += max_group_rent(env, squares[0]) / (2 ** missing)
+        mono += MONOPOLY_SCALE * max_group_rent(env, squares[0]) / (2 ** missing)
 
     return assets + rent + mono
 
