@@ -1192,3 +1192,71 @@ ceiling, which is exactly the substitution this measurement was run to avoid.
 **Additivity check (D2.14) is deferred with it.** It only becomes meaningful
 once a second real implementation exists, and the recommendation is now not to
 build that second implementation as a hand-fitted rule.
+
+## D3.1 — Phase 3 scope: the network owns trade only, and why
+
+The brief's hybrid is "rules decide when confident, the network breaks ties /
+covers uncovered states". The ablation already measured where that boundary
+is, so the network is aimed rather than general:
+
+| family | agreement | win-rate cost |
+| --- | --- | --- |
+| ROLL_DICE / BUY / turn flow / auction | 90–99% | **+0.0pp** |
+| liquidation | 23.8% | **+0.0pp** |
+| trade reply | 78.1% | +6.7pp |
+| trade proposal | 8.0% | +13.3pp |
+
+Every family outside trade recovers **zero** win rate when pinned to ground
+truth, so a network covering them adds risk and latency for no measured
+return. Liquidation is the sharpest case — the worst agreement number in the
+project and worth nothing. `distill_collect.py` therefore records only states
+offering a trade choice, and the head scores only
+`buy_trade / sell_trade / exch_trade / ACCEPT / DECLINE`.
+
+## D3.2 — Covariate shift confirmed on first contact
+
+D2.11 flagged that the trade fit came from teacher-vs-teacher play while
+matches are decided in states the *clone* reaches. The DAgger collector
+measures this directly, and the distributions differ immediately:
+
+    teacher driving (harvest, D2.9)   teacher proposes in 41.6% of states
+    student driving (DAgger iter 0)   teacher proposes in 64.3% of states
+
+A 23-point gap in the label distribution alone. The states the clone reaches
+are ones where trading is *much* more often correct — consistent with it
+holding worse positions. This is no longer a flagged risk; it is a measured
+property of the data, and it is the reason iteration 0 uses the student as
+driver rather than reproducing the old harvest.
+
+## D3.3 — Pipeline validated, data scale is the blocker
+
+End-to-end smoke test on 6 games (420 trade states, split by game seed):
+
+    train top-1     93.04%
+    held-out top-1  13.46%
+    hand-fitted reference (D2.9)  29.86%
+
+The gap is textbook overfitting: 316 training states against a 2,774-way
+masked-softmax output. The pipeline is correct — loss falls, training accuracy
+rises, the seed-level split holds — but the sample is roughly two orders of
+magnitude too small, and **the learned head is currently worse than the rule it
+is meant to replace.**
+
+Scale required, from the observed ~81 trade states per game:
+
+    60 games   ~  4,850 states
+    300 games  ~ 24,250 states
+    800 games  ~ 64,700 states
+
+**No claim about the learned approach can be made from 13.46%.** It is not
+evidence against D2.15's reasoning — that a network over the 300-dim
+observation is not confined to four hand-chosen features — because the model
+has not been given enough data to test that. The honest statement is that the
+Phase 3 machinery works and is not yet trained.
+
+Next: collect at scale (300+ games) once the widened floor-vs-fitted
+measurement releases the CPU, then compare held-out top-1 against the 29.86%
+hand-fitted reference before wiring anything into `hybrid_policy.py`. If the
+network does not clear that bar with adequate data, D2.15's recommendation to
+prefer Phase 3 over further hand-fitting is itself refuted and should be
+revisited.
