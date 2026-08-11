@@ -1,0 +1,351 @@
+"""Phase 2 — a policy built from SPEC.md, branch by branch.
+
+Structure
+---------
+A **priority-ordered rule pipeline**, not a reconstruction of the teacher's
+architecture. Rules are consulted in order; the first that returns an action
+wins. Each rule is small, names the SPEC ids it implements, and is responsible
+for exactly one decision family. The ordering encodes what the probes showed
+about which considerations override which.
+
+Every branch cites the SPEC rule that justifies it. Nothing here was derived
+from the teacher's source or from `decide()`'s internals.
+
+    forced        - only one legal action
+    debt          - forced liquidation ordering            F1-F5
+    auction       - ceiling + safety                       B1-B5, D1-D4
+    jail          - post-roll exit choice                  G1-G5
+    buy           - the buy gate                           A1-A6, D1
+    trade_reply   - accept/decline an incoming offer        H1-H4
+    build         - development order + safety             E1-E5, D1-D4
+    unmortgage    - restore a mortgaged deed               D1-D4
+    default       - END_TURN / DO_NOTHING
+"""
+
+from __future__ import annotations
+
+from typing import List, Optional
+
+from monopoly_game_engine.actions import (
+    OFFSETS, ActionType, AuctionAction, action_to_description,
+)
+from monopoly_game_engine.constants import (
+    AUCTION_BID_INCREMENTS, COLOR_GROUPS, JAIL_BAIL, PROPERTIES, PROPERTY_IDS,
+    REAL_ESTATE_IDS,
+)
+
+from competition_agent.spec_model import (
+    MIN_CASH, auction_ceiling, deed_value, expected_rent_flow, gates_ok,
+    liquidatable_worth, marginal_monopoly_value, rent_for, worst_reachable_rent,
+)
+
+DO_NOTHING = int(ActionType.DO_NOTHING)
+END_TURN = int(ActionType.END_TURN)
+ROLL_DICE = int(ActionType.ROLL_DICE)
+BUY = int(ActionType.BUY_PROPERTY)
+USE_GOOJ = int(ActionType.USE_GOOJ_CARD)
+PAY_BAIL = int(ActionType.PAY_BAIL)
+DECLARE_BANKRUPT = int(ActionType.DECLARE_BANKRUPT)
+ACCEPT_TRADE = int(ActionType.ACCEPT_TRADE)
+DECLINE_TRADE = int(ActionType.DECLINE_TRADE)
+AUCTION_PASS = int(AuctionAction.PASS)
+
+
+def _sq_of(action: int, family: str, table: List[int]) -> int:
+    return table[action - OFFSETS[family]]
+
+
+class SpecPolicy:
+    """A policy whose every branch cites a SPEC.md rule."""
+
+    policy_id = "spec_policy_v1"
+
+    def __init__(self, player_id: int, rng_seed: int = 0):
+        self.player_id = player_id
+
+    # ------------------------------------------------------------------
+    def choose_action(self, env) -> int:
+        pid = self.player_id
+        legal = [int(a) for a in env.get_allowed_actions(pid)]
+        if len(legal) == 1:
+            return legal[0]                       # forced; nothing to decide
+        allowed = set(legal)
+
+        for rule in (self._debt, self._auction, self._jail, self._buy,
+                     self._trade_reply, self._propose_trade, self._build,
+                     self._unmortgage):
+            action = rule(env, pid, allowed, legal)
+            if action is not None and action in allowed:
+                return action
+
+        # SPEC G1 — in pre_roll, END_TURN advances the phase rather than
+        # declining anything, so it is the correct default, not a passive one.
+        if END_TURN in allowed:
+            return END_TURN
+        return legal[0]
+
+    # ------------------------------------------------------------------
+    # F1-F5 — forced liquidation under debt
+    # ------------------------------------------------------------------
+    def _debt(self, env, pid, allowed, legal) -> Optional[int]:
+        if getattr(env, "debt_player", None) != pid:
+            return None
+
+        # F5 — bankruptcy only when nothing remains. The engine already
+        # reduces the menu to DECLARE_BANKRUPT in that case.
+        if allowed == {DECLARE_BANKRUPT}:
+            return DECLARE_BANKRUPT
+
+        # F3 — cheapest asset first, by mortgage value. F2 — mortgages rank
+        # ahead of house sales where both are legal, which is partly the
+        # engine's doing (a deed carrying houses cannot be mortgaged) and
+        # partly preference; ordering by raised-cash reproduces both.
+        candidates = []
+        for a in legal:
+            if OFFSETS["mortgage"] <= a < OFFSETS["unmortgage"]:
+                sq = _sq_of(a, "mortgage", PROPERTY_IDS)
+                candidates.append((env.properties[sq].mortgage_v, 0, a))
+            elif OFFSETS["sell_prop"] <= a < OFFSETS["buy_trade"]:
+                sq = _sq_of(a, "sell_prop", PROPERTY_IDS)
+                candidates.append((env.properties[sq].mortgage_v, 2, a))
+            elif OFFSETS["sell_house"] <= a < OFFSETS["sell_hotel"]:
+                sq = _sq_of(a, "sell_house", REAL_ESTATE_IDS)
+                # F4 — strip one deed at a time; prefer the deed already
+                # being stripped, i.e. the least developed among those legal.
+                hp = PROPERTIES[sq]["house_price"] // 2
+                candidates.append((hp, 1, a))
+            elif OFFSETS["sell_hotel"] <= a < OFFSETS["sell_prop"]:
+                sq = _sq_of(a, "sell_hotel", REAL_ESTATE_IDS)
+                hp = PROPERTIES[sq]["house_price"] // 2
+                candidates.append((hp, 1, a))
+        if not candidates:
+            return DECLARE_BANKRUPT if DECLARE_BANKRUPT in allowed else None
+        candidates.sort(key=lambda t: (t[1], t[0], t[2]))
+        return candidates[0][2]
+
+    # ------------------------------------------------------------------
+    # B1-B5 + D1-D4 — auctions
+    # ------------------------------------------------------------------
+    def _auction(self, env, pid, allowed, legal) -> Optional[int]:
+        if env.phase != "auction" or env.auction_current_pid != pid:
+            return None
+        sq = env.auction_property_id
+        if sq is None:
+            return None
+
+        ceiling = auction_ceiling(env, pid, sq)          # B1
+        high = env.auction_high_bid
+
+        # B2 — the value teacher takes the LARGEST legal increment whose total
+        # stays within the ceiling and passes safety (82/82 opening bids were
+        # the maximum increment).
+        best = None
+        for i, inc in enumerate(AUCTION_BID_INCREMENTS):
+            action = AUCTION_PASS + 1 + i
+            if action not in allowed:
+                continue
+            total = high + inc
+            if total > ceiling:
+                continue
+            if not gates_ok(env, pid, total, liq_delta=0):   # D1-D4
+                continue
+            best = action                                # keep the largest
+        return best if best is not None else AUCTION_PASS
+
+    # ------------------------------------------------------------------
+    # G1-G5 — jail
+    # ------------------------------------------------------------------
+    def _jail(self, env, pid, allowed, legal) -> Optional[int]:
+        me = env.players[pid]
+        if not me.in_jail:
+            return None
+
+        # G1 — in pre_roll the choice is deferred, never taken.
+        if env.phase == "pre_roll":
+            return END_TURN if END_TURN in allowed else None
+        if env.phase != "post_roll" or env.has_rolled:
+            return None
+
+        danger = worst_reachable_rent(env, pid)
+
+        # G2 — a free exit is taken readily (63% overall). G5 — but doubles are
+        # free too, so the first jail turn is usually spent rolling.
+        if USE_GOOJ in allowed and me.jail_turns >= 1:
+            return USE_GOOJ
+
+        # G3 — bail is discretionary spending and obeys the $200 floor.
+        # G4 — the more rent is waiting outside, the less willing to leave.
+        # G5 — buy out later rather than sooner, and more readily when rich.
+        if PAY_BAIL in allowed and me.jail_turns >= 2:
+            if gates_ok(env, pid, JAIL_BAIL) and danger < me.cash:
+                return PAY_BAIL
+
+        return ROLL_DICE if ROLL_DICE in allowed else None
+
+    # ------------------------------------------------------------------
+    # A1-A6 + D1 — the buy decision
+    # ------------------------------------------------------------------
+    def _buy(self, env, pid, allowed, legal) -> Optional[int]:
+        if BUY not in allowed:
+            return None
+        sq = env.players[pid].position
+        prop = env.properties.get(sq)
+        if prop is None or prop.owner is not None:
+            return None
+
+        # A3 — buy iff (cash - price) + E[next-round net rent] >= 200, with the
+        # rent term from A4/A5's complete-turn enumeration over real positions.
+        # A2 — the gate is on cash AFTER the purchase.
+        if gates_ok(env, pid, prop.price, liq_delta=0):
+            return BUY
+        return None
+
+    # ------------------------------------------------------------------
+    # H1-H4 — replying to an incoming trade
+    # ------------------------------------------------------------------
+    def _trade_reply(self, env, pid, allowed, legal) -> Optional[int]:
+        if ACCEPT_TRADE not in allowed:
+            return None
+        offer = env._incoming_trade(pid)
+        if offer is None:
+            return None
+
+        gain = 0.0
+        if offer.offered_prop is not None:
+            gain += deed_value(env, pid, offer.offered_prop.square_id)
+        if offer.requested_prop is not None:
+            # H4 — no sweetener buys a deed out of a near-monopoly.
+            gain -= deed_value(env, pid, offer.requested_prop.square_id)
+        gain += offer.cash_offered - offer.cash_requested
+
+        # H2 — the counterparty must be able to fund it: the teacher refuses
+        # offers that are generous but unaffordable to the proposer.
+        proposer = env.players[offer.from_player]
+        if offer.cash_offered > 0:
+            if not gates_ok(env, offer.from_player, offer.cash_offered):
+                return DECLINE_TRADE
+
+        # our own safety on any cash we pay
+        if offer.cash_requested > 0 and not gates_ok(env, pid,
+                                                     offer.cash_requested):
+            return DECLINE_TRADE
+
+        return ACCEPT_TRADE if gain > 0 else DECLINE_TRADE
+
+    # ------------------------------------------------------------------
+    # I1-I5 — proposing a trade
+    # ------------------------------------------------------------------
+    def _propose_trade(self, env, pid, allowed, legal) -> Optional[int]:
+        """Offer a spare deed for the piece that completes one of our groups.
+
+        I1 — every proposal observed was an `exch_trade` (36/36 in p09);
+        `buy_trade` and `sell_trade` were never chosen there.
+        I5 — cash is irrelevant to the choice (identical at $300 and $2,500).
+
+        I2 (revised) — the first version of this rule assumed the requested
+        deed is always the piece completing one of our groups, which p09's
+        narrow setup supported. Held-out play refuted it: over 281 real
+        proposals the teacher requested 23, 25, 37, 12, 9, 31, 27, 35 … and
+        *offered* valuable deeds (13, 24, 9, 21), not spares. Agreement on the
+        requested deed was 27/189. It is running a general search over
+        exchange pairs, not a completion heuristic.
+
+        I3 (revised) — implemented as that search: score every legal exchange
+        as a counterfactual transfer, keep the pairs that are positive for us
+        and non-negative for the counterparty, and take the best. Deed values
+        come from the same A4/A6 projection used everywhere else, so a deed is
+        worth more when opponents are likelier to land on it.
+        """
+        n = len(PROPERTY_IDS)
+        others = [i for i in range(len(env.players)) if i != pid]
+
+        exch_actions = [a for a in legal
+                        if OFFSETS["exch_trade"] <= a < OFFSETS["auction"]]
+        if not exch_actions:
+            return None
+
+        # Value tables: O(28) per interested player, then every pair is O(1).
+        our_val = {}
+        their_val = {p: {} for p in others}
+
+        def val(player, sq, cache):
+            if sq not in cache:
+                cache[sq] = deed_value(env, player, sq)
+            return cache[sq]
+
+        best_action, best_gain = None, 0.0
+        for a in exch_actions:
+            loc = a - OFFSETS["exch_trade"]
+            p_idx = loc // (n * (n - 1))
+            rem = loc % (n * (n - 1))
+            off_idx = rem // (n - 1)
+            req_raw = rem % (n - 1)
+            req_idx = req_raw if req_raw < off_idx else req_raw + 1
+            if p_idx >= len(others):
+                continue
+            target = others[p_idx]
+            offer_sq = PROPERTY_IDS[off_idx]
+            req_sq = PROPERTY_IDS[req_idx]
+
+            # I3 — proposer gain must be strictly positive.
+            gain_us = val(pid, req_sq, our_val) - val(pid, offer_sq, our_val)
+            if gain_us <= best_gain:
+                continue
+
+            # H2 — and the counterparty must not be made worse off, the same
+            # two-sided test that governs the reply side.
+            tcache = their_val[target]
+            gain_them = (val(target, offer_sq, tcache)
+                         - val(target, req_sq, tcache))
+            if gain_them < 0:
+                continue
+
+            best_action, best_gain = a, gain_us
+
+        return best_action
+
+    # ------------------------------------------------------------------
+    # E1-E5 + D1-D4 — development
+    # ------------------------------------------------------------------
+    def _build(self, env, pid, allowed, legal) -> Optional[int]:
+        cands = []
+        for a in legal:
+            if OFFSETS["improve_house"] <= a < OFFSETS["improve_hotel"]:
+                sq = _sq_of(a, "improve_house", REAL_ESTATE_IDS)
+            elif OFFSETS["improve_hotel"] <= a < OFFSETS["sell_house"]:
+                sq = _sq_of(a, "improve_hotel", REAL_ESTATE_IDS)
+            else:
+                continue
+            cands.append((sq, a))
+        if not cands:
+            return None
+
+        # E5 — building is gated by the same cushion as every other spend.
+        cost = PROPERTIES[cands[0][0]]["house_price"]
+        if not gates_ok(env, pid, cost, liq_delta=0):
+            return None
+
+        # E1 — highest base RENT first, not highest price (brown picks Baltic
+        # over Mediterranean at equal $60). E2 — ties break on lower square id.
+        cands.sort(key=lambda t: (-PROPERTIES[t[0]]["rent"][0], t[0], t[1]))
+        return cands[0][1]
+
+    # ------------------------------------------------------------------
+    # D1-D4 — restoring a mortgaged deed
+    # ------------------------------------------------------------------
+    def _unmortgage(self, env, pid, allowed, legal) -> Optional[int]:
+        cands = []
+        for a in legal:
+            if OFFSETS["unmortgage"] <= a < OFFSETS["improve_house"]:
+                sq = _sq_of(a, "unmortgage", PROPERTY_IDS)
+                cands.append((int(env.properties[sq].mortgage_v * 1.1), sq, a))
+        if not cands:
+            return None
+        cands.sort(key=lambda t: (t[0], t[1]))
+        cost, sq, action = cands[0]
+        if not gates_ok(env, pid, cost, liq_delta=0):
+            return None
+        return action
+
+
+__all__ = ["SpecPolicy"]

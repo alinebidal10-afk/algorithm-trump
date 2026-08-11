@@ -366,3 +366,73 @@ D0.6, the certification's two timeouts, and Experiment 6's runtime. The
 given a state, so contention changes only wall-clock, not selected actions.
 Timing-sensitive conclusions (Phase 4's per-move budget) must be re-measured
 on a quiet machine.
+
+## D2.1 — Phase 2 status: 76.4% held-out, blocked on trade proposal
+
+`spec_policy.py` is a priority-ordered rule pipeline; every branch cites the
+SPEC rule it implements. `spec_model.py` rebuilds the quantities the rules are
+stated in — the 2d6 complete-turn landing enumeration (A4/A5), rent flow from
+real positions (A6), liquidatable worth (D3/F3), and both safety gates (D1–D4).
+
+**Model validation before policy work.** `gates_ok` was checked against the
+probe corpus first: it reproduces **28/28** measured buy flip points within $2
+(26 exact) and every gate-1 row of the build and unmortgage sweeps exactly.
+Gate 2 carries a known residual, recorded in the function's docstring rather
+than curve-fitted away — the clone is $21–$81 more cautious than the teacher
+when opponents are heavily developed, a safe direction to err.
+
+**Agreement (held-out, seeds 900000+, disjoint from all probe seeds):**
+
+| family | n | rate |
+| --- | --- | --- |
+| ROLL_DICE | 212 | 100.0% |
+| unmortgage | 11 | 100.0% |
+| BUY_PROPERTY | 26 | 96.2% |
+| END_TURN | 931 | 98.2% |
+| auction | 153 | 90.8% |
+| DECLINE_TRADE | 315 | 69.5% |
+| improve_house | 37 | 27.0% |
+| **exch_trade** | **281** | **0–5%** |
+| buy_trade / sell_trade / mortgage | 36 | 0% |
+| **TOTAL** | **2005** | **76.4%** |
+
+Against the ≥90% target: **FAIL**. The decision families the probes covered
+directly are in good shape — buy, auction, jail, roll, unmortgage all sit at
+90–100%. The gap is concentrated in trade *proposal*.
+
+**Root cause: an experiment that was never briefed.** Phase 1 mapped the trade
+accept/decline surface (Experiment 6) — the reply side. It never asked what
+the teacher *proposes*. That family is ~15% of all decisions (307 of 474
+disagreements), so no amount of tuning the covered rules reaches 90%.
+
+**Three attempts, all recorded because the failures are informative:**
+
+1. *No proposal rule* — 76.4%. The clone simply ends its turn.
+2. *Completion heuristic* (p09: offer the least valuable spare for the deed
+   completing a group) — **75.0%**, `exch_trade` 5%. p09's narrow setup made
+   this look right: 36/36 proposals there were exactly that shape. Held-out
+   play refuted it — across 281 real proposals the teacher requested 23, 25,
+   37, 12, 9, 31, 27, 35 and *offered valuable* deeds (13, 24, 9, 21), not
+   spares. Agreement on the requested deed alone was 27/189.
+3. *General two-sided +EV search* over all legal exchange pairs, scored with
+   the same deed valuation used elsewhere — **73.8%**, `exch_trade` 0.4%.
+
+Attempt 3 is structurally the right shape and still scored worst, which
+locates the problem precisely: **`deed_value` is not accurate enough to rank
+exchange pairs.** It is calibrated well enough for threshold decisions — where
+only its comparison against a cash gate matters, hence 96% on buy and 91% on
+auction — but ranking two deeds against each other needs relative accuracy it
+does not have.
+
+**Next step, and it is a probe, not a tuning pass.** Attempts 2 and 3 were both
+made without evidence to guide them, which is why each was worse than the last.
+Experiment 9b must measure the teacher's *ranking* directly: fix a board, offer
+a forced choice between two specific exchanges, and sweep the pair to recover
+the ordering deed-by-deed. That calibrates `deed_value` on relative
+comparisons instead of inferring it from thresholds. Until that exists, no
+further change should be made to `_propose_trade`.
+
+Secondary, smaller gaps once trade is solved: `improve_house` at 27% (E1's
+rent ordering is right in isolation but something else outranks it in real
+positions), and `DECLINE_TRADE` at 69.5% (the clone accepts offers the teacher
+refuses — consistent with the same valuation weakness).
