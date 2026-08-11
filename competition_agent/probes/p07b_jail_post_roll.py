@@ -27,6 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from competition_agent.proc import managed_pool  # noqa: E402
 from competition_agent.probe_harness import (  # noqa: E402
     COLOR_GROUPS, ActionType, ProbeWriter, ask_value, blank_board, describe,
     give, legal, set_jail,
@@ -78,7 +79,7 @@ def main() -> int:
              for t in TURNS
              for cash in CASHES
              for d in DEVS]
-    with mp.Pool(10) as pool:
+    with managed_pool(10) as pool:
         rows = pool.map(_job, items)
 
     with ProbeWriter("p07b_jail_post_roll", list(rows[0].keys())) as out:

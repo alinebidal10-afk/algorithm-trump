@@ -33,6 +33,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from competition_agent.proc import managed_pool  # noqa: E402
 from competition_agent.probe_harness import (  # noqa: E402
     COLOR_GROUPS, PROPERTIES, PROPERTY_IDS, AuctionAction, ProbeWriter,
     ask_value, blank_board, deed_color, deed_price, describe, give, legal,
@@ -115,7 +116,7 @@ def _job(item):
 
 def main() -> int:
     items = [(sq, n) for sq in PROPERTY_IDS for n in (0, 1, 2, 3)]
-    with mp.Pool(10) as pool:
+    with managed_pool(10) as pool:
         rows = [r for r in pool.map(_job, items) if r is not None]
 
     fields = list(rows[0].keys())

@@ -285,3 +285,84 @@ assumed ones.
    This is a direct opening for Phase 5 module 2 (denial-value trading), and
    it is a weakness in the *teacher we are cloning*, so the clone will inherit
    it unless the module explicitly overrides the auction ceiling.
+
+## D1.3 — Phase 4 gate CORRECTED: trade goes back into the rollout path
+
+D1.1 scoped the Phase 4 rollout layer to auction and build only, excluding buy
+and trade on the strength of p08's 0% divergence in both. That exclusion was
+recorded as **provisional for trade**, because the trade sample was 14 states
+from a single narrow setup. The caveat was justified.
+
+Experiment 6 built the real trade surface — seat 0 holding four deeds against
+a rival holding five, sweeping the sweetener across the whole accept region —
+and measured **50 divergences in 54 states, 92.6%**. Trade is not a family
+where lookahead is redundant; it is the family where the two variants agree
+*least*.
+
+| family | p08 (narrow) | p06 (wide) | in rollout path? |
+| --- | --- | --- | --- |
+| auction | 94.6% (56) | — | yes |
+| build | 58.3% (48) | — | yes |
+| **trade** | **0.0% (14)** | **92.6% (54)** | **yes — corrected** |
+| buy | 0.0% (112) | — | no (112 states, one setup) |
+
+**Decision.** The selective rollout path covers **auction, build and trade**.
+Buy remains on the fast path, but that exclusion now carries the same warning
+the trade one did: 112 states is a decent sample, yet they came from a single
+board configuration, and the trade case is a worked example of how badly a
+one-setup sample can mislead. Before the competition entry is frozen, buy must
+be re-tested on a population that varies board configuration, not just cash.
+
+**Process lesson, recorded because it nearly shipped a wrong design.** A 0%
+result on a narrow population is not evidence of absence; it is evidence about
+that population. Divergence probes must vary the *board*, not only the
+parameter under sweep. Both p08's trade cell and its buy cell hold board shape
+fixed, which is exactly the flaw that produced the wrong conclusion.
+
+## D1.4 — Orphaned workers: the bug that silently halved throughput for 3.5 hours
+
+**Symptom.** After the 200-game reference run was stopped (D0.8), everything
+was inexplicably slow: the teacher certification timed out twice at 10 minutes
+on an apparently idle box, a full value game measured 25.6 s against an
+expected ~3 s, and Experiment 6 took over half an hour.
+
+**Cause.** The run was stopped with `pkill -f "bench.py --games 200"`. That
+pattern matches the parent only. `multiprocessing` workers are spawned with a
+command line of `python -c from multiprocessing.spawn import spawn_main...`,
+which contains neither the script name nor its arguments, so the ten workers
+never matched, were re-parented to init, and kept running. They were found
+still alive **3.5 hours later** at ~55% CPU each — 911% of the machine's
+1000% total — computing results that no living process would ever collect.
+
+Two independent defects made this possible:
+
+1. SIGTERM to the parent kills it immediately, so `with mp.Pool(...)` never
+   reaches its cleanup and the children survive.
+2. Even a correct pattern kill cannot match a worker's command line, so there
+   was no way to clean up after the fact except by hand.
+
+**Fix.** `competition_agent/proc.py`:
+
+- `managed_pool(workers)` installs SIGTERM/SIGINT/SIGHUP handlers that call
+  `pool.terminate()` before re-raising, and puts the parent in its own process
+  group so the job can be killed as a unit. Wired into `bench.py`,
+  `certify_teacher.py`, and all seven pooled probes.
+- `kill_by_script(name)` resolves script → pid → process group → group kill,
+  which is what a bare `pkill -f` cannot do.
+- `find_orphans()` / `python3 -m competition_agent.proc orphans` lists python
+  workers whose parent is init, so this smell is diagnosable in seconds rather
+  than mistaken for a slow machine.
+
+Verified: a pool running a real module-level target is SIGTERMed, and both the
+child count and the count of processes matching the script drop to zero. The
+first version of that test was invalid — the workers died unpickling the
+target rather than running it, so it would have passed against a broken
+implementation — and was rewritten against a real module file.
+
+**What it cost.** Every timing figure taken between the kill and the cleanup
+is contaminated and none should be trusted: the 25.6 s/game measurement in
+D0.6, the certification's two timeouts, and Experiment 6's runtime. The
+*decision* data from those runs is unaffected — the teacher is deterministic
+given a state, so contention changes only wall-clock, not selected actions.
+Timing-sensitive conclusions (Phase 4's per-move budget) must be re-measured
+on a quiet machine.

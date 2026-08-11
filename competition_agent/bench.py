@@ -62,6 +62,7 @@ if str(ROOT) not in sys.path:
 from ASU_FROZEN_TEACHER.evaluate import _new_seeded_game  # noqa: E402
 from ASU_FROZEN_TEACHER.spec import FROZEN_SPEC_HASH  # noqa: E402
 from competition_agent.policies import build_policy  # noqa: E402
+from competition_agent.proc import managed_pool  # noqa: E402
 
 NUM_SEATS = 4
 
@@ -271,7 +272,7 @@ def main(argv=None) -> int:
     sink = resume_path.open("a") if resume_path else None
     try:
         if args.workers > 1 and jobs:
-            with mp.Pool(args.workers) as pool:
+            with managed_pool(args.workers) as pool:
                 stream = pool.imap_unordered(_worker, jobs)
                 for i, rec in enumerate(stream, 1):
                     records.append(rec)

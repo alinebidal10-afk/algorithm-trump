@@ -329,6 +329,8 @@ def emit(shadow: str | None, workers: int) -> dict:
     """Run a specific teacher version and record its selected actions."""
     import multiprocessing as mp
 
+    from competition_agent.proc import managed_pool
+
     if shadow:
         os.environ["ASU_SHADOW"] = shadow
     A = _load()[0]
@@ -338,7 +340,7 @@ def emit(shadow: str | None, workers: int) -> dict:
     jobs = [(s, "value", None) for s in GAME_SEEDS]
     jobs += [(s, "rollout", ROLLOUT_DECISIONS) for s in ROLLOUT_SEEDS]
 
-    with mp.Pool(workers) as pool:
+    with managed_pool(workers) as pool:
         for seed, variant, acts, steps in pool.imap_unordered(_play_job, jobs):
             rec = out["games"].setdefault(str(seed), {})
             rec[f"{variant}_actions"] = acts

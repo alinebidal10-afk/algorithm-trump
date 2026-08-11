@@ -30,6 +30,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from competition_agent.proc import managed_pool  # noqa: E402
 from competition_agent.probe_harness import (  # noqa: E402
     COLOR_GROUPS, PROPERTIES, PROPERTY_IDS, ProbeWriter, ask_value,
     blank_board, describe, give, legal, set_pre_roll,
@@ -95,7 +96,7 @@ def main() -> int:
     items = [(dev, pos, label)
              for dev in range(6)
              for pos, label in ((NEAR_POS, "near"), (FAR_POS, "far"))]
-    with mp.Pool(10) as pool:
+    with managed_pool(10) as pool:
         rows = pool.map(_job, items)
 
     with ProbeWriter("p03b_unmortgage_isolated", list(rows[0].keys())) as out:

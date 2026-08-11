@@ -35,6 +35,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from competition_agent.proc import managed_pool  # noqa: E402
 from competition_agent.probe_harness import (  # noqa: E402
     COLOR_GROUPS, PROPERTIES, ProbeWriter, ask_value,
     bisect_flip, blank_board, describe, give, legal, set_pre_roll,
@@ -124,7 +125,7 @@ def main() -> int:
             for pos, label in ((NEAR_POS, "near"), (FAR_POS, "far")):
                 items.append((kind, dev, pos, label))
 
-    with mp.Pool(10) as pool:
+    with managed_pool(10) as pool:
         rows = pool.map(_job, items)
 
     fields = list(rows[0].keys())

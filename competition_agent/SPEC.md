@@ -654,6 +654,15 @@ corpus.
 null "rollout never changes the decision" is falsified outright).
 **Evidence:** `p08_rollout_divergence.csv` (230 rows, seed 20250811).
 
+> **CONTRADICTED IN PART — see H5.** C1's "0.0% in trade (0/14)" does not
+> generalise. Experiment 6 built a richer trade population (seat 0 holding
+> four deeds against a rival holding five, sweeping the sweetener across the
+> whole accept surface) and measured **50/54 divergences — 92.6%**. C1's trade
+> row reflects one narrow setup, not trade decisions in general. The auction,
+> build and buy figures are unaffected. C1 is downgraded from **certain** to
+> **certain for auction/build/buy, contradicted for trade**, and the Phase 4
+> gate is corrected in `DECISIONS.md` D1.3.
+
 ### C2. Where they diverge, the rollout is systematically more liquidity-preserving
 **Observation.** Every one of the 53 auction divergences is bid-versus-bid:
 the value variant takes the largest increment (B2) while the rollout takes a
@@ -682,6 +691,94 @@ selected for closeness, not sampled.
 
 ---
 
+## Group H — the trade accept/decline surface (Experiment 6)
+
+Method: seat 0 holds 16, 18 (two oranges), 25 and 37; the rival holds 19 (the
+completing orange), 5, 1, 21, 23. An incoming offer is swept over which deed
+is offered, which is requested, and a cash sweetener from −$400 (seat 0 pays)
+to +$400 (seat 0 is paid) in $25 steps. Monotonicity is verified with
+`scan_flip`, not assumed (D6).
+
+### H1. The accept surface is narrow and *not* monotone in the sweetener
+**Observation.** Accept/decline across the sweetener grid
+(`A` = accept, `.` = decline; leftmost = we pay $400, rightmost = we receive
+$400):
+
+    offer 19 / want 25   AAAAAAAAAAAAAAAAAAAAAAAAAAAAA....
+    offer 19 / want 16   .........AA......................
+    offer  5 / want 25   .........AA......................
+    offer  5 / want 16   .................................
+    offer  1 / want 25   .................................
+    offer  1 / want 16   .................................
+
+`monotone` is False in 3 of 6 cells. Two cells accept only on a
+**two-point island** at −$175 and −$150 and decline on both sides of it.
+**Rule.** "Accept above a cash threshold" is the wrong model for trades. Any
+single "accept from $X" figure — including the `accept_from_cash` column of
+this probe's own CSV — is meaningless for the non-monotone cells and must not
+be used as a threshold.
+**Confidence:** certain.
+**Evidence:** `p06_trade_surface.csv`, `monotone` column; surface printed above.
+
+### H2. It refuses offers that are *too generous*, because the counterparty could not afford them
+**Observation.** The top-left cell accepts while paying $400 but declines once
+offered more than +$300. Raising only the proposer's cash moves that edge:
+
+| proposer cash | highest sweetener still accepted |
+| --- | --- |
+| $600 | +$300 |
+| $1,200 | +$300 |
+| $2,000 | +$950 |
+| $5,000 | +$1,200 (grid max) |
+| $20,000 | +$1,200 (grid max) |
+
+**Rule.** The upper edge of the accept region is set by the *counterparty's*
+ability to pay, not by seat 0's valuation — the teacher evaluates the offer
+against both sides' safety and rejects a trade the proposer could not safely
+fund. It therefore declines free money from a poor opponent.
+**Confidence:** certain.
+**Evidence:** `p06_trade_surface.csv` plus the proposer-cash sweep above.
+
+### H3. It pays heavily for the deed that completes its group
+**Observation.** Offered deed 19 (completing seat 0's orange group) for a
+spare railroad, it accepts across the entire lower range — including paying
+the full $400 at the grid edge.
+**Rule.** Completion is worth at least $400 over a spare deed, consistent with
+B4's doubling of the auction ceiling on the completing deed.
+**Confidence:** certain (a lower bound — the grid does not reach the refusal
+point on that side).
+**Evidence:** `p06_trade_surface.csv`.
+
+### H4. Deeds of no group value are refused at every price
+**Observation.** Three of six cells never accept anywhere on an $800-wide
+sweetener range: offering a cheap brown (sq 1) is refused outright, and so is
+any offer requesting seat 0's own orange piece in exchange for a non-orange
+deed.
+**Rule.** No cash sweetener within $400 buys a deed out of a near-monopoly,
+and a worthless deed is not made attractive by cash.
+**Confidence:** certain.
+**Evidence:** `p06_trade_surface.csv`, `never_accepts` column.
+
+### H5. Rollout and value disagree on almost every trade decision
+**Observation.** Across 54 trade states spanning the full surface, value and
+rollout selected the same action in **4** — a divergence rate of **92.6%**.
+This directly contradicts C1's 0/14.
+**Rule.** Trade is not a family where lookahead is redundant; it is the family
+where the two variants agree *least*. C1's trade row was an artefact of a
+single narrow setup.
+**Confidence:** certain.
+**Evidence:** `p06_trade_surface.csv`, `rollout_agree` / `rollout_states`
+columns (coarser $100 rollout grid — see the file's note on cost).
+
+**Competitive note.** H2 is the concrete requirement for Phase 5 module 2's
+opponent-acceptance model: whether the teacher accepts our offer depends on
+*our* cash, not only on the deeds. An offer that is generous but unaffordable
+is rejected, so the proposer model must include our own safety position. H1
+means that model cannot be a threshold in the sweetener — it needs the
+surface.
+
+---
+
 ## Status
 
 | experiment | status |
@@ -691,24 +788,38 @@ selected for closeness, not sampled.
 | 1b. Rent-residual mechanism (added) | done — A4, A5 |
 | 2. Auction ceiling curve | done — B1–B5 |
 | 3. Safety floor scaling | done — D1–D5 (p03 unmortgage rows void, superseded by p03b; see D6) |
-| 4. Development order | not started |
-| 5. Mortgage / liquidation order | not started |
-| 6. Trade accept/decline surface | not started |
-| 7. Jail policy | not started |
+| 4. Development order | done — E1–E5 |
+| 5. Mortgage / liquidation order | done — F1–F5 |
+| 6. Trade accept/decline surface | done — H1–H5 (contradicts C1's trade row) |
+| 7. Jail policy | done — G1–G5 (p07 reinterpreted as pre-roll deferral; see G1) |
 | 8. Rollout-variant divergence | done (pulled forward) — C1–C3 |
 
-**20 rules evidenced** (A1–A6, B1–B5, C1–C3, D1–D6) of the ≥25 required for
-Phase 1 acceptance. Experiments 4–7 remain: development order,
-mortgage/liquidation order, the trade accept/decline surface, and jail policy.
+**40 rules evidenced** (A1–A6, B1–B5, C1–C3, D1–D6, E1–E5, F1–F5, G1–G5,
+H1–H5) against the ≥25 required for Phase 1 acceptance — **the bar is
+cleared and Phase 1 is complete**. All eight briefed experiments are done,
+plus three added ones (1b rent-residual mechanism, 3b isolated unmortgage,
+7b jail at the binding phase) and the audit-trail certification.
 
 ### Rules by confidence
 
 | confidence | rules |
 | --- | --- |
-| certain | A1–A6, B1–B4, C1, C3, D1, D2, D3, D4, D6 |
-| likely | B5, C2, D5 (net-rent mechanism certain; gate-2 worst-case scope inferred) |
+| certain | A1–A6, B1–B4, C3, D1–D4, D6, E1, E2, E4, E5, F1–F5, G1–G5, H1–H5 |
+| likely | B5, C2, D5, E3 |
+| partly contradicted | C1 (holds for auction/build/buy; trade row overturned by H5) |
 | guess | — |
 
-No rule about the *teacher* has been contradicted by a later probe. One
-methodological result was retracted: p03's unmortgage rows, void under D6 and
-superseded by p03b.
+35 certain, 4 likely, 1 partly contradicted.
+
+Two corrections are on the record, both found by later probes rather than
+left standing:
+
+- **C1 (trade row) contradicted by H5** — 0/14 divergence became 92.6% on a
+  wider population. The rule is kept with its confidence downgraded and the
+  contradiction recorded in place, per this document's own convention.
+- **p03's unmortgage rows retracted (D6)** — a non-monotone predicate broke
+  the bisection; superseded by p03b.
+
+One reinterpretation: p07's "never leaves jail" measured pre-roll deferral,
+not jail policy (G1); the rows are retained as evidence for what they do
+show.

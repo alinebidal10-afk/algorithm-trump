@@ -35,6 +35,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from competition_agent.proc import managed_pool  # noqa: E402
 from competition_agent.probe_harness import (  # noqa: E402
     PROPERTIES, ActionType, ProbeWriter, ask_rollout, ask_value, blank_board,
     describe, give, legal, scan_flip,
@@ -119,7 +120,7 @@ def _job(item):
 
 def main() -> int:
     items = [(o, ol, r, rl) for o, ol in OFFERED for r, rl in REQUESTED]
-    with mp.Pool(6) as pool:
+    with managed_pool(6) as pool:
         rows = pool.map(_job, items)
 
     with ProbeWriter("p06_trade_surface", list(rows[0].keys())) as out:

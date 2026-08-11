@@ -32,6 +32,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+from competition_agent.proc import managed_pool  # noqa: E402
 from competition_agent.probe_harness import (  # noqa: E402
     COLOR_GROUPS, PROPERTY_IDS, ActionType, ProbeWriter, ask_rollout,
     ask_value, blank_board, deed_price, describe, legal, set_auction,
@@ -160,7 +161,7 @@ def main() -> int:
     items = list(_states())
     print(f"constructed {len(items)} boundary states")
 
-    with mp.Pool(10) as pool:
+    with managed_pool(10) as pool:
         rows = [r for r in pool.map(_job, items) if r is not None]
 
     fields = list(rows[0].keys())
