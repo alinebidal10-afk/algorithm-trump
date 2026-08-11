@@ -909,3 +909,42 @@ is not on its own a route to the second.
 Remaining known defects, in order of measured cost: trade proposal is still
 8.0% on 16% of decisions; trade reply sits at 78.1% on another 15%;
 liquidation order is 23.8%; unmortgage 45.7%.
+
+## D2.11 — Covariate shift in the trade fit: flagged, not yet critical
+
+The trade ranking and gate (D2.9) were fitted on states harvested from **60
+teacher-vs-teacher games** — seat 0 was `ASUValueV1` and so were, effectively,
+the dynamics that produced every board it saw.
+
+In a real match the agent plays `spec_policy` against the teacher. Two things
+differ:
+
+1. **The opponent is different.** The boards seat 0 encounters are produced by
+   a teacher reacting to *spec's* moves, not to another teacher's. Deed
+   allocations, cash levels and development trajectories will drift from the
+   harvest distribution.
+2. **Our own trajectory is different.** The harvest recorded states reached by
+   a teacher playing optimally-by-its-own-lights. A clone at 77.5% agreement
+   reaches materially different positions — typically worse ones, given it
+   goes bankrupt in 86–93% of head-to-head games against the teacher's 60%.
+
+This is ordinary covariate shift, and it is exactly what DAgger (Phase 3 in
+the brief) exists to fix: iterate self-play, label the states the *clone*
+visits, retrain.
+
+**Not treated as critical yet**, because the fit is validated on held-out play
+agreement (77.5%, up 4.1pp) which is measured on the same teacher-driven
+distribution, and because the ranking's held-out top-1 (29.86%) was measured
+on games the fit never saw. But the validation shares the harvest's bias, so
+it cannot detect this failure mode.
+
+**Trigger:** if a win-rate improvement lands materially below what the
+agreement gain predicts, this is the first place to look — before any further
+tuning of the ranking itself. D2.10 already shows one instance of agreement
+rising while win rate did not, which is consistent with covariate shift
+although not diagnostic of it on its own.
+
+**Cheap check when needed:** re-harvest with seat 0 driven by `spec_policy`
+instead of the teacher (the teacher still supplies the ground-truth label at
+each state), refit, and compare. That is one DAgger iteration and it directly
+tests whether the distribution is the problem.
