@@ -1,2522 +1,5282 @@
 [
  {
   "arm": "none",
-  "seed": 920000,
+  "seed": 930002,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
   "fired": 0,
-  "total": 476
+  "total": 543
  },
  {
   "arm": "none",
-  "seed": 920000,
+  "seed": 930000,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 578
+ },
+ {
+  "arm": "none",
+  "seed": 930002,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 543
+ },
+ {
+  "arm": "none",
+  "seed": 930001,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 488
+ },
+ {
+  "arm": "none",
+  "seed": 930000,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 679
+ },
+ {
+  "arm": "none",
+  "seed": 930001,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 705
+ },
+ {
+  "arm": "none",
+  "seed": 930003,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 711
+ },
+ {
+  "arm": "none",
+  "seed": 930003,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
   "fired": 0,
-  "total": 748
+  "total": 747
  },
  {
   "arm": "none",
-  "seed": 920001,
-  "spec_win": true,
-  "fired": 0,
-  "total": 646
- },
- {
-  "arm": "none",
-  "seed": 920001,
+  "seed": 930005,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
   "fired": 0,
-  "total": 471
+  "total": 692
  },
  {
   "arm": "none",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 0,
-  "total": 448
- },
- {
-  "arm": "none",
-  "seed": 920002,
-  "spec_win": true,
-  "fired": 0,
-  "total": 580
- },
- {
-  "arm": "none",
-  "seed": 920003,
-  "spec_win": true,
-  "fired": 0,
-  "total": 446
- },
- {
-  "arm": "none",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 0,
-  "total": 328
- },
- {
-  "arm": "none",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 0,
-  "total": 626
- },
- {
-  "arm": "none",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 0,
-  "total": 549
- },
- {
-  "arm": "none",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 0,
-  "total": 589
- },
- {
-  "arm": "none",
-  "seed": 920005,
-  "spec_win": true,
-  "fired": 0,
-  "total": 545
- },
- {
-  "arm": "none",
-  "seed": 920006,
-  "spec_win": true,
-  "fired": 0,
-  "total": 654
- },
- {
-  "arm": "none",
-  "seed": 920006,
-  "spec_win": false,
-  "fired": 0,
-  "total": 611
- },
- {
-  "arm": "none",
-  "seed": 920007,
-  "spec_win": false,
-  "fired": 0,
-  "total": 365
- },
- {
-  "arm": "none",
-  "seed": 920007,
-  "spec_win": true,
-  "fired": 0,
-  "total": 287
- },
- {
-  "arm": "none",
-  "seed": 920008,
-  "spec_win": true,
-  "fired": 0,
-  "total": 635
- },
- {
-  "arm": "none",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 0,
-  "total": 744
- },
- {
-  "arm": "none",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 0,
-  "total": 287
- },
- {
-  "arm": "none",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 0,
-  "total": 577
- },
- {
-  "arm": "none",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 0,
-  "total": 414
- },
- {
-  "arm": "none",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 0,
-  "total": 409
- },
- {
-  "arm": "none",
-  "seed": 920011,
-  "spec_win": false,
-  "fired": 0,
-  "total": 393
- },
- {
-  "arm": "none",
-  "seed": 920011,
-  "spec_win": true,
-  "fired": 0,
-  "total": 675
- },
- {
-  "arm": "none",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 0,
-  "total": 452
- },
- {
-  "arm": "none",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 0,
-  "total": 347
- },
- {
-  "arm": "none",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 0,
-  "total": 561
- },
- {
-  "arm": "none",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 0,
-  "total": 454
- },
- {
-  "arm": "none",
-  "seed": 920014,
-  "spec_win": false,
-  "fired": 0,
-  "total": 662
- },
- {
-  "arm": "none",
-  "seed": 920014,
-  "spec_win": true,
-  "fired": 0,
-  "total": 540
- },
- {
-  "arm": "none",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 0,
-  "total": 552
- },
- {
-  "arm": "none",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 0,
-  "total": 606
- },
- {
-  "arm": "none",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 0,
-  "total": 668
- },
- {
-  "arm": "none",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 0,
-  "total": 339
- },
- {
-  "arm": "none",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 0,
-  "total": 478
- },
- {
-  "arm": "none",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 0,
-  "total": 515
- },
- {
-  "arm": "none",
-  "seed": 920018,
+  "seed": 930004,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
   "fired": 0,
   "total": 616
  },
  {
   "arm": "none",
-  "seed": 920018,
+  "seed": 930005,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
   "fired": 0,
-  "total": 607
+  "total": 485
  },
  {
   "arm": "none",
-  "seed": 920019,
-  "spec_win": true,
+  "seed": 930004,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
   "fired": 0,
-  "total": 524
+  "total": 630
  },
  {
   "arm": "none",
-  "seed": 920019,
+  "seed": 930006,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
   "fired": 0,
-  "total": 759
+  "total": 502
  },
  {
-  "arm": "trade_reply",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 4,
-  "total": 361
- },
- {
-  "arm": "trade_reply",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 12,
-  "total": 295
- },
- {
-  "arm": "trade_reply",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 9,
-  "total": 660
- },
- {
-  "arm": "trade_reply",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 19,
-  "total": 548
- },
- {
-  "arm": "trade_reply",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 13,
-  "total": 353
- },
- {
-  "arm": "trade_reply",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 9,
-  "total": 396
- },
- {
-  "arm": "trade_reply",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 12,
-  "total": 339
- },
- {
-  "arm": "trade_reply",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 4,
-  "total": 237
- },
- {
-  "arm": "trade_reply",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 19,
-  "total": 473
- },
- {
-  "arm": "trade_reply",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 4,
-  "total": 345
- },
- {
-  "arm": "trade_reply",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 10,
-  "total": 426
- },
- {
-  "arm": "trade_reply",
-  "seed": 920005,
+  "arm": "none",
+  "seed": 930006,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 8,
-  "total": 453
+  "fired": 0,
+  "total": 670
  },
  {
-  "arm": "trade_reply",
-  "seed": 920006,
+  "arm": "none",
+  "seed": 930007,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 10,
-  "total": 492
+  "fired": 0,
+  "total": 608
  },
  {
-  "arm": "trade_reply",
-  "seed": 920006,
+  "arm": "none",
+  "seed": 930010,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 315
+ },
+ {
+  "arm": "none",
+  "seed": 930010,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 36,
-  "total": 698
+  "fired": 0,
+  "total": 391
  },
  {
-  "arm": "trade_reply",
-  "seed": 920007,
+  "arm": "none",
+  "seed": 930008,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 4,
-  "total": 259
+  "fired": 0,
+  "total": 576
  },
  {
-  "arm": "trade_reply",
-  "seed": 920007,
+  "arm": "none",
+  "seed": 930009,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 15,
-  "total": 755
+  "fired": 0,
+  "total": 386
  },
  {
-  "arm": "trade_reply",
-  "seed": 920008,
+  "arm": "none",
+  "seed": 930007,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 28,
-  "total": 528
- },
- {
-  "arm": "trade_reply",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 16,
-  "total": 662
- },
- {
-  "arm": "trade_reply",
-  "seed": 920009,
-  "spec_win": true,
-  "fired": 9,
-  "total": 399
- },
- {
-  "arm": "trade_reply",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 5,
-  "total": 271
- },
- {
-  "arm": "trade_reply",
-  "seed": 920010,
-  "spec_win": true,
-  "fired": 16,
-  "total": 412
- },
- {
-  "arm": "trade_reply",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 14,
-  "total": 369
- },
- {
-  "arm": "trade_reply",
-  "seed": 920011,
-  "spec_win": false,
-  "fired": 7,
-  "total": 285
- },
- {
-  "arm": "trade_reply",
-  "seed": 920011,
-  "spec_win": false,
-  "fired": 7,
-  "total": 515
- },
- {
-  "arm": "trade_reply",
-  "seed": 920012,
-  "spec_win": true,
-  "fired": 11,
-  "total": 626
- },
- {
-  "arm": "trade_reply",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 31,
-  "total": 524
- },
- {
-  "arm": "trade_reply",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 14,
-  "total": 373
- },
- {
-  "arm": "trade_reply",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 15,
-  "total": 595
- },
- {
-  "arm": "trade_reply",
-  "seed": 920014,
-  "spec_win": false,
-  "fired": 21,
-  "total": 319
- },
- {
-  "arm": "trade_reply",
-  "seed": 920014,
-  "spec_win": false,
-  "fired": 15,
-  "total": 366
- },
- {
-  "arm": "trade_reply",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 40,
-  "total": 392
- },
- {
-  "arm": "trade_reply",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 14,
-  "total": 508
- },
- {
-  "arm": "trade_reply",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 72,
-  "total": 620
- },
- {
-  "arm": "trade_reply",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 33,
+  "fired": 0,
   "total": 794
  },
  {
-  "arm": "trade_reply",
-  "seed": 920017,
+  "arm": "none",
+  "seed": 930011,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 281
+ },
+ {
+  "arm": "none",
+  "seed": 930009,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 684
+ },
+ {
+  "arm": "none",
+  "seed": 930008,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 740
+ },
+ {
+  "arm": "none",
+  "seed": 930012,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 19,
-  "total": 704
+  "fired": 0,
+  "total": 567
  },
  {
-  "arm": "trade_reply",
-  "seed": 920017,
+  "arm": "none",
+  "seed": 930011,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 21,
-  "total": 472
+  "fired": 0,
+  "total": 663
  },
  {
-  "arm": "trade_reply",
-  "seed": 920018,
+  "arm": "none",
+  "seed": 930012,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 489
+ },
+ {
+  "arm": "none",
+  "seed": 930014,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 372
+ },
+ {
+  "arm": "none",
+  "seed": 930015,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 474
+ },
+ {
+  "arm": "none",
+  "seed": 930013,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 15,
-  "total": 829
+  "fired": 0,
+  "total": 645
  },
  {
-  "arm": "trade_reply",
-  "seed": 920018,
+  "arm": "none",
+  "seed": 930015,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 22,
-  "total": 524
+  "fired": 0,
+  "total": 516
  },
  {
-  "arm": "trade_reply",
-  "seed": 920019,
+  "arm": "none",
+  "seed": 930013,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 8,
-  "total": 411
+  "fired": 0,
+  "total": 827
  },
  {
-  "arm": "trade_reply",
-  "seed": 920019,
+  "arm": "none",
+  "seed": 930014,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 7,
-  "total": 255
+  "fired": 0,
+  "total": 618
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920000,
+  "arm": "none",
+  "seed": 930016,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 655
+ },
+ {
+  "arm": "none",
+  "seed": 930017,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 662
+ },
+ {
+  "arm": "none",
+  "seed": 930019,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 499
+ },
+ {
+  "arm": "none",
+  "seed": 930017,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 569
+ },
+ {
+  "arm": "none",
+  "seed": 930016,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 809
+ },
+ {
+  "arm": "none",
+  "seed": 930022,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 12,
-  "total": 578
+  "fired": 0,
+  "total": 532
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 11,
-  "total": 302
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 16,
-  "total": 413
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 13,
-  "total": 501
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 8,
-  "total": 495
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920002,
+  "arm": "none",
+  "seed": 930021,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 22,
-  "total": 556
+  "fired": 0,
+  "total": 529
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920003,
+  "arm": "none",
+  "seed": 930020,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 559
+ },
+ {
+  "arm": "none",
+  "seed": 930020,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 659
+ },
+ {
+  "arm": "none",
+  "seed": 930018,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 7,
-  "total": 472
+  "fired": 0,
+  "total": 808
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920003,
+  "arm": "none",
+  "seed": 930021,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 11,
-  "total": 346
+  "fired": 0,
+  "total": 673
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920004,
+  "arm": "none",
+  "seed": 930018,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 637
+ },
+ {
+  "arm": "none",
+  "seed": 930019,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 14,
-  "total": 605
+  "fired": 0,
+  "total": 756
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920004,
+  "arm": "none",
+  "seed": 930023,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 5,
-  "total": 568
+  "fired": 0,
+  "total": 498
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920005,
+  "arm": "none",
+  "seed": 930024,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 24,
-  "total": 414
+  "fired": 0,
+  "total": 463
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920005,
+  "arm": "none",
+  "seed": 930024,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 13,
-  "total": 710
+  "fired": 0,
+  "total": 826
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920006,
+  "arm": "none",
+  "seed": 930025,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 23,
-  "total": 647
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920006,
-  "spec_win": false,
-  "fired": 9,
-  "total": 380
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920007,
-  "spec_win": false,
-  "fired": 7,
-  "total": 337
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920007,
-  "spec_win": true,
-  "fired": 5,
-  "total": 299
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 15,
-  "total": 416
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 13,
+  "fired": 0,
   "total": 551
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920009,
-  "spec_win": true,
-  "fired": 10,
-  "total": 534
+  "arm": "none",
+  "seed": 930022,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 537
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920009,
+  "arm": "none",
+  "seed": 930023,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 11,
+  "fired": 0,
+  "total": 429
+ },
+ {
+  "arm": "none",
+  "seed": 930026,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 589
+ },
+ {
+  "arm": "none",
+  "seed": 930028,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
   "total": 300
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920010,
+  "arm": "none",
+  "seed": 930025,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 553
+ },
+ {
+  "arm": "none",
+  "seed": 930028,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 319
+ },
+ {
+  "arm": "none",
+  "seed": 930027,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 13,
+  "fired": 0,
+  "total": 882
+ },
+ {
+  "arm": "none",
+  "seed": 930026,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 749
+ },
+ {
+  "arm": "none",
+  "seed": 930029,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 381
+ },
+ {
+  "arm": "none",
+  "seed": 930029,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 696
+ },
+ {
+  "arm": "none",
+  "seed": 930027,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 734
+ },
+ {
+  "arm": "none",
+  "seed": 930031,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 641
+ },
+ {
+  "arm": "none",
+  "seed": 930031,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 517
+ },
+ {
+  "arm": "none",
+  "seed": 930030,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 780
+ },
+ {
+  "arm": "none",
+  "seed": 930030,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 586
+ },
+ {
+  "arm": "none",
+  "seed": 930032,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 718
+ },
+ {
+  "arm": "none",
+  "seed": 930032,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 675
+ },
+ {
+  "arm": "none",
+  "seed": 930033,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 325
+ },
+ {
+  "arm": "none",
+  "seed": 930033,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 504
+ },
+ {
+  "arm": "none",
+  "seed": 930035,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 404
+ },
+ {
+  "arm": "none",
+  "seed": 930035,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 464
+ },
+ {
+  "arm": "none",
+  "seed": 930034,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 459
+ },
+ {
+  "arm": "none",
+  "seed": 930036,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 655
+ },
+ {
+  "arm": "none",
+  "seed": 930034,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 537
+ },
+ {
+  "arm": "none",
+  "seed": 930037,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 618
+ },
+ {
+  "arm": "none",
+  "seed": 930036,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 681
+ },
+ {
+  "arm": "none",
+  "seed": 930037,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 492
+ },
+ {
+  "arm": "none",
+  "seed": 930039,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 574
+ },
+ {
+  "arm": "none",
+  "seed": 930040,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 326
+ },
+ {
+  "arm": "none",
+  "seed": 930040,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 506
+ },
+ {
+  "arm": "none",
+  "seed": 930038,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 697
+ },
+ {
+  "arm": "none",
+  "seed": 930039,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 533
+ },
+ {
+  "arm": "none",
+  "seed": 930038,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 743
+ },
+ {
+  "arm": "none",
+  "seed": 930042,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 455
+ },
+ {
+  "arm": "none",
+  "seed": 930041,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
   "total": 475
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920010,
+  "arm": "none",
+  "seed": 930041,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 9,
-  "total": 535
+  "fired": 0,
+  "total": 740
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920011,
+  "arm": "none",
+  "seed": 930043,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 13,
+  "fired": 0,
+  "total": 517
+ },
+ {
+  "arm": "none",
+  "seed": 930042,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 571
+ },
+ {
+  "arm": "none",
+  "seed": 930044,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 492
+ },
+ {
+  "arm": "none",
+  "seed": 930046,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 233
+ },
+ {
+  "arm": "none",
+  "seed": 930044,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 538
+ },
+ {
+  "arm": "none",
+  "seed": 930047,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 383
+ },
+ {
+  "arm": "none",
+  "seed": 930047,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 386
+ },
+ {
+  "arm": "none",
+  "seed": 930045,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 349
+ },
+ {
+  "arm": "none",
+  "seed": 930043,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 747
+ },
+ {
+  "arm": "none",
+  "seed": 930045,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 734
+ },
+ {
+  "arm": "none",
+  "seed": 930046,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 882
+ },
+ {
+  "arm": "none",
+  "seed": 930051,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 391
+ },
+ {
+  "arm": "none",
+  "seed": 930049,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 577
+ },
+ {
+  "arm": "none",
+  "seed": 930048,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 599
+ },
+ {
+  "arm": "none",
+  "seed": 930048,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
   "total": 658
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920011,
-  "spec_win": true,
-  "fired": 8,
-  "total": 535
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920012,
+  "arm": "none",
+  "seed": 930049,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 21,
-  "total": 818
+  "fired": 0,
+  "total": 654
+ },
+ {
+  "arm": "none",
+  "seed": 930050,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 696
+ },
+ {
+  "arm": "none",
+  "seed": 930050,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 686
+ },
+ {
+  "arm": "none",
+  "seed": 930051,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 369
+ },
+ {
+  "arm": "none",
+  "seed": 930052,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 429
+ },
+ {
+  "arm": "none",
+  "seed": 930052,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 662
+ },
+ {
+  "arm": "none",
+  "seed": 930054,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 463
+ },
+ {
+  "arm": "none",
+  "seed": 930053,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 425
+ },
+ {
+  "arm": "none",
+  "seed": 930055,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 519
+ },
+ {
+  "arm": "none",
+  "seed": 930056,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 521
+ },
+ {
+  "arm": "none",
+  "seed": 930055,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 687
+ },
+ {
+  "arm": "none",
+  "seed": 930054,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 661
+ },
+ {
+  "arm": "none",
+  "seed": 930053,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 630
+ },
+ {
+  "arm": "none",
+  "seed": 930056,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 662
+ },
+ {
+  "arm": "none",
+  "seed": 930059,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 501
+ },
+ {
+  "arm": "none",
+  "seed": 930059,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 489
+ },
+ {
+  "arm": "none",
+  "seed": 930057,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 631
  },
  {
   "arm": "trade_proposal",
-  "seed": 920012,
+  "seed": 930000,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
   "fired": 7,
   "total": 312
  },
  {
   "arm": "trade_proposal",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 5,
-  "total": 503
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920013,
+  "seed": 930000,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
   "fired": 10,
-  "total": 465
+  "total": 483
  },
  {
-  "arm": "trade_proposal",
-  "seed": 920014,
+  "arm": "none",
+  "seed": 930057,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 8,
-  "total": 435
+  "fired": 0,
+  "total": 620
+ },
+ {
+  "arm": "none",
+  "seed": 930058,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 0,
+  "total": 783
+ },
+ {
+  "arm": "none",
+  "seed": 930058,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 0,
+  "total": 727
  },
  {
   "arm": "trade_proposal",
-  "seed": 920014,
+  "seed": 930002,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 459
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930001,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 9,
+  "total": 423
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930001,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 354
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930002,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 15,
+  "total": 704
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930003,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 23,
+  "total": 934
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930003,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 15,
+  "total": 635
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930005,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 13,
+  "total": 622
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930005,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 628
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930004,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
   "fired": 7,
-  "total": 540
+  "total": 460
  },
  {
   "arm": "trade_proposal",
-  "seed": 920015,
-  "spec_win": true,
-  "fired": 9,
-  "total": 560
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 21,
-  "total": 647
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 16,
-  "total": 510
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920016,
-  "spec_win": true,
-  "fired": 6,
-  "total": 779
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920017,
-  "spec_win": true,
-  "fired": 10,
-  "total": 525
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920017,
+  "seed": 930006,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
   "fired": 11,
+  "total": 473
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930006,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 10,
+  "total": 463
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930004,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 15,
+  "total": 690
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930007,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 609
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930007,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 579
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930011,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 8,
+  "total": 325
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930010,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 289
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930010,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 3,
+  "total": 349
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930008,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 10,
+  "total": 663
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930009,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 536
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930008,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 771
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930009,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 555
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930011,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 409
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930012,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 437
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930012,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 5,
+  "total": 504
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930013,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 483
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930015,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 6,
+  "total": 354
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930013,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 42,
+  "total": 838
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930015,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 12,
+  "total": 725
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930014,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 21,
+  "total": 542
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930014,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 16,
+  "total": 635
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930016,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 311
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930016,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 31,
+  "total": 759
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930017,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 35,
+  "total": 549
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930017,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 15,
   "total": 453
  },
  {
   "arm": "trade_proposal",
-  "seed": 920018,
+  "seed": 930019,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 550
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930020,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 415
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930019,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 450
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930021,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 16,
+  "total": 624
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930020,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 18,
+  "total": 574
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930018,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 26,
+  "total": 754
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930021,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 2,
+  "total": 373
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930022,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 440
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930022,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 5,
+  "total": 428
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930018,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
   "fired": 12,
+  "total": 558
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930023,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 16,
+  "total": 511
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930026,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 2,
+  "total": 341
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930026,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 5,
+  "total": 367
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930023,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 384
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930024,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 514
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930024,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 12,
+  "total": 410
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930025,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 24,
+  "total": 566
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930025,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 556
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930027,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 405
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930027,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 15,
+  "total": 399
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930028,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 331
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930029,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 398
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930029,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 403
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930030,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 18,
   "total": 636
  },
  {
   "arm": "trade_proposal",
-  "seed": 920018,
+  "seed": 930028,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 9,
-  "total": 490
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920019,
-  "spec_win": false,
-  "fired": 12,
-  "total": 385
- },
- {
-  "arm": "trade_proposal",
-  "seed": 920019,
-  "spec_win": false,
-  "fired": 10,
-  "total": 557
- },
- {
-  "arm": "liquidation",
-  "seed": 920000,
-  "spec_win": false,
   "fired": 17,
-  "total": 476
+  "total": 595
  },
  {
-  "arm": "liquidation",
-  "seed": 920000,
+  "arm": "trade_proposal",
+  "seed": 930030,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 7,
-  "total": 748
+  "fired": 10,
+  "total": 530
  },
  {
-  "arm": "liquidation",
-  "seed": 920001,
-  "spec_win": true,
-  "fired": 52,
-  "total": 693
- },
- {
-  "arm": "liquidation",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 42,
-  "total": 517
- },
- {
-  "arm": "liquidation",
-  "seed": 920002,
+  "arm": "trade_proposal",
+  "seed": 930031,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
   "fired": 14,
-  "total": 448
- },
- {
-  "arm": "liquidation",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 34,
-  "total": 506
- },
- {
-  "arm": "liquidation",
-  "seed": 920003,
-  "spec_win": true,
-  "fired": 10,
-  "total": 446
- },
- {
-  "arm": "liquidation",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 20,
-  "total": 330
- },
- {
-  "arm": "liquidation",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 28,
-  "total": 648
- },
- {
-  "arm": "liquidation",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 50,
-  "total": 566
- },
- {
-  "arm": "liquidation",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 27,
-  "total": 585
- },
- {
-  "arm": "liquidation",
-  "seed": 920005,
-  "spec_win": true,
-  "fired": 32,
-  "total": 659
- },
- {
-  "arm": "liquidation",
-  "seed": 920006,
-  "spec_win": true,
-  "fired": 51,
-  "total": 735
- },
- {
-  "arm": "liquidation",
-  "seed": 920006,
-  "spec_win": false,
-  "fired": 41,
-  "total": 550
- },
- {
-  "arm": "liquidation",
-  "seed": 920007,
-  "spec_win": false,
-  "fired": 13,
-  "total": 365
- },
- {
-  "arm": "liquidation",
-  "seed": 920007,
-  "spec_win": true,
-  "fired": 5,
-  "total": 283
- },
- {
-  "arm": "liquidation",
-  "seed": 920008,
-  "spec_win": true,
-  "fired": 38,
-  "total": 637
- },
- {
-  "arm": "liquidation",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 41,
-  "total": 765
- },
- {
-  "arm": "liquidation",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 20,
-  "total": 288
- },
- {
-  "arm": "liquidation",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 23,
-  "total": 599
- },
- {
-  "arm": "liquidation",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 17,
-  "total": 414
- },
- {
-  "arm": "liquidation",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 27,
-  "total": 431
- },
- {
-  "arm": "liquidation",
-  "seed": 920011,
-  "spec_win": false,
-  "fired": 15,
   "total": 393
  },
  {
-  "arm": "liquidation",
-  "seed": 920011,
+  "arm": "trade_proposal",
+  "seed": 930032,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 26,
-  "total": 628
+  "fired": 8,
+  "total": 617
  },
  {
-  "arm": "liquidation",
-  "seed": 920012,
+  "arm": "trade_proposal",
+  "seed": 930031,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 13,
-  "total": 452
+  "fired": 8,
+  "total": 644
  },
  {
-  "arm": "liquidation",
-  "seed": 920012,
+  "arm": "trade_proposal",
+  "seed": 930032,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 488
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930033,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 24,
+  "total": 551
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930034,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 11,
+  "total": 406
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930035,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
   "fired": 19,
-  "total": 353
+  "total": 325
  },
  {
-  "arm": "liquidation",
-  "seed": 920013,
+  "arm": "trade_proposal",
+  "seed": 930035,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 30,
-  "total": 565
+  "fired": 7,
+  "total": 364
  },
  {
-  "arm": "liquidation",
-  "seed": 920013,
+  "arm": "trade_proposal",
+  "seed": 930034,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 20,
-  "total": 452
+  "fired": 4,
+  "total": 437
  },
  {
-  "arm": "liquidation",
-  "seed": 920014,
+  "arm": "trade_proposal",
+  "seed": 930033,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 23,
-  "total": 791
+  "fired": 6,
+  "total": 717
  },
  {
-  "arm": "liquidation",
-  "seed": 920014,
-  "spec_win": true,
-  "fired": 19,
-  "total": 496
- },
- {
-  "arm": "liquidation",
-  "seed": 920015,
+  "arm": "trade_proposal",
+  "seed": 930037,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 27,
-  "total": 560
+  "fired": 6,
+  "total": 375
  },
  {
-  "arm": "liquidation",
-  "seed": 920015,
+  "arm": "trade_proposal",
+  "seed": 930037,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 18,
+  "fired": 17,
   "total": 598
  },
  {
-  "arm": "liquidation",
-  "seed": 920016,
+  "arm": "trade_proposal",
+  "seed": 930036,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 17,
-  "total": 604
- },
- {
-  "arm": "liquidation",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 24,
-  "total": 346
- },
- {
-  "arm": "liquidation",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 36,
-  "total": 551
- },
- {
-  "arm": "liquidation",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 21,
-  "total": 519
- },
- {
-  "arm": "liquidation",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 12,
-  "total": 812
- },
- {
-  "arm": "liquidation",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 22,
-  "total": 590
- },
- {
-  "arm": "liquidation",
-  "seed": 920019,
-  "spec_win": true,
-  "fired": 21,
-  "total": 513
- },
- {
-  "arm": "liquidation",
-  "seed": 920019,
-  "spec_win": false,
-  "fired": 15,
-  "total": 762
- },
- {
-  "arm": "unmortgage",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 1,
-  "total": 476
- },
- {
-  "arm": "unmortgage",
-  "seed": 920000,
-  "spec_win": true,
-  "fired": 5,
-  "total": 748
- },
- {
-  "arm": "unmortgage",
-  "seed": 920001,
-  "spec_win": true,
-  "fired": 10,
-  "total": 669
- },
- {
-  "arm": "unmortgage",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 2,
-  "total": 470
- },
- {
-  "arm": "unmortgage",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 0,
-  "total": 448
- },
- {
-  "arm": "unmortgage",
-  "seed": 920002,
-  "spec_win": true,
-  "fired": 15,
-  "total": 570
- },
- {
-  "arm": "unmortgage",
-  "seed": 920003,
-  "spec_win": true,
-  "fired": 8,
-  "total": 493
- },
- {
-  "arm": "unmortgage",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 0,
-  "total": 328
- },
- {
-  "arm": "unmortgage",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 2,
-  "total": 628
- },
- {
-  "arm": "unmortgage",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 1,
-  "total": 549
- },
- {
-  "arm": "unmortgage",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 4,
-  "total": 590
- },
- {
-  "arm": "unmortgage",
-  "seed": 920005,
-  "spec_win": true,
-  "fired": 14,
-  "total": 551
- },
- {
-  "arm": "unmortgage",
-  "seed": 920006,
-  "spec_win": true,
-  "fired": 15,
-  "total": 616
- },
- {
-  "arm": "unmortgage",
-  "seed": 920006,
-  "spec_win": false,
-  "fired": 2,
-  "total": 611
- },
- {
-  "arm": "unmortgage",
-  "seed": 920007,
-  "spec_win": false,
-  "fired": 1,
-  "total": 365
- },
- {
-  "arm": "unmortgage",
-  "seed": 920007,
-  "spec_win": true,
-  "fired": 9,
-  "total": 288
- },
- {
-  "arm": "unmortgage",
-  "seed": 920008,
-  "spec_win": true,
-  "fired": 12,
-  "total": 631
- },
- {
-  "arm": "unmortgage",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 7,
-  "total": 755
- },
- {
-  "arm": "unmortgage",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 0,
-  "total": 287
- },
- {
-  "arm": "unmortgage",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 1,
-  "total": 577
- },
- {
-  "arm": "unmortgage",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 0,
-  "total": 414
- },
- {
-  "arm": "unmortgage",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 1,
-  "total": 411
- },
- {
-  "arm": "unmortgage",
-  "seed": 920011,
-  "spec_win": false,
-  "fired": 0,
-  "total": 393
- },
- {
-  "arm": "unmortgage",
-  "seed": 920011,
-  "spec_win": true,
-  "fired": 14,
-  "total": 682
- },
- {
-  "arm": "unmortgage",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 0,
-  "total": 452
- },
- {
-  "arm": "unmortgage",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 0,
-  "total": 347
- },
- {
-  "arm": "unmortgage",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 8,
-  "total": 516
- },
- {
-  "arm": "unmortgage",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 0,
-  "total": 454
- },
- {
-  "arm": "unmortgage",
-  "seed": 920014,
-  "spec_win": false,
-  "fired": 0,
-  "total": 662
- },
- {
-  "arm": "unmortgage",
-  "seed": 920014,
-  "spec_win": true,
-  "fired": 20,
-  "total": 604
- },
- {
-  "arm": "unmortgage",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 0,
-  "total": 552
- },
- {
-  "arm": "unmortgage",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 1,
-  "total": 606
- },
- {
-  "arm": "unmortgage",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 1,
-  "total": 668
- },
- {
-  "arm": "unmortgage",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 0,
-  "total": 339
- },
- {
-  "arm": "unmortgage",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 1,
-  "total": 480
- },
- {
-  "arm": "unmortgage",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 1,
-  "total": 515
- },
- {
-  "arm": "unmortgage",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 1,
-  "total": 616
- },
- {
-  "arm": "unmortgage",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 0,
-  "total": 607
- },
- {
-  "arm": "unmortgage",
-  "seed": 920019,
-  "spec_win": true,
-  "fired": 4,
-  "total": 512
- },
- {
-  "arm": "unmortgage",
-  "seed": 920019,
-  "spec_win": false,
-  "fired": 1,
-  "total": 753
- },
- {
-  "arm": "development",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 1,
-  "total": 476
- },
- {
-  "arm": "development",
-  "seed": 920000,
-  "spec_win": true,
-  "fired": 16,
-  "total": 748
- },
- {
-  "arm": "development",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 26,
-  "total": 749
- },
- {
-  "arm": "development",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 20,
-  "total": 470
- },
- {
-  "arm": "development",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 0,
-  "total": 448
- },
- {
-  "arm": "development",
-  "seed": 920002,
-  "spec_win": true,
-  "fired": 19,
-  "total": 594
- },
- {
-  "arm": "development",
-  "seed": 920003,
-  "spec_win": true,
-  "fired": 22,
-  "total": 446
- },
- {
-  "arm": "development",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 0,
-  "total": 328
- },
- {
-  "arm": "development",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 0,
-  "total": 626
- },
- {
-  "arm": "development",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 19,
-  "total": 532
- },
- {
-  "arm": "development",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 1,
-  "total": 589
- },
- {
-  "arm": "development",
-  "seed": 920005,
-  "spec_win": true,
-  "fired": 53,
-  "total": 758
- },
- {
-  "arm": "development",
-  "seed": 920006,
-  "spec_win": true,
-  "fired": 25,
-  "total": 661
- },
- {
-  "arm": "development",
-  "seed": 920006,
-  "spec_win": false,
-  "fired": 16,
-  "total": 611
- },
- {
-  "arm": "development",
-  "seed": 920007,
-  "spec_win": false,
-  "fired": 0,
-  "total": 365
- },
- {
-  "arm": "development",
-  "seed": 920007,
-  "spec_win": true,
-  "fired": 23,
-  "total": 287
- },
- {
-  "arm": "development",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 25,
+  "fired": 18,
   "total": 732
  },
  {
-  "arm": "development",
-  "seed": 920008,
+  "arm": "trade_proposal",
+  "seed": 930036,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 23,
+  "total": 709
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930039,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 381
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930039,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
+  "fired": 11,
+  "total": 698
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930038,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 20,
+  "total": 630
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930038,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
   "fired": 29,
-  "total": 646
+  "total": 541
  },
  {
-  "arm": "development",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 19,
-  "total": 720
- },
- {
-  "arm": "development",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 1,
-  "total": 577
- },
- {
-  "arm": "development",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 0,
-  "total": 414
- },
- {
-  "arm": "development",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 0,
-  "total": 409
- },
- {
-  "arm": "development",
-  "seed": 920011,
-  "spec_win": false,
-  "fired": 0,
-  "total": 393
- },
- {
-  "arm": "development",
-  "seed": 920011,
+  "arm": "trade_proposal",
+  "seed": 930040,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 35,
-  "total": 551
+  "fired": 21,
+  "total": 603
  },
  {
-  "arm": "development",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 0,
-  "total": 452
- },
- {
-  "arm": "development",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 2,
-  "total": 334
- },
- {
-  "arm": "development",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 4,
-  "total": 509
- },
- {
-  "arm": "development",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 6,
-  "total": 453
- },
- {
-  "arm": "development",
-  "seed": 920014,
-  "spec_win": false,
-  "fired": 2,
-  "total": 719
- },
- {
-  "arm": "development",
-  "seed": 920014,
+  "arm": "trade_proposal",
+  "seed": 930041,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 22,
-  "total": 597
+  "fired": 17,
+  "total": 444
  },
  {
-  "arm": "development",
-  "seed": 920015,
+  "arm": "trade_proposal",
+  "seed": 930041,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 8,
-  "total": 601
+  "fired": 5,
+  "total": 479
  },
  {
-  "arm": "development",
-  "seed": 920015,
+  "arm": "trade_proposal",
+  "seed": 930040,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 3,
-  "total": 612
+  "fired": 7,
+  "total": 604
  },
  {
-  "arm": "development",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 0,
-  "total": 668
+  "arm": "trade_proposal",
+  "seed": 930042,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 38,
+  "total": 787
  },
  {
-  "arm": "development",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 0,
-  "total": 339
+  "arm": "trade_proposal",
+  "seed": 930042,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 15,
+  "total": 607
  },
  {
-  "arm": "development",
-  "seed": 920017,
+  "arm": "trade_proposal",
+  "seed": 930043,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
+  "fired": 7,
+  "total": 610
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930044,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
   "fired": 17,
   "total": 546
  },
  {
-  "arm": "development",
-  "seed": 920017,
+  "arm": "trade_proposal",
+  "seed": 930043,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 24,
-  "total": 578
+  "fired": 32,
+  "total": 601
  },
  {
-  "arm": "development",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 8,
-  "total": 614
- },
- {
-  "arm": "development",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 0,
-  "total": 607
- },
- {
-  "arm": "development",
-  "seed": 920019,
-  "spec_win": true,
-  "fired": 43,
-  "total": 427
- },
- {
-  "arm": "development",
-  "seed": 920019,
-  "spec_win": false,
-  "fired": 10,
-  "total": 755
- },
- {
-  "arm": "auction",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 17,
-  "total": 476
- },
- {
-  "arm": "auction",
-  "seed": 920000,
-  "spec_win": true,
-  "fired": 17,
-  "total": 731
- },
- {
-  "arm": "auction",
-  "seed": 920001,
-  "spec_win": true,
-  "fired": 14,
-  "total": 521
- },
- {
-  "arm": "auction",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 6,
-  "total": 470
- },
- {
-  "arm": "auction",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 22,
-  "total": 418
- },
- {
-  "arm": "auction",
-  "seed": 920002,
-  "spec_win": true,
-  "fired": 18,
-  "total": 693
- },
- {
-  "arm": "auction",
-  "seed": 920003,
-  "spec_win": true,
-  "fired": 16,
-  "total": 439
- },
- {
-  "arm": "auction",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 17,
-  "total": 443
- },
- {
-  "arm": "auction",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 20,
-  "total": 639
- },
- {
-  "arm": "auction",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 17,
-  "total": 581
- },
- {
-  "arm": "auction",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 24,
-  "total": 510
- },
- {
-  "arm": "auction",
-  "seed": 920005,
-  "spec_win": true,
-  "fired": 19,
-  "total": 545
- },
- {
-  "arm": "auction",
-  "seed": 920006,
-  "spec_win": true,
-  "fired": 13,
-  "total": 644
- },
- {
-  "arm": "auction",
-  "seed": 920006,
-  "spec_win": false,
-  "fired": 17,
-  "total": 611
- },
- {
-  "arm": "auction",
-  "seed": 920007,
-  "spec_win": false,
-  "fired": 27,
-  "total": 379
- },
- {
-  "arm": "auction",
-  "seed": 920007,
-  "spec_win": true,
-  "fired": 17,
-  "total": 288
- },
- {
-  "arm": "auction",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 19,
-  "total": 538
- },
- {
-  "arm": "auction",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 16,
-  "total": 682
- },
- {
-  "arm": "auction",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 20,
-  "total": 288
- },
- {
-  "arm": "auction",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 16,
-  "total": 565
- },
- {
-  "arm": "auction",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 14,
-  "total": 470
- },
- {
-  "arm": "auction",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 16,
-  "total": 456
- },
- {
-  "arm": "auction",
-  "seed": 920011,
+  "arm": "trade_proposal",
+  "seed": 930046,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
   "fired": 12,
-  "total": 412
+  "total": 237
  },
  {
-  "arm": "auction",
-  "seed": 920011,
-  "spec_win": true,
-  "fired": 17,
-  "total": 676
- },
- {
-  "arm": "auction",
-  "seed": 920012,
+  "arm": "trade_proposal",
+  "seed": 930045,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 11,
-  "total": 316
+  "fired": 13,
+  "total": 458
  },
  {
-  "arm": "auction",
-  "seed": 920012,
+  "arm": "trade_proposal",
+  "seed": 930047,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 11,
+  "total": 321
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930044,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
   "fired": 16,
-  "total": 470
+  "total": 592
  },
  {
-  "arm": "auction",
-  "seed": 920013,
+  "arm": "trade_proposal",
+  "seed": 930047,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 15,
-  "total": 561
- },
- {
-  "arm": "auction",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 14,
-  "total": 455
- },
- {
-  "arm": "auction",
-  "seed": 920014,
-  "spec_win": false,
-  "fired": 24,
-  "total": 574
- },
- {
-  "arm": "auction",
-  "seed": 920014,
-  "spec_win": true,
-  "fired": 34,
+  "fired": 7,
   "total": 439
  },
  {
-  "arm": "auction",
-  "seed": 920015,
+  "arm": "trade_proposal",
+  "seed": 930045,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 23,
-  "total": 624
+  "fired": 12,
+  "total": 657
  },
  {
-  "arm": "auction",
-  "seed": 920015,
+  "arm": "trade_proposal",
+  "seed": 930046,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 29,
-  "total": 613
+  "fired": 5,
+  "total": 906
  },
  {
-  "arm": "auction",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 16,
-  "total": 639
+  "arm": "trade_proposal",
+  "seed": 930049,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 4,
+  "total": 431
  },
  {
-  "arm": "auction",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 16,
-  "total": 291
- },
- {
-  "arm": "auction",
-  "seed": 920017,
+  "arm": "trade_proposal",
+  "seed": 930048,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
   "fired": 13,
-  "total": 609
- },
- {
-  "arm": "auction",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 6,
-  "total": 600
- },
- {
-  "arm": "auction",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 13,
-  "total": 616
- },
- {
-  "arm": "auction",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 14,
-  "total": 607
- },
- {
-  "arm": "auction",
-  "seed": 920019,
-  "spec_win": true,
-  "fired": 8,
-  "total": 524
- },
- {
-  "arm": "auction",
-  "seed": 920019,
-  "spec_win": false,
-  "fired": 6,
-  "total": 759
- },
- {
-  "arm": "turn_flow",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 327,
-  "total": 454
- },
- {
-  "arm": "turn_flow",
-  "seed": 920000,
-  "spec_win": true,
-  "fired": 451,
-  "total": 732
- },
- {
-  "arm": "turn_flow",
-  "seed": 920001,
-  "spec_win": true,
-  "fired": 313,
-  "total": 615
- },
- {
-  "arm": "turn_flow",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 321,
-  "total": 477
- },
- {
-  "arm": "turn_flow",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 278,
-  "total": 370
- },
- {
-  "arm": "turn_flow",
-  "seed": 920002,
-  "spec_win": true,
-  "fired": 373,
-  "total": 581
- },
- {
-  "arm": "turn_flow",
-  "seed": 920003,
-  "spec_win": true,
-  "fired": 311,
-  "total": 428
- },
- {
-  "arm": "turn_flow",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 208,
-  "total": 322
- },
- {
-  "arm": "turn_flow",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 363,
-  "total": 608
- },
- {
-  "arm": "turn_flow",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 305,
-  "total": 428
- },
- {
-  "arm": "turn_flow",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 425,
-  "total": 574
- },
- {
-  "arm": "turn_flow",
-  "seed": 920005,
-  "spec_win": true,
-  "fired": 353,
-  "total": 538
- },
- {
-  "arm": "turn_flow",
-  "seed": 920006,
-  "spec_win": true,
-  "fired": 387,
-  "total": 624
- },
- {
-  "arm": "turn_flow",
-  "seed": 920006,
-  "spec_win": false,
-  "fired": 316,
-  "total": 528
- },
- {
-  "arm": "turn_flow",
-  "seed": 920007,
-  "spec_win": false,
-  "fired": 249,
-  "total": 339
- },
- {
-  "arm": "turn_flow",
-  "seed": 920007,
-  "spec_win": true,
-  "fired": 185,
-  "total": 287
- },
- {
-  "arm": "turn_flow",
-  "seed": 920008,
-  "spec_win": true,
-  "fired": 427,
-  "total": 625
- },
- {
-  "arm": "turn_flow",
-  "seed": 920008,
-  "spec_win": false,
-  "fired": 476,
-  "total": 694
- },
- {
-  "arm": "turn_flow",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 188,
-  "total": 280
- },
- {
-  "arm": "turn_flow",
-  "seed": 920009,
-  "spec_win": false,
-  "fired": 398,
-  "total": 541
- },
- {
-  "arm": "turn_flow",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 245,
-  "total": 399
- },
- {
-  "arm": "turn_flow",
-  "seed": 920010,
-  "spec_win": false,
-  "fired": 249,
-  "total": 403
- },
- {
-  "arm": "turn_flow",
-  "seed": 920011,
-  "spec_win": false,
-  "fired": 245,
-  "total": 386
- },
- {
-  "arm": "turn_flow",
-  "seed": 920011,
-  "spec_win": true,
-  "fired": 429,
-  "total": 646
- },
- {
-  "arm": "turn_flow",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 294,
-  "total": 433
- },
- {
-  "arm": "turn_flow",
-  "seed": 920012,
-  "spec_win": false,
-  "fired": 208,
-  "total": 322
- },
- {
-  "arm": "turn_flow",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 427,
-  "total": 524
- },
- {
-  "arm": "turn_flow",
-  "seed": 920013,
-  "spec_win": false,
-  "fired": 304,
-  "total": 470
- },
- {
-  "arm": "turn_flow",
-  "seed": 920014,
-  "spec_win": false,
-  "fired": 426,
-  "total": 661
- },
- {
-  "arm": "turn_flow",
-  "seed": 920014,
-  "spec_win": true,
-  "fired": 360,
-  "total": 536
- },
- {
-  "arm": "turn_flow",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 420,
-  "total": 517
- },
- {
-  "arm": "turn_flow",
-  "seed": 920015,
-  "spec_win": false,
-  "fired": 357,
-  "total": 559
- },
- {
-  "arm": "turn_flow",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 425,
-  "total": 614
- },
- {
-  "arm": "turn_flow",
-  "seed": 920016,
-  "spec_win": false,
-  "fired": 205,
-  "total": 329
- },
- {
-  "arm": "turn_flow",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 380,
-  "total": 607
- },
- {
-  "arm": "turn_flow",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 346,
-  "total": 507
- },
- {
-  "arm": "turn_flow",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 473,
-  "total": 607
- },
- {
-  "arm": "turn_flow",
-  "seed": 920018,
-  "spec_win": false,
-  "fired": 417,
-  "total": 586
- },
- {
-  "arm": "turn_flow",
-  "seed": 920019,
-  "spec_win": true,
-  "fired": 370,
-  "total": 522
- },
- {
-  "arm": "turn_flow",
-  "seed": 920019,
-  "spec_win": false,
-  "fired": 424,
-  "total": 617
- },
- {
-  "arm": "all",
-  "seed": 920000,
-  "spec_win": true,
-  "fired": 392,
-  "total": 392
- },
- {
-  "arm": "all",
-  "seed": 920000,
-  "spec_win": false,
-  "fired": 343,
-  "total": 343
- },
- {
-  "arm": "all",
-  "seed": 920001,
-  "spec_win": true,
-  "fired": 528,
-  "total": 528
- },
- {
-  "arm": "all",
-  "seed": 920001,
-  "spec_win": false,
-  "fired": 513,
-  "total": 513
- },
- {
-  "arm": "all",
-  "seed": 920002,
-  "spec_win": false,
-  "fired": 418,
-  "total": 418
- },
- {
-  "arm": "all",
-  "seed": 920002,
-  "spec_win": true,
-  "fired": 524,
-  "total": 524
- },
- {
-  "arm": "all",
-  "seed": 920003,
-  "spec_win": true,
-  "fired": 362,
-  "total": 362
- },
- {
-  "arm": "all",
-  "seed": 920003,
-  "spec_win": false,
-  "fired": 286,
-  "total": 286
- },
- {
-  "arm": "all",
-  "seed": 920004,
-  "spec_win": true,
-  "fired": 528,
-  "total": 528
- },
- {
-  "arm": "all",
-  "seed": 920004,
-  "spec_win": false,
-  "fired": 477,
-  "total": 477
- },
- {
-  "arm": "all",
-  "seed": 920005,
-  "spec_win": false,
-  "fired": 387,
   "total": 387
  },
  {
-  "arm": "all",
-  "seed": 920005,
+  "arm": "trade_proposal",
+  "seed": 930049,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 467,
-  "total": 467
+  "fired": 9,
+  "total": 594
  },
  {
-  "arm": "all",
-  "seed": 920006,
+  "arm": "trade_proposal",
+  "seed": 930051,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 392
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930048,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 18,
+  "total": 551
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930051,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 620,
-  "total": 620
+  "fired": 14,
+  "total": 318
  },
  {
-  "arm": "all",
-  "seed": 920006,
+  "arm": "trade_proposal",
+  "seed": 930050,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 510,
-  "total": 510
+  "fired": 16,
+  "total": 632
  },
  {
-  "arm": "all",
-  "seed": 920007,
+  "arm": "trade_proposal",
+  "seed": 930052,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 325,
+  "fired": 23,
+  "total": 586
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930050,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 486
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930053,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 342
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930052,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 672
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930053,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 13,
+  "total": 626
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930054,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 383
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930054,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 491
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930056,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 265
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930056,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 11,
+  "total": 490
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930055,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 20,
+  "total": 583
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930055,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 18,
+  "total": 428
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930057,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 408
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930059,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 12,
+  "total": 386
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930059,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 5,
+  "total": 491
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930058,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 14,
+  "total": 523
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930000,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 302
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930057,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 587
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930000,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 28,
+  "total": 612
+ },
+ {
+  "arm": "trade_proposal",
+  "seed": 930058,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 30,
+  "total": 756
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930001,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 603
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930002,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 42,
+  "total": 554
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930002,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 641
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930001,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 16,
+  "total": 475
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930003,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 492
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930004,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 30,
+  "total": 554
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930005,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 398
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930004,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 9,
+  "total": 570
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930003,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 18,
+  "total": 669
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930006,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 16,
+  "total": 430
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930006,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 6,
+  "total": 424
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930005,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 25,
+  "total": 470
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930007,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 347
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930008,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 12,
+  "total": 399
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930007,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 7,
   "total": 325
  },
  {
-  "arm": "all",
-  "seed": 920007,
+  "arm": "trade_reply",
+  "seed": 930010,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 348,
-  "total": 348
+  "fired": 6,
+  "total": 341
  },
  {
-  "arm": "all",
-  "seed": 920008,
+  "arm": "trade_reply",
+  "seed": 930011,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 378,
-  "total": 378
+  "fired": 5,
+  "total": 236
  },
  {
-  "arm": "all",
-  "seed": 920008,
+  "arm": "trade_reply",
+  "seed": 930008,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 479,
-  "total": 479
+  "fired": 13,
+  "total": 678
  },
  {
-  "arm": "all",
-  "seed": 920009,
-  "spec_win": true,
-  "fired": 298,
-  "total": 298
- },
- {
-  "arm": "all",
-  "seed": 920009,
+  "arm": "trade_reply",
+  "seed": 930011,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 285,
-  "total": 285
+  "fired": 7,
+  "total": 397
  },
  {
-  "arm": "all",
-  "seed": 920010,
-  "spec_win": true,
-  "fired": 370,
-  "total": 370
- },
- {
-  "arm": "all",
-  "seed": 920010,
+  "arm": "trade_reply",
+  "seed": 930009,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 382,
-  "total": 382
+  "fired": 22,
+  "total": 499
  },
  {
-  "arm": "all",
-  "seed": 920011,
+  "arm": "trade_reply",
+  "seed": 930010,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 395,
-  "total": 395
+  "fired": 14,
+  "total": 690
  },
  {
-  "arm": "all",
-  "seed": 920011,
-  "spec_win": true,
-  "fired": 1027,
-  "total": 1027
- },
- {
-  "arm": "all",
-  "seed": 920012,
+  "arm": "trade_reply",
+  "seed": 930012,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 745,
-  "total": 745
+  "fired": 21,
+  "total": 407
  },
  {
-  "arm": "all",
-  "seed": 920012,
-  "spec_win": true,
-  "fired": 623,
-  "total": 623
- },
- {
-  "arm": "all",
-  "seed": 920013,
-  "spec_win": true,
-  "fired": 562,
-  "total": 562
- },
- {
-  "arm": "all",
-  "seed": 920013,
+  "arm": "trade_reply",
+  "seed": 930012,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 513,
-  "total": 513
+  "fired": 8,
+  "total": 422
  },
  {
-  "arm": "all",
-  "seed": 920014,
-  "spec_win": true,
-  "fired": 425,
-  "total": 425
- },
- {
-  "arm": "all",
-  "seed": 920014,
+  "arm": "trade_reply",
+  "seed": 930009,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 420,
-  "total": 420
+  "fired": 52,
+  "total": 609
  },
  {
-  "arm": "all",
-  "seed": 920015,
+  "arm": "trade_reply",
+  "seed": 930013,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 600,
-  "total": 600
+  "fired": 14,
+  "total": 439
  },
  {
-  "arm": "all",
-  "seed": 920015,
+  "arm": "trade_reply",
+  "seed": 930014,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": true,
-  "fired": 606,
+  "fired": 18,
+  "total": 486
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930015,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 29,
+  "total": 537
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930014,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 332
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930016,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 48,
+  "total": 805
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930013,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 39,
+  "total": 674
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930016,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 410
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930015,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 455
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930019,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 472
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930020,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 8,
+  "total": 423
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930017,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 38,
+  "total": 566
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930019,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 569
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930018,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 22,
+  "total": 687
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930017,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 28,
+  "total": 614
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930020,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 15,
+  "total": 737
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930018,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 412
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930022,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 25,
+  "total": 557
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930021,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 448
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930022,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 9,
+  "total": 360
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930024,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 6,
+  "total": 401
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930021,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 19,
+  "total": 674
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930024,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 3,
+  "total": 371
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930026,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 4,
+  "total": 340
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930023,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 3,
+  "total": 377
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930025,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 5,
+  "total": 548
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930023,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 6,
+  "total": 567
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930025,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 15,
   "total": 606
  },
  {
-  "arm": "all",
-  "seed": 920016,
+  "arm": "trade_reply",
+  "seed": 930028,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 596,
-  "total": 596
- },
- {
-  "arm": "all",
-  "seed": 920016,
-  "spec_win": true,
-  "fired": 833,
-  "total": 833
- },
- {
-  "arm": "all",
-  "seed": 920017,
-  "spec_win": true,
-  "fired": 413,
-  "total": 413
- },
- {
-  "arm": "all",
-  "seed": 920017,
-  "spec_win": false,
-  "fired": 355,
+  "fired": 7,
   "total": 355
  },
  {
-  "arm": "all",
-  "seed": 920018,
+  "arm": "trade_reply",
+  "seed": 930029,
+  "seats": [
+   1,
+   3
+  ],
   "spec_win": false,
-  "fired": 605,
-  "total": 605
+  "fired": 12,
+  "total": 336
  },
  {
-  "arm": "all",
-  "seed": 920018,
+  "arm": "trade_reply",
+  "seed": 930027,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": true,
-  "fired": 538,
-  "total": 538
+  "fired": 9,
+  "total": 705
  },
  {
-  "arm": "all",
-  "seed": 920019,
-  "spec_win": true,
-  "fired": 473,
-  "total": 473
- },
- {
-  "arm": "all",
-  "seed": 920019,
+  "arm": "trade_reply",
+  "seed": 930029,
+  "seats": [
+   0,
+   2
+  ],
   "spec_win": false,
-  "fired": 576,
-  "total": 576
+  "fired": 12,
+  "total": 459
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930026,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 57,
+  "total": 793
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930028,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 551
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930027,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 48,
+  "total": 851
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930032,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 26,
+  "total": 397
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930030,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 9,
+  "total": 384
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930030,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 458
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930031,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 16,
+  "total": 423
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930031,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 36,
+  "total": 688
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930032,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 37,
+  "total": 704
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930033,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 40,
+  "total": 465
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930035,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 389
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930034,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 34,
+  "total": 504
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930034,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 35,
+  "total": 449
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930035,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 460
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930033,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 22,
+  "total": 812
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930037,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 8,
+  "total": 370
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930036,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 432
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930036,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 15,
+  "total": 510
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930037,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 383
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930039,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 479
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930039,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 408
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930040,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 322
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930040,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 14,
+  "total": 572
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930038,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 46,
+  "total": 644
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930041,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 476
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930042,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 628
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930038,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 19,
+  "total": 742
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930044,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 35,
+  "total": 450
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930042,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 24,
+  "total": 745
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930043,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 22,
+  "total": 599
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930041,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 52,
+  "total": 698
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930044,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 344
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930046,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 35,
+  "total": 598
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930047,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 382
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930046,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 235
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930043,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 34,
+  "total": 653
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930047,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 397
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930048,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 10,
+  "total": 440
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930045,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 109,
+  "total": 976
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930045,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 485
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930049,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 4,
+  "total": 269
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930051,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 315
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930049,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 493
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930050,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 12,
+  "total": 397
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930052,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 342
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930052,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 438
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930048,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 12,
+  "total": 755
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930054,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 272
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930051,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 67,
+  "total": 701
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930054,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 22,
+  "total": 397
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930053,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 12,
+  "total": 531
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930055,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 16,
+  "total": 419
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930055,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 426
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930053,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 18,
+  "total": 512
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930050,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 686
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930056,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 12,
+  "total": 487
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930056,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 9,
+  "total": 496
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930000,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 304
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930059,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 8,
+  "total": 439
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930057,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 394
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930059,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 505
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930000,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 22,
+  "total": 483
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930058,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 8,
+  "total": 697
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930058,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 23,
+  "total": 668
+ },
+ {
+  "arm": "trade_reply",
+  "seed": 930057,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 773
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930001,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 366
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930002,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 15,
+  "total": 488
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930002,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 656
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930001,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 37,
+  "total": 787
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930003,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 17,
+  "total": 528
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930005,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 399
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930005,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 515
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930006,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 32,
+  "total": 513
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930003,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 17,
+  "total": 771
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930007,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 19,
+  "total": 464
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930006,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 12,
+  "total": 430
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930004,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 456
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930004,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 20,
+  "total": 661
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930010,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 323
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930007,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 579
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930010,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 7,
+  "total": 353
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930008,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 25,
+  "total": 587
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930011,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 13,
+  "total": 396
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930008,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 26,
+  "total": 546
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930009,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 65,
+  "total": 501
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930011,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 281
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930012,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 26,
+  "total": 529
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930013,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 11,
+  "total": 337
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930012,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 15,
+  "total": 437
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930009,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 33,
+  "total": 610
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930013,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 25,
+  "total": 666
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930014,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 21,
+  "total": 488
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930015,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 354
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930015,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 45,
+  "total": 686
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930014,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 31,
+  "total": 493
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930016,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 36,
+  "total": 630
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930017,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 26,
+  "total": 490
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930016,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 30,
+  "total": 425
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930019,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 468
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930019,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 9,
+  "total": 482
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930017,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 22,
+  "total": 447
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930018,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 26,
+  "total": 523
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930018,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 49,
+  "total": 732
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930020,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 13,
+  "total": 556
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930020,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 429
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930022,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 16,
+  "total": 450
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930021,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 32,
+  "total": 817
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930024,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 13,
+  "total": 215
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930023,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 29,
+  "total": 509
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930021,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 452
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930022,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 13,
+  "total": 507
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930026,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 12,
+  "total": 377
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930026,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 5,
+  "total": 338
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930025,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 25,
+  "total": 606
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930023,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 399
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930024,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 439
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930028,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 19,
+  "total": 362
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930028,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 365
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930025,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 26,
+  "total": 668
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930027,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 31,
+  "total": 679
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930027,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 30,
+  "total": 572
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930029,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 7,
+  "total": 446
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930029,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 12,
+  "total": 441
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930032,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 321
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930030,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 353
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930032,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 11,
+  "total": 616
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930030,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 54,
+  "total": 846
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930031,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 22,
+  "total": 391
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930033,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 31,
+  "total": 533
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930035,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 362
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930033,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 21,
+  "total": 556
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930035,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 11,
+  "total": 392
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930034,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 28,
+  "total": 386
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930034,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 300
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930031,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 19,
+  "total": 711
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930036,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 28,
+  "total": 431
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930036,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 54,
+  "total": 808
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930037,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 20,
+  "total": 387
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930039,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 37,
+  "total": 460
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930039,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 19,
+  "total": 373
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930037,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 25,
+  "total": 618
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930038,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 16,
+  "total": 533
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930038,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 26,
+  "total": 763
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930040,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 14,
+  "total": 857
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930040,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 16,
+  "total": 655
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930042,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 29,
+  "total": 533
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930042,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 23,
+  "total": 630
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930041,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 121,
+  "total": 898
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930043,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 28,
+  "total": 333
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930041,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 634
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930043,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 36,
+  "total": 797
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930044,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 15,
+  "total": 590
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930044,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 367
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930046,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 17,
+  "total": 251
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930047,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 28,
+  "total": 469
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930045,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 22,
+  "total": 557
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930049,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 282
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930046,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 23,
+  "total": 740
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930047,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 21,
+  "total": 586
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930048,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 10,
+  "total": 584
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930045,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 26,
+  "total": 765
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930049,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 593
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930048,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 30,
+  "total": 685
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930051,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 8,
+  "total": 382
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930050,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 24,
+  "total": 569
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930051,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 9,
+  "total": 380
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930052,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 13,
+  "total": 577
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930053,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 341
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930052,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 574
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930050,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 21,
+  "total": 671
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930054,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 19,
+  "total": 328
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930053,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 23,
+  "total": 671
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930054,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 14,
+  "total": 394
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930056,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 18,
+  "total": 262
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930056,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 22,
+  "total": 258
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930055,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 28,
+  "total": 585
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930055,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 27,
+  "total": 553
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930059,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 52,
+  "total": 529
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930057,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 10,
+  "total": 396
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930059,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": true,
+  "fired": 18,
+  "total": 496
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930057,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": true,
+  "fired": 28,
+  "total": 779
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930058,
+  "seats": [
+   0,
+   2
+  ],
+  "spec_win": false,
+  "fired": 41,
+  "total": 737
+ },
+ {
+  "arm": "trade_both",
+  "seed": 930058,
+  "seats": [
+   1,
+   3
+  ],
+  "spec_win": false,
+  "fired": 64,
+  "total": 766
  }
 ]

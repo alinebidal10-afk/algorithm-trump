@@ -1001,3 +1001,74 @@ the top of the cost ranking and still the worst-agreeing family with headroom
 (8.0%), so the two rankings agree on it even though they disagree elsewhere.
 Liquidation, unmortgage and auction are explicitly **de-prioritised despite
 their agreement numbers** — that is the whole point of measuring cost.
+
+## D2.13 — Confirmatory ablation: trade is the whole gap, and the two families are additive
+
+480 games, 120 per arm, fresh seeds 930000+, seat-rotated. Three times the
+games of the exploratory run, which was the right call — one of its findings
+inverted.
+
+| pinned family | win rate | Δ vs none | fires on | per 1% of decisions |
+| --- | --- | --- | --- | --- |
+| none | 26.7% [19.6, 35.2] | — | — | — |
+| trade_reply | 33.3% [25.5, 42.2] | **+6.7** | 3.6% | +1.87pp |
+| trade_proposal | 40.0% [31.7, 48.9] | **+13.3** | 2.6% | **+5.21pp** |
+| **trade_both** | **45.8% [37.2, 54.7]** | **+19.2** | 4.3% | +4.49pp |
+
+### Three results
+
+**1. The n=40 negative was noise, exactly as suspected.** `trade_reply`
+measured **−7.5pp** at 40 games and **+6.7pp** at 120 — it flipped sign. The
+reasoning that rejected it ("pinning a family to ground truth should not make
+play worse") held, and the insistence on more games before allocating was
+correct. Had we acted on the exploratory run we would have written off a
+family worth +6.7pp.
+
+**2. The two families are additive; there is no interaction.**
+
+    trade_proposal alone   +13.3
+    trade_reply alone      + 6.7
+    sum if independent     +20.0
+    trade_both measured    +19.2   (difference −0.8pp, inside noise)
+
+So the `trade_both` arm answers its question in the first of the three ways it
+was set up to distinguish: the proposal fix stands on its own, the reply fix
+stands on its own, and neither is hostage to the other. They can be worked
+sequentially without one blocking the other.
+
+**3. Fixing trade alone is statistically indistinguishable from parity.**
+`trade_both`'s interval **[37.2, 54.7] contains 50.0%**, and 50% is parity by
+construction in a 2v2 of identical policies. The `all` arm — every family
+pinned — measured 50.0%. So trade accounts for essentially the entire gap
+between the clone and the teacher: 26.7% → 45.8% of a 50% ceiling.
+
+### This refutes my own earlier inference
+
+D2.12 noted the gap between `all` (+22.5) and the sum of individual arms and
+speculated that "the remaining loss is distributed or interactive rather than
+sitting in one family", and that per-family fixes would therefore have a
+ceiling well below parity with Phase 3 being the better route. **That was
+wrong**, and it was wrong because it reasoned from underpowered arms. The loss
+is highly concentrated: two families covering 4.3% of decisions carry ~19 of
+the ~23 points.
+
+### Allocation and Phase 3
+
+**Allocation: trade_proposal first, trade_reply second.** Proposal is the most
+efficient per decision touched (+5.21pp per 1%) and has the larger absolute
+effect. Reply follows. Everything else — liquidation (23.8% agreement),
+unmortgage (45.7%), auction, development, turn flow — stays de-prioritised;
+the exploratory run measured all of them at +0.0pp and nothing here changes
+that.
+
+**Phase 3 is not the next move.** The hybrid/DAgger route was attractive on
+the belief that the loss was distributed. It is not. A targeted fix to two
+trade families has a measured ceiling of ~parity with the value teacher, which
+is what Phase 2's acceptance actually asks for. Phase 3 should be reconsidered
+after the trade work lands and its realised gain is compared against the
++19.2pp this predicts.
+
+**D2.11's covariate-shift trigger is now armed and specific.** If the trade
+fixes land materially below +19.2pp, the harvest distribution is the first
+suspect — the fit came from teacher-vs-teacher games, and this ablation shows
+trade decisions are precisely where the clone's play is decided.
