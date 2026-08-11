@@ -1312,3 +1312,47 @@ starved each other earlier in this project and cost a 2h09 run (D0.8); more
 importantly, win rates measured under contention are still valid but the
 timings are not, and both jobs are long enough that interleaving them would
 roughly double wall-clock for no gain.
+
+## D2.17 — Widened floor-vs-fitted: significant at p = 0.030, capture 33.8%
+
+300 games per arm, matched seeds (930000+), seat-rotated, fitted model live.
+
+| | | win rate |
+| --- | --- | --- |
+| floor — proposals disabled | 55/300 | 18.3% [14.4, 23.1] |
+| **fitted — the 29.86% top-1 ranker** | 77/300 | **25.7% [21.1, 30.9]** |
+
+    difference   +7.3pp
+    z             2.17   (projected 2.31)
+    p             0.0301
+
+**The comparison is significant.** The fitted trade ranker is worth +7.3pp of
+win rate over never proposing, at p = 0.030. D2.15's +7.9pp point estimate
+held up under 3.75x the games, landing at +7.3pp.
+
+**But the two 95% intervals still overlap** — fitted's lower bound 21.1%
+against floor's upper bound 23.1% — and the (a) condition asked for them to
+separate. That is worth stating precisely rather than glossing:
+
+Overlapping 95% CIs do **not** imply p > 0.05. The two-proportion z-test is
+the correct test of a difference; the CI-overlap heuristic is a distinct and
+substantially more conservative criterion, roughly equivalent to demanding
+p ≈ 0.005. So the honest report is: **significant by the standard test
+(p = 0.030), not separated by the stricter overlap criterion.** Reaching the
+latter would need roughly 700–800 games per arm at this effect size.
+
+z came in at 2.17 against the projected 2.31 because the realised difference
+was 7.3pp rather than the 7.9pp the projection assumed — exactly the
+conditional D2.16 recorded.
+
+**Capture ratio, revised down slightly:**
+
+    oracle ceiling  40.0% - 18.3%  = +21.7pp
+    fitted gain     25.7% - 18.3%  = + 7.3pp
+    CAPTURE                          33.8%   (was 37.3% on the smaller sample)
+
+**D2.15's Phase 3 recommendation stands and is now on firmer evidence.**
+Hand-fitting captures about one third of what perfect trade decisions are
+worth. The remaining two thirds sit inside the trade families and are not
+reachable by reweighting these features (D2.5, D2.6, D2.12). Proceeding to
+Phase 3 collection at scale.
