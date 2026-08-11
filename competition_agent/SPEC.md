@@ -15,6 +15,95 @@ its confidence downgraded, and the contradiction recorded beneath it.
 
 ---
 
+## Audit Trail Integrity — certification of the probed teacher
+
+**Verdict: PASS.** Probes in this document target a decision function proved
+identical to the committed frozen teacher.
+
+### Why a stronger check was needed
+
+`ASU_FROZEN_TEACHER/core.py` carries 258 added / 32 removed uncommitted lines.
+The initial evidence — a chained digest match on 3 ordinary-play seeds plus 24
+green tests — was insufficient: three ordinary games are unlikely to reach
+auctions with several live bidders, jail exits by card, forced liquidation,
+bankruptcy resolution, trade acceptance, or the house/hotel boundary under a
+constrained bank. If any of those branches had changed, the entire probe
+corpus would rest on a policy nobody froze.
+
+### What changed, by function name
+
+Established from `git diff --numstat`, hunk headers, and a set-difference of
+`def`/`class` names between `HEAD:core.py` and the working tree. Names only —
+no diff body, and no decision logic, was read.
+
+| | functions |
+| --- | --- |
+| **added** | `_DeedRentTables`, `_build_deed_rent_tables`, `_deed_rent_with`, `_expected_landings_items`, `_fast_copy_env`, `_fast_copy_player`, `_fast_copy_property`, `_fast_copy_trade_offer`, `_hypothetical_group_rent_uncached`, `_max_developed_rent_uncached` |
+| **removed** | `_hypothetical_group_rent`, `_max_developed_rent`, `_owned_count` |
+| **touched** | `deed_rent`, `expected_landings`, `liquidatable_worth`, `long_rent_projection`, `movement_probabilities`, `rent_projection`, `preserve_global_rng`, `_PrivateGame` |
+
+The shape is memoisation plus renamed-behind-cache wrappers — with one
+genuinely risky family. `_fast_copy_env / _fast_copy_player /
+_fast_copy_property / _fast_copy_trade_offer` replace `deepcopy` in the
+rollout's state duplication. A hand-rolled copy that omits a rarely-populated
+field (auction bidders, pending trades, debt bookkeeping) would reproduce
+ordinary play exactly while corrupting precisely the rare branches above.
+That risk is what the certification had to exclude.
+
+### Method
+
+Not a comparison against a stored digest, which only fixes behaviour on the
+three seeds that produced it. Instead **both versions were executed and their
+outputs diffed.** `HEAD:ASU_FROZEN_TEACHER/core.py` was checked out into a
+shadow package placed first on `sys.path`; `certify_teacher.py` runs under
+each version and emits the selected action id at every decision point.
+
+This reads no source at all — each version is executed, never inspected — and
+it records only selected action ids, so the D0.3 opacity discipline holds
+here too.
+
+| | |
+| --- | --- |
+| old `core.py` sha256 | `09d84f268c9f7e99…` (git `HEAD`) |
+| new `core.py` sha256 | `4ea57aa919de4735…` (working tree) |
+| ordinary-play seeds | 20 (seeds 1–20, value variant, full games to 1200 steps) |
+| rollout seeds | 5 (seeds 1–5, 20 decisions each — exercises `_fast_copy_*`) |
+| synthetic scenarios | 10, each run under **both** variants |
+| **decision points compared** | **6,314** |
+| **mismatches** | **0** |
+
+The 10 scenarios cover every branch named above: a four-bidder auction for
+Boardwalk; jail exit by bail, by card, and at the third-turn boundary; forced
+liquidation under a $1,100 debt; bankruptcy with nothing left to liquidate;
+an incoming trade priced to accept and one priced to refuse; and the
+4-house/hotel boundary with the bank down to 2 houses and 1 hotel, against an
+unconstrained control. Each was verified to actually reach its branch before
+being trusted — the first trade scenario exposed only offer-*making* actions,
+so real `TradeOffer` objects were injected until `ACCEPT_TRADE` and
+`DECLINE_TRADE` became legal.
+
+### Certification
+
+Across 6,314 decision points spanning 20 full ordinary-play seeds, 5 rollout
+seeds, and 10 synthetic scenarios chosen specifically to reach the rare
+branches that the `_fast_copy_*` family could plausibly have broken, the
+modified `core.py` selected an identical action to the committed `core.py` at
+**every single decision point**, under both the value and the rollout variant.
+The change is therefore behaviour-preserving on the decision function, and the
+3× speedup (0.0501 → 0.0167 s/decision aggregate) is a pure optimisation. The
+probe corpus in this document is valid evidence about the frozen teacher.
+
+Artifacts: `probes/certification/` (`cert_old_core.json`,
+`cert_new_core.json`, `certification_result.txt`, `versions.txt`).
+Reproduce with `certify_teacher.py --emit old --shadow <dir>` /
+`--emit new`, then `--compare`.
+
+**Standing check.** Re-run this certification if `core.py` is touched again.
+A digest-only check against `artifacts/asu_baseline_locked.json` is not a
+substitute and should not be treated as one.
+
+---
+
 ## Group A — the buy decision
 
 ### A1. Buy response is monotone in cash
