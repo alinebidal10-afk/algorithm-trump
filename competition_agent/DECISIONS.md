@@ -1387,3 +1387,59 @@ compute is replaceable; the lost explanation is not.
 No cause is offered here. The plausible candidates (chunking under `map`,
 memory pressure, a degenerate game) were not tested and inventing one would be
 worse than recording the gap.
+
+## D3.5 — The network clears the bar: 38.51% vs 29.86%
+
+52,590 trade states from 320 student-driven games; 40,956 usable after
+restricting to in-scope labels with a real choice. Split by game seed:
+28,403 train / 12,553 held out.
+
+    epoch  1   train 63.76%   held-out 35.70%
+    epoch  5   train 81.39%   held-out 38.22%
+    epoch 15   train 91.96%   held-out 38.49%
+    epoch 30   train 97.76%   held-out 37.66%
+
+    best held-out top-1   38.51%
+    hand-fitted reference 29.86%   (D2.9)
+
+**The learned head beats the hand-fitted ranker by +8.65pp of top-1**, and the
+decision rule set in D3.3 resolves in its favour. D2.15's reasoning — that the
+binding constraint was the four hand-chosen features, not their weights — is
+supported: given the same task and the full 300-dim observation, a model finds
+substantially more signal.
+
+D3.3's 13.46% was a data-scale artefact, as recorded. 316 training states
+became 28,403 and held-out top-1 went 13.46% → 38.51%.
+
+**Still overfitting, and more epochs do not help.** Held-out peaks at epoch 5
+(38.22%) and is flat-to-declining through epoch 30 while train climbs to
+97.76%. The gap says regularisation, more data, or a smaller head — not
+longer training. This has not been tuned; 38.51% is a first, untuned number.
+
+### The win-rate implication is much smaller than the top-1 jump suggests
+
+Interpolating between the two measured points — hand-fitted 29.86% top-1 worth
++7.3pp (D2.17), oracle 100% worth +21.7pp:
+
+    network 38.51% top-1  ->  projected +9.1pp
+    gain over hand-fitted ->  +1.8pp
+
+**A +8.65pp gain in top-1 projects to roughly +1.8pp of win rate — a 1:4.9
+dilution.** That is consistent with everything measured so far: agreement and
+playing strength are different objectives (D2.10), and the capture ratio is
+33.8% (D2.17).
+
+**This projection is an assumption, not a measurement.** It presumes top-1 maps
+linearly to win rate between the two anchors, which nothing establishes — the
+decisions the network newly gets right may be systematically cheaper or dearer
+than average. It is recorded to set expectations before the measurement, in
+the same spirit as marking the trade_reply estimate (D2.15), and the actual
+head-to-head is what decides.
+
+### Next
+
+Wire the head into `hybrid_policy.py` behind a flag — rules everywhere except
+the two trade families, network there — and run the same floor/fitted/network
+head-to-head. If the realised gain is near +1.8pp, the honest conclusion is
+that Phase 3 bought a real but small improvement at considerable complexity,
+and Phase 5's structural work is the better remaining investment.
