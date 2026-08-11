@@ -300,6 +300,143 @@ position. Recorded for Phase 5.
 
 ---
 
+## Group D — the safety gates
+
+A2 located a $200 floor on the buy decision. These rules establish that the
+same machinery governs discretionary spending generally, that a *second*
+gate exists, and which of the two binds when.
+
+Setup: seat 0 holds a spendable position, a rival holds the green monopoly
+developed to H houses per deed (H = 0..5, hotel at 5, so the worst green rent
+runs $56 → $1,400), and seat 0 stands either 6 squares before the group
+("near", reachable next roll) or 30 squares away ("far", not reachable).
+
+### D1. The same $200 floor governs building and unmortgaging, not just buying
+**Observation.** With an undeveloped rival and seat 0 far away, the cash
+remaining after the spend is **201** for building (cost $100) and **200** for
+unmortgaging (cost $110) — the same cushion A2 found for buying, across three
+different spend types and two different costs.
+**Rule.** The $200 floor is a property of discretionary spending in general,
+not of the buy decision.
+**Confidence:** certain.
+**Evidence:** `p03_safety_floor.csv` (build rows), `p03b_unmortgage_isolated.csv`.
+
+### D2. A second gate exists and dominates once opponents are developed
+**Observation.** The cushion is flat at ~200 for low rival development, then
+grows steeply and becomes independent of the $200 floor:
+
+| rival H | build cushion (far) | unmortgage cushion (far) |
+| --- | --- | --- |
+| 0 | 201 | 200 |
+| 1 | 201 | 200 |
+| 2 | 201 | **250** |
+| 3 | 671 | 800 |
+| 4 | 871 | 1000 |
+| 5 | 1071 | 1200 |
+
+Crucially the two setups diverge at H=2 — the same rival board, different
+cushions — so the second gate depends on something seat 0 holds, not only on
+the threat.
+**Rule.** Two gates are evaluated and the binding one is whichever demands
+more cash.
+**Confidence:** certain.
+**Evidence:** `p03_safety_floor.csv`, `p03b_unmortgage_isolated.csv`.
+
+### D3. The second gate is worst reachable rent, offset by liquidatable worth and rent income
+**Observation.** The two setups differ in what seat 0 can liquidate: the build
+setup holds the orange group (mortgage values 90+90+100 = **280**), the
+unmortgage setup holds two railroads, one already mortgaged (**100**). Taking
+the worst reachable green rent (Pennsylvania Avenue: $1,000 / $1,200 / $1,400
+at H = 3/4/5) and subtracting liquidatable worth and a constant rent-income
+term predicts every observed cushion exactly:
+
+| setup | H | worst rent | liquidatable | income | predicted | **observed** |
+| --- | --- | --- | --- | --- | --- | --- |
+| build | 3 | 1000 | 280 | 49 | 671 | **671** |
+| build | 4 | 1200 | 280 | 49 | 871 | **871** |
+| build | 5 | 1400 | 280 | 49 | 1071 | **1071** |
+| unmortgage | 3 | 1000 | 100 | 100 | 800 | **800** |
+| unmortgage | 4 | 1200 | 100 | 100 | 1000 | **1000** |
+| unmortgage | 5 | 1400 | 100 | 100 | 1200 | **1200** |
+
+**Rule.**
+
+    cash_after + rent_income + liquidatable_worth - worst_reachable_rent > 0
+
+**Confidence:** certain (6/6 exact, across two different liquidatable values).
+**Evidence:** `p03_safety_floor.csv`, `p03b_unmortgage_isolated.csv`.
+
+### D4. The binding gate is the maximum of the two, and the crossover is predicted
+**Observation.** At H=2 the two setups sit on opposite sides of the crossover,
+and both are predicted correctly:
+
+| setup | gate-2 demand | vs $200 floor | predicted | **observed** |
+| --- | --- | --- | --- | --- |
+| build, far | 450−280−49 = 121 | floor wins | 201 | **201** |
+| unmortgage, far | 450−100−100 = 250 | gate 2 wins | 250 | **250** |
+
+**Rule.** Required cushion = `max(gate-1 floor, gate-2 demand)`. A player with
+more liquidatable assets may spend down further, which is why the build setup
+still sits on the floor where the unmortgage setup has already left it.
+**Confidence:** certain.
+**Evidence:** as D3.
+
+### D5. Only *reachable* danger counts
+**Observation.** At low rival development the near and far positions give
+different cushions; at H≥3 they are identical:
+
+| rival H | near | far | difference |
+| --- | --- | --- | --- |
+| 0 | 225 | 200 | 25 |
+| 1 | 260 | 200 | 60 |
+| 2 | 380 | 250 | 130 |
+| 3 | 800 | 800 | **0** |
+| 4 | 1000 | 1000 | **0** |
+| 5 | 1200 | 1200 | **0** |
+
+The near-position excess matches expected rent *paid*, computed the same way
+as A4: from position 25 the green deeds sit at gaps 6, 7 and 9, so
+`Σ P(2d6=gap) × rent` gives 22.1 at H=0 (observed 25) and 56.4 at H=1
+(observed 60).
+**Rule.** Gate 1's rent term is *net* — expected rent collected minus expected
+rent paid, both from actual board positions. Gate 2's `worst_reachable_rent`
+is a worst case over the whole board, which is why it stops depending on
+position once it dominates.
+**Confidence:** certain for the net-rent mechanism (matches A4's method on
+independent data); **likely** for the exact worst-case scope of gate 2, which
+is inferred from the near/far collapse rather than measured directly.
+**Evidence:** `p03_safety_floor.csv`, `p03b_unmortgage_isolated.csv`.
+
+### D6. Methodological correction — p03's unmortgage rows are void
+**Observation.** p03's original unmortgage sweep reported thresholds that were
+wrong, and reported *no* threshold at H=4 and H=5 where one plainly exists. A
+linear scan showed the response is not monotone in cash: with a buildable
+monopoly also held, the teacher goes `END_TURN → improve_house → unmortgage`
+as cash rises, because building outranks unmortgaging over a middle band.
+`bisect_flip` assumes monotonicity and failed silently.
+**Consequence.** The unmortgage rows of `p03_safety_floor.csv` are void and
+are superseded by `p03b_unmortgage_isolated.csv`, which removes the competing
+action (two railroads, no completable colour group — `build_action_available`
+is False in 12/12 rows) and verifies monotonicity explicitly
+(`monotone` True in 12/12). The build rows of p03 are unaffected: no mortgaged
+deed was held, so no unmortgage action competed.
+**Rule (about the method, not the teacher).** A threshold is only meaningful
+if the response is monotone, so the scan that establishes a threshold must
+also prove one exists. `probe_harness.scan_flip` now returns
+`(flip, monotone, points)` and `bisect_flip` is marked unsafe on its own.
+**Confidence:** certain.
+**Evidence:** `p03b_unmortgage_isolated.csv`, `monotone` and
+`build_action_available` columns.
+
+**Competitive note.** D3–D5 say the teacher's caution is driven by *worst
+reachable rent* and is discounted by liquidatable worth. Two exploitable
+consequences: it will refuse to develop while a big rent sits within reach
+even when the probability of landing there is low, and a player who mortgages
+to raise cash makes the teacher *less* cautious (liquidatable worth falls, but
+so does the rent it fears). Both feed Phase 5 module 3.
+
+---
+
 ## Group C — rollout vs value divergence (Experiment 8, pulled forward)
 
 Both variants are deterministic given a state — the rollout uses fixed
@@ -362,22 +499,25 @@ selected for closeness, not sampled.
 | 1. Buy threshold curve | done — A1–A6 |
 | 1b. Rent-residual mechanism (added) | done — A4, A5 |
 | 2. Auction ceiling curve | done — B1–B5 |
-| 3. Safety floor scaling | partial — floor located at $200 (A2); scaling with opponent development untested |
+| 3. Safety floor scaling | done — D1–D5 (p03 unmortgage rows void, superseded by p03b; see D6) |
 | 4. Development order | not started |
 | 5. Mortgage / liquidation order | not started |
 | 6. Trade accept/decline surface | not started |
 | 7. Jail policy | not started |
 | 8. Rollout-variant divergence | done (pulled forward) — C1–C3 |
 
-**14 rules evidenced** (A1–A6, B1–B5, C1–C3) of the ≥25 required for Phase 1
-acceptance. Experiments 3–7 remain.
+**20 rules evidenced** (A1–A6, B1–B5, C1–C3, D1–D6) of the ≥25 required for
+Phase 1 acceptance. Experiments 4–7 remain: development order,
+mortgage/liquidation order, the trade accept/decline surface, and jail policy.
 
 ### Rules by confidence
 
 | confidence | rules |
 | --- | --- |
-| certain | A1, A2, A3, A4, A5, A6, B1, B2, B3, B4, C1, C3 |
-| likely | B5, C2 |
+| certain | A1–A6, B1–B4, C1, C3, D1, D2, D3, D4, D6 |
+| likely | B5, C2, D5 (net-rent mechanism certain; gate-2 worst-case scope inferred) |
 | guess | — |
 
-No rule has yet been contradicted by a later probe.
+No rule about the *teacher* has been contradicted by a later probe. One
+methodological result was retracted: p03's unmortgage rows, void under D6 and
+superseded by p03b.

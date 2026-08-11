@@ -270,8 +270,15 @@ def group_of(square: int) -> List[int]:
 def bisect_flip(predicate, lo: int, hi: int) -> Optional[int]:
     """Smallest x in [lo, hi] with predicate(x) true, or None.
 
-    Assumes predicate is monotone in x. Probes that use this also spot-check
-    monotonicity, because a non-monotone response is itself a finding.
+    UNSAFE ON ITS OWN — assumes predicate is monotone in x. Prefer
+    `scan_flip`, which verifies monotonicity, unless the probe checks it
+    separately (as p01 does with its own coarse scan).
+
+    p03 was invalidated by using this on a non-monotone predicate: seat 0 held
+    a buildable monopoly, so "chooses unmortgage" went
+    false -> false(builds instead) -> true as cash rose. Bisection returned a
+    plausible number in some rows and silently returned None in others, where
+    a linear scan showed a clear flip.
     """
     if predicate(hi) is not True:
         return None
@@ -286,10 +293,31 @@ def bisect_flip(predicate, lo: int, hi: int) -> Optional[int]:
     return lo
 
 
+def scan_flip(predicate, lo: int, hi: int, step: int):
+    """Locate a flip by linear scan and report whether it is monotone.
+
+    Returns ``(flip, monotone, points)``. ``flip`` is the first x where the
+    predicate holds; ``monotone`` is False if it ever reverts afterwards,
+    which means the "threshold" framing does not apply to that decision and
+    any single number reported for it would be misleading.
+
+    Costlier than `bisect_flip`, and that is the point: the threshold is only
+    meaningful if the response is monotone, so the scan that establishes the
+    threshold should be the same scan that proves it exists.
+    """
+    scan = [(x, bool(predicate(x))) for x in range(lo, hi + 1, step)]
+    first = next((i for i, (_, b) in enumerate(scan) if b), None)
+    if first is None:
+        return None, True, len(scan)
+    monotone = all(b for _, b in scan[first:])
+    return scan[first][0], monotone, len(scan)
+
+
 __all__ = [
     "ActionType", "AuctionAction", "COLOR_GROUPS", "PROPERTIES",
     "PROPERTY_IDS", "REAL_ESTATE_IDS", "ProbeWriter", "ask_rollout",
     "ask_value", "bisect_flip", "blank_board", "deed_color", "deed_price",
     "describe", "give", "group_of", "legal", "requires", "set_auction",
-    "set_buy_decision", "set_jail", "set_pre_roll", "set_turn", "copy",
+    "scan_flip", "set_buy_decision", "set_jail", "set_pre_roll", "set_turn",
+    "copy",
 ]
