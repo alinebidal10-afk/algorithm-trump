@@ -633,3 +633,101 @@ not another valuation variant but a direct probe of *what the teacher's trade
 choice actually correlates with*, measured rather than assumed.
 
 **Phase 2 remains open.** No further valuation change until this ablation runs.
+
+## D2.6 — Component ablation on the full pool, and the threshold-vs-ranking reconciliation
+
+Run before anything from D2.5 is allowed into `SPEC.md`, on the full 400-board
+pool (7,675 candidates, 118 proposals), board-level 60/40 split, Wilson 95%
+intervals on every arm.
+
+### Part 1 — which component drives the trade ranking
+
+| arm | train top-1 | held-out top-1 |
+| --- | --- | --- |
+| combined (current) | 12.7% [6.8, 22.4] | 8.5% [3.4, 19.9] |
+| **monopoly only** | **12.7% [6.8, 22.4]** | **8.5% [3.4, 19.9]** |
+| price only | 7.0% [3.0, 15.4] | 4.3% [1.2, 14.2] |
+| rent only | 5.6% [2.2, 13.6] | 8.5% [3.4, 19.9] |
+| no monopoly | 5.6% [2.2, 13.6] | 4.3% [1.2, 14.2] |
+| monopoly x0.1 | 8.5% [3.9, 17.2] | 6.4% [2.2, 17.2] |
+| *random-pick reference* | *4.3%* | *4.3%* (mean 23.4 candidates) |
+
+**The dominance hypothesis is confirmed, and not statistically — identically.**
+Monopoly-only reproduces the combined model exactly on both splits (9/71 and
+4/47, the same boards). Dropping the term costs more than half the accuracy.
+This is the same fact the 40/40 argmax invariance showed, now with the cause
+named: the ordering *is* the monopoly term, and price and rent are decoration.
+
+**But the absolute numbers cannot support a SPEC rule.** The held-out interval
+for every arm contains the 4.3% random-pick reference. At 47 proposals nothing
+here is distinguishable from guessing, and the arms were chosen after seeing
+earlier results, so train is not clean either. The correct statement is
+"monopoly-only is identical to combined", which is an identity over the same
+boards and does not need statistics. Any claim about which component ranks
+*better* is unsupported and is not being made.
+
+### Part 2 — the same perturbations on auction, a threshold decision
+
+402 randomly configured auction states.
+
+| arm | auction agreement | Δ vs combined |
+| --- | --- | --- |
+| combined (current) | 78.6% [74.3, 82.3] | — |
+| price only | 79.4% [75.1, 83.0] | +0.7 |
+| **no monopoly** | **83.6% [79.6, 86.9]** | **+5.0** |
+| **monopoly x0.1** | **86.8% [83.2, 89.8]** | **+8.2** |
+| monopoly only | 68.7% [64.0, 73.0] | −10.0 |
+| rent only | 36.6% [32.0, 41.4] | −42.0 |
+
+### Reconciliation — the proposed explanation is only half right
+
+The hypothesis was: buy and auction survive a dominant monopoly term because
+they compare one candidate against a fixed gate, where a term that shifts the
+ceiling far above the standing bid is harmless, whereas ranking collapses under
+a dominant additive term. Tested rather than assumed, it splits:
+
+**Confirmed for buy — but for a more basic reason than proposed.** `_buy` does
+not call `deed_value` at all; it is `gates_ok(env, pid, price)` and nothing
+else. Buy's 96–98% is evidence about the safety gates exclusively and can be
+cited neither for nor against the valuation. The apparent paradox for half the
+cases was never a paradox; it was me quoting an agreement number for a code
+path that does not exist.
+
+**Refuted in its strong form for auction.** Auction is *not* insensitive to
+the term. Removing it improves agreement by 5.0 points and shrinking it to a
+tenth by 8.2 — well outside the intervals. The monopoly term is actively
+harmful in auction too; auction merely survives it, at 78.6%, because price
+and rent carry the decision (price-only alone scores 79.4%, and stripping rent
+collapses it to 36.6%).
+
+**What is actually true.** The same defect damages both decisions, by very
+different amounts, and the threshold/ranking distinction explains the
+*magnitude* rather than the presence:
+
+- in a threshold comparison the term is one addend among three, so being wrong
+  costs a bounded 5–8 points;
+- in a ranking it is the *only* term that separates candidates, so being wrong
+  costs everything — the ordering is fully determined by it.
+
+So the finding is not "the monopoly term is fine for thresholds and bad for
+rankings". It is **"the monopoly term is wrong, and ranking is simply the
+decision that has no other term to fall back on."**
+
+### Consequences
+
+1. **Nothing from D2.5/D2.6 goes into `SPEC.md`.** These are findings about
+   *our model*, not about the teacher's behaviour. `SPEC.md` documents
+   observed teacher behaviour; a defect in `spec_model.py` belongs here.
+2. **An immediate, measurable improvement is available and is not speculative**:
+   scaling the monopoly term to 0.1 gains +8.2 points of auction agreement on
+   402 states, interval [83.2, 89.8] against [74.3, 82.3]. That is worth
+   taking on its own merits, independently of trade.
+3. **The trade ranking still has no working model,** and the pool is too small
+   to choose between candidate models. Widening it means more *proposal*
+   boards, not more boards — 400 boards yielded only 118. The next step is a
+   generator biased toward states where the teacher actually proposes, so the
+   118 becomes ~500, before any further model is compared.
+4. `max_group_rent / 2**missing` needs re-deriving from probe evidence rather
+   than from the published formula. B3/B4/B5 measured *auction ceilings*, and
+   ceilings constrain the term only up to the additive company it keeps —
+   which is exactly the freedom that let a wrong term reproduce them.
