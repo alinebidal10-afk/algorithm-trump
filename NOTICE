@@ -1,0 +1,23 @@
+This repository bundles third-party code in the RL_CFR_MONOPOLYMODIFIED/ directory.
+
+That code is from "Monopoly Deal Research Platform",
+https://github.com/cavaunpeu/monopoly-deal-ai
+
+Copyright 2025 Will Wolf
+
+Licensed under the Apache License, Version 2.0 (as modified by the copyright
+holder). The full text of the license, as distributed by the copyright
+holder, is included at RL_CFR_MONOPOLYMODIFIED/LICENSE.
+
+The only modifications made to this code in this repository are:
+  - Rewriting import paths:
+      game.    -> RL_CFR_MONOPOLYMODIFIED.game.
+      models.  -> RL_CFR_MONOPOLYMODIFIED.RL_models_1_CounterfactualRegretMinimization.
+  - One locally added file with no upstream counterpart:
+      RL_models_1_CounterfactualRegretMinimization/cfr/classic_cfr.py
+
+The bundled code implements Monopoly Deal, a two-player card game. It is
+unrelated to, and out of scope for, the board-Monopoly work in
+monopoly_game_engine/ (ruleset ppo-plus-v2) elsewhere in this repository.
+
+No other part of this repository is covered by the license described above.

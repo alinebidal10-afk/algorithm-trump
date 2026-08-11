@@ -3,3 +3,32 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .env
+
+# logs
+*.log
+collect.log
+
+# caches / tooling
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+.DS_Store
+
+# virtualenvs
+.venv/
+venv/
+
+# run outputs
+runs/
+checkpoints/
+replay/
+teacher-data/
+
+# Harvested decision corpora: large, regenerable, and not evidence in
+# themselves. trade_harvest.jsonl is 164MB (over GitHub's 100MB hard limit)
+# and is reproduced exactly by:
+#     python3 competition_agent/harvest_trades.py --seeds 60
+# The fitted weights derived from it ARE committed (probes/trade_weights.json),
+# so results stay reproducible without shipping the corpus.
+competition_agent/probes/trade_harvest.jsonl
+competition_agent/probes/*.partial.jsonl

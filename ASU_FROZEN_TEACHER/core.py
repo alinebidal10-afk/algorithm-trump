@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import os
 import random
 import sys
 from collections import defaultdict
@@ -29,7 +30,8 @@ from monopoly_game_engine.constants import (  # noqa: E402
     PROPERTIES,
     RULESET_VERSION,
 )
-from monopoly_game_engine.env import PHASE_AUCTION  # noqa: E402
+from monopoly_game_engine.env import PHASE_AUCTION, MonopolyEnv, TradeOffer  # noqa: E402
+from monopoly_game_engine.state import Player, Property  # noqa: E402
 
 from .spec import (  # noqa: E402
     ASU_ROLLOUT_V1,
@@ -59,6 +61,11 @@ _EPSILON = 1e-12
 _TURN_STATE = tuple[int, bool, int]
 _LANDING = tuple[int, int]
 
+# Checked ONCE at import time. Set ASU_DISABLE_CACHE=1 to bind the raw
+# (undecorated) pure functions instead of their lru_cache-wrapped versions,
+# e.g. for cache on/off equivalence testing.
+ASU_DISABLE_CACHE = os.environ.get("ASU_DISABLE_CACHE") == "1"
+
 
 @contextmanager
 def preserve_global_rng() -> Iterator[None]:
@@ -84,13 +91,138 @@ def preserve_global_rng() -> Iterator[None]:
                 torch.cuda.set_rng_state_all(cuda_states)
 
 
+def _fast_copy_property(prop: Property) -> Property:
+    new_prop = Property.__new__(Property)
+    new_prop.square_id = prop.square_id
+    # `data` is the shared, never-mutated `PROPERTIES[square_id]` dict (see
+    # monopoly_game_engine/state.py); reusing the reference instead of
+    # deep-copying it is both safe -- nothing in this codebase ever writes
+    # to it -- and avoids re-copying the same constant dict on every call.
+    new_prop.data = prop.data
+    new_prop.name = prop.name
+    new_prop.price = prop.price
+    new_prop.mortgage_v = prop.mortgage_v
+    new_prop.color = prop.color
+    new_prop.owner = prop.owner
+    new_prop.mortgaged = prop.mortgaged
+    new_prop.houses = prop.houses
+    new_prop.is_monopoly = prop.is_monopoly
+    return new_prop
+
+
+def _fast_copy_player(player: Player, new_properties: dict[int, Property]) -> Player:
+    new_player = Player.__new__(Player)
+    new_player.player_id = player.player_id
+    new_player.cash = player.cash
+    new_player.position = player.position
+    new_player.in_jail = player.in_jail
+    new_player.jail_turns = player.jail_turns
+    new_player.gooj_card = player.gooj_card
+    new_player.bankrupt = player.bankrupt
+    # ALIASING: every entry here must be the SAME object as the matching
+    # entry in `new_properties`, mirroring the sharing that copy.deepcopy's
+    # memo dict preserves between `env.properties` and `player.properties`.
+    new_player.properties = [
+        new_properties[prop.square_id] for prop in player.properties
+    ]
+    return new_player
+
+
+def _fast_copy_trade_offer(
+    offer: TradeOffer, new_properties: dict[int, Property]
+) -> TradeOffer:
+    new_offer = TradeOffer.__new__(TradeOffer)
+    new_offer.from_player = offer.from_player
+    new_offer.to_player = offer.to_player
+    new_offer.offered_prop = (
+        None
+        if offer.offered_prop is None
+        else new_properties[offer.offered_prop.square_id]
+    )
+    new_offer.requested_prop = (
+        None
+        if offer.requested_prop is None
+        else new_properties[offer.requested_prop.square_id]
+    )
+    new_offer.cash_offered = offer.cash_offered
+    new_offer.cash_requested = offer.cash_requested
+    return new_offer
+
+
+def _fast_copy_env(env: MonopolyEnv) -> MonopolyEnv:
+    """A faster, semantics-preserving substitute for ``copy.deepcopy(env)``.
+
+    Used ONLY inside ``_PrivateGame.__init__``. Every mutable attribute set
+    by ``MonopolyEnv.__init__``/``reset`` (see
+    ``monopoly_game_engine/env.py``) is copied explicitly below. Nothing
+    else mutates env attributes outside of those two methods and ``step``'s
+    helpers, which only ever assign to attributes already listed here (see
+    the exhaustive ``self.<name> =`` audit of env.py this was built from).
+
+    CRITICAL ALIASING: in a real env, `player.properties` holds the SAME
+    `Property` objects that are the values of `env.properties`, and a
+    pending `TradeOffer`'s `offered_prop`/`requested_prop` may also point
+    at those same objects. `copy.deepcopy` preserves that sharing via its
+    memo dict; this function preserves it by copying each `Property`
+    exactly once (into `new_properties`) and having every other reference
+    look itself up in that same dict instead of being copied again.
+    """
+
+    new_env = MonopolyEnv.__new__(MonopolyEnv)
+
+    new_env.agent_ids = list(env.agent_ids)
+    new_env.max_rounds = env.max_rounds
+
+    new_properties = {
+        square: _fast_copy_property(prop) for square, prop in env.properties.items()
+    }
+    new_env.properties = new_properties
+
+    new_env.players = [
+        _fast_copy_player(player, new_properties) for player in env.players
+    ]
+
+    new_env.turn_order = list(env.turn_order)
+    new_env.current_turn_idx = env.current_turn_idx
+    new_env.round = env.round
+    new_env.done = env.done
+
+    new_env.pending_trades = {
+        pid: _fast_copy_trade_offer(offer, new_properties)
+        for pid, offer in env.pending_trades.items()
+    }
+    new_env.last_dice = env.last_dice  # tuple[int, int], immutable
+
+    new_env.phase = env.phase
+    new_env.has_rolled = env.has_rolled
+    new_env.out_of_turn_pids = list(env.out_of_turn_pids)
+    new_env.consecutive_doubles = env.consecutive_doubles
+    new_env.extra_roll_pending = env.extra_roll_pending
+
+    new_env.auction_property_id = env.auction_property_id
+    new_env.auction_bidders = list(env.auction_bidders)
+    new_env.auction_current_pid = env.auction_current_pid
+    new_env.auction_high_bid = env.auction_high_bid
+    new_env.auction_high_bidder = env.auction_high_bidder
+    new_env.houses_available = env.houses_available
+    new_env.hotels_available = env.hotels_available
+
+    new_env.debt_player = env.debt_player
+    new_env.debt_creditor = env.debt_creditor
+    new_env.debt_amount = env.debt_amount
+
+    new_env.player_needs_funds = env.player_needs_funds
+
+    return new_env
+
+
 class _PrivateGame:
     """An environment paired with a private stdlib random stream."""
 
     __slots__ = ("env", "random_state")
 
     def __init__(self, env, seed: int):
-        self.env = copy.deepcopy(env)
+        self.env = _fast_copy_env(env)
         self.random_state = random.Random(seed).getstate()
 
     def step(self, action: int):
@@ -201,19 +333,29 @@ def _expected_landings_float(
     )
 
 
-def expected_landings(player, turns: int = SHORT_TURNS) -> dict[_LANDING, float]:
-    """Expected deed landings keyed by ``(square, dice_total)``."""
+def _expected_landings_items(
+    player, turns: int = SHORT_TURNS
+) -> tuple[tuple[_LANDING, float], ...]:
+    """Internal hot-path accessor: the cached tuple, never copied into a dict.
+
+    Callers MUST only iterate the result -- it is the same tuple object the
+    lru_cache holds, shared across every call with equal arguments.
+    """
 
     if turns < 1:
         raise ValueError("turns must be positive")
-    return dict(
-        _expected_landings_float(
-            player.position,
-            player.in_jail,
-            player.jail_turns,
-            turns,
-        )
+    return _expected_landings_float(
+        player.position,
+        player.in_jail,
+        player.jail_turns,
+        turns,
     )
+
+
+def expected_landings(player, turns: int = SHORT_TURNS) -> dict[_LANDING, float]:
+    """Expected deed landings keyed by ``(square, dice_total)``."""
+
+    return dict(_expected_landings_items(player, turns))
 
 
 def movement_probabilities(player, turns: int = SHORT_TURNS) -> dict[int, float]:
@@ -225,45 +367,103 @@ def movement_probabilities(player, turns: int = SHORT_TURNS) -> dict[int, float]
     return dict(sorted(result.items()))
 
 
-def _owned_count(env, owner: int, color: str) -> int:
-    return sum(
-        prop.owner == owner and prop.color == color for prop in env.properties.values()
-    )
+class _DeedRentTables:
+    """Per-env-snapshot lookups that replace repeated full-board scans.
+
+    Built in ONE pass over ``env.properties`` (see
+    ``_build_deed_rent_tables``) and then reused for every ``deed_rent``
+    lookup against that same snapshot, instead of each lookup rescanning
+    all 28 properties on its own.
+    """
+
+    __slots__ = ("rail_counts", "util_counts", "monopoly_owner")
+
+    def __init__(self, rail_counts, util_counts, monopoly_owner):
+        self.rail_counts = rail_counts
+        self.util_counts = util_counts
+        self.monopoly_owner = monopoly_owner
 
 
-def deed_rent(env, square: int, dice_total: int = 7) -> int:
-    """Current ppo-plus-v2 rent, including exact railroad/utility scaling."""
+def _build_deed_rent_tables(env) -> _DeedRentTables:
+    """Build the railroad/utility/monopoly lookups in one pass over properties.
+
+    Reproduces the exact semantics of the old per-call scans, mortgaged
+    deeds included: ``rail_counts``/``util_counts`` count a property toward
+    its owner regardless of ``mortgaged`` (matching the old ``_owned_count``,
+    which never looked at ``mortgaged``), and ``monopoly_owner[color]`` is
+    the owner iff every square in ``COLOR_GROUPS[color]`` shares that owner
+    -- also ignoring ``mortgaged``, matching the old
+    ``all(env.properties[item].owner == owner for item in group)`` check.
+    """
+
+    rail_counts: dict[int, int] = defaultdict(int)
+    util_counts: dict[int, int] = defaultdict(int)
+    color_owners: dict[str, set] = defaultdict(set)
+
+    for prop in env.properties.values():
+        color = prop.color
+        if color == "railroad":
+            if prop.owner is not None:
+                rail_counts[prop.owner] += 1
+        elif color == "utility":
+            if prop.owner is not None:
+                util_counts[prop.owner] += 1
+        elif color in COLOR_GROUPS:
+            color_owners[color].add(prop.owner)
+
+    monopoly_owner: dict[str, int | None] = {}
+    for color in COLOR_GROUPS:
+        owners = color_owners.get(color, set())
+        if len(owners) == 1:
+            (only_owner,) = owners
+            monopoly_owner[color] = only_owner
+        else:
+            monopoly_owner[color] = None
+
+    return _DeedRentTables(dict(rail_counts), dict(util_counts), monopoly_owner)
+
+
+def _deed_rent_with(
+    tables: _DeedRentTables, env, square: int, dice_total: int = 7
+) -> int:
+    """``deed_rent`` logic driven by a precomputed ``_DeedRentTables``."""
 
     prop = env.properties[square]
     if prop.owner is None or prop.mortgaged:
         return 0
     owner = prop.owner
     if prop.color == "railroad":
-        return prop.data["rent"][min(_owned_count(env, owner, "railroad") - 1, 3)]
+        return prop.data["rent"][min(tables.rail_counts.get(owner, 0) - 1, 3)]
     if prop.color == "utility":
-        utilities = _owned_count(env, owner, "utility")
+        utilities = tables.util_counts.get(owner, 0)
         return prop.data["rent"][0 if utilities == 1 else 1] * dice_total
     if prop.houses:
         return prop.data["rent"][min(prop.houses, 5)]
-    group = COLOR_GROUPS[prop.color]
-    monopoly = all(env.properties[item].owner == owner for item in group)
+    monopoly = tables.monopoly_owner.get(prop.color) == owner
     return prop.data["rent"][0] * (2 if monopoly else 1)
+
+
+def deed_rent(env, square: int, dice_total: int = 7) -> int:
+    """Current ppo-plus-v2 rent, including exact railroad/utility scaling."""
+
+    return _deed_rent_with(_build_deed_rent_tables(env), env, square, dice_total)
 
 
 def rent_projection(env, player_id: int, turns: int = SHORT_TURNS) -> RentProjection:
     """Exact expected incoming and outgoing rent over complete turns."""
 
+    tables = _build_deed_rent_tables(env)
     root = env.players[player_id]
-    root_landings = expected_landings(root, turns)
+    root_landings = _expected_landings_items(root, turns)
     income = 0.0
     exposure = 0.0
     worst = 0.0
 
-    for (square, dice_total), probability in root_landings.items():
+    for (square, dice_total), probability in root_landings:
         prop = env.properties.get(square)
         if prop is None or prop.owner in (None, player_id):
             continue
-        rent = deed_rent(env, square, dice_total)
+        rent = _deed_rent_with(tables, env, square, dice_total)
         exposure += probability * rent
         if probability > 0:
             worst = max(worst, float(rent))
@@ -271,12 +471,14 @@ def rent_projection(env, player_id: int, turns: int = SHORT_TURNS) -> RentProjec
     for opponent in env.players:
         if opponent.player_id == player_id or opponent.bankrupt:
             continue
-        for (square, dice_total), probability in expected_landings(
+        for (square, dice_total), probability in _expected_landings_items(
             opponent, turns
-        ).items():
+        ):
             prop = env.properties.get(square)
             if prop is not None and prop.owner == player_id:
-                income += probability * deed_rent(env, square, dice_total)
+                income += probability * _deed_rent_with(
+                    tables, env, square, dice_total
+                )
 
     return RentProjection(
         income=float(income),
@@ -289,6 +491,7 @@ def rent_projection(env, player_id: int, turns: int = SHORT_TURNS) -> RentProjec
 def long_rent_projection(env, player_id: int) -> RentProjection:
     """Five-lap rent projection with uniform deed landings."""
 
+    tables = _build_deed_rent_tables(env)
     visits_per_deed = Fraction(LONG_LAPS * 40, 7 * len(PROPERTY_IDS))
     root = env.players[player_id]
     if root.bankrupt:
@@ -299,18 +502,20 @@ def long_rent_projection(env, player_id: int) -> RentProjection:
         if player.player_id != player_id and not player.bankrupt
     ]
     income = sum(
-        float(visits_per_deed) * deed_rent(env, square, 7) * len(opponents)
+        float(visits_per_deed)
+        * _deed_rent_with(tables, env, square, 7)
+        * len(opponents)
         for square, prop in env.properties.items()
         if prop.owner == player_id
     )
     exposure = sum(
-        float(visits_per_deed) * deed_rent(env, square, 7)
+        float(visits_per_deed) * _deed_rent_with(tables, env, square, 7)
         for square, prop in env.properties.items()
         if prop.owner is not None and prop.owner != player_id
     )
     worst = max(
         (
-            float(deed_rent(env, square, 12))
+            float(_deed_rent_with(tables, env, square, 12))
             for square, prop in env.properties.items()
             if prop.owner is not None and prop.owner != player_id
         ),
@@ -350,7 +555,7 @@ def liquidatable_worth(env, player_id: int) -> float:
     return worth
 
 
-def _hypothetical_group_rent(
+def _hypothetical_group_rent_uncached(
     color: str,
     squares: tuple[int, ...],
     levels: tuple[int, ...],
@@ -371,7 +576,7 @@ def _hypothetical_group_rent(
     return total
 
 
-def _max_developed_rent(
+def _max_developed_rent_uncached(
     color: str,
     squares: tuple[int, ...],
     levels: tuple[int, ...],
@@ -419,6 +624,27 @@ def _max_developed_rent(
                     )
                 )
     return best
+
+
+# Both functions above are pure: their output depends ONLY on the argument
+# tuple plus the immutable module constants PROPERTIES / MAX_HOUSES /
+# _EPSILON. They never read any env/game state, so the argument tuple is a
+# complete cache key by construction -- there is no hidden state that could
+# make two equal-argument calls return different results. A maxsize is used
+# (rather than None/unbounded) because `budget` is a float, so the key space
+# is technically unbounded across a long-running process; 1 << 17 bounds
+# memory while comfortably covering the working set for a single decision.
+#
+# ASU_DISABLE_CACHE=1 (checked once at import time, above) binds the raw
+# uncached functions instead, e.g. for cache on/off equivalence testing.
+if ASU_DISABLE_CACHE:
+    _hypothetical_group_rent = _hypothetical_group_rent_uncached
+    _max_developed_rent = _max_developed_rent_uncached
+else:
+    _hypothetical_group_rent = lru_cache(maxsize=1 << 17)(
+        _hypothetical_group_rent_uncached
+    )
+    _max_developed_rent = lru_cache(maxsize=1 << 17)(_max_developed_rent_uncached)
 
 
 def monopoly_value(env, player_id: int, r_long: float | None = None) -> float:
