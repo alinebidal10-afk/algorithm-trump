@@ -207,19 +207,177 @@ the collection side, which is already sharp. Recorded in `DECISIONS.md`.
 
 ---
 
+## Group B — the auction
+
+Method note: in the auction phase the legal actions are PASS and four bid
+increments (+1, +10, +50, +100), the increment being legal only if
+`high_bid + increment <= cash`. Sweeping the standing bid `B` and finding the
+smallest `B` at which the teacher passes locates its ceiling exactly, because
+raising by +1 costs `B+1`: it passes precisely when `B+1` exceeds the ceiling.
+Cash is pinned at $5,000 throughout so the safety gates never bind and the
+ceiling reflects deed value alone.
+
+### B1. The auction ceiling is several times list price
+**Observation.** With no group presence, ceilings run 1.9×–7.4× list price:
+Mediterranean $60 → $416 (6.9×), Oriental $100 → $546 (5.5×), Kentucky $220 →
+$1,083 (4.9×), Boardwalk $400 → $2,315 (5.8×), Reading Railroad $200 → $388
+(1.9×).
+**Rule.** The teacher values a deed at auction far above its list price. It is
+not anchored to price, and it will not be outbid by a price-anchored opponent.
+**Confidence:** certain.
+**Evidence:** `p02_auction_ceiling.csv` (82 rows, seed 20250811).
+
+### B2. The value variant always opens at the maximum legal increment
+**Observation.** `opening_action` is `auction_bid(+$100)` in **82/82** rows,
+across every deed, colour and ownership configuration.
+**Rule.** Given a ceiling above the standing bid, `ASUValueV1` jumps by the
+largest legal increment rather than creeping. Combined with B1 this makes it
+an aggressive, fast-escalating bidder.
+**Confidence:** certain.
+**Evidence:** `p02_auction_ceiling.csv`, `opening_action` column.
+**See C2** — the rollout variant does the exact opposite, and this is where
+the two disagree most.
+
+### B3. Owning one deed of a three-deed group buys *no* premium
+**Observation.** For every one of the 18 three-deed real-estate cases, the
+ceiling with one group member already owned is **identical to the ceiling with
+none owned** — ratio exactly 1.00, to the dollar:
+
+| group | sq | own 0 | own 1 | own 2 | own1/own0 | own2/own1 |
+| --- | --- | --- | --- | --- | --- | --- |
+| green | 31 | 1377 | 1377 | 2641 | **1.00** | 1.92 |
+| orange | 16 | 954 | 954 | 1835 | **1.00** | 1.92 |
+| red | 21 | 1083 | 1083 | 2079 | **1.00** | 1.92 |
+| pink | 11 | 775 | 775 | 1488 | **1.00** | 1.92 |
+| lightblue | 6 | 546 | 546 | 1044 | **1.00** | 1.91 |
+| yellow | 26 | 1212 | 1212 | 2324 | **1.00** | 1.92 |
+
+(18/18 cases; the table shows one deed per group.)
+**Rule.** The teacher pays the same for the *first* deed of a group as for the
+*second*. Its bid escalates only on the deed that completes the monopoly.
+**Confidence:** certain.
+**Evidence:** `p02_auction_ceiling.csv`.
+
+### B4. The completing deed roughly doubles the ceiling
+**Observation.** `own2/own1` is 1.87–1.92 in all 18 three-deed cases (green
+2641/1377 = 1.92, yellow 2324/1212 = 1.92, lightblue 1071/574 = 1.87).
+**Rule.** Acquiring the deed that completes a monopoly is worth about twice
+the marginal value of a non-completing deed of the same group.
+**Confidence:** certain.
+**Evidence:** `p02_auction_ceiling.csv`.
+
+### B5. A group the player owns nothing of contributes no monopoly term
+**Observation.** B3 and B4 together are not explained by a plain
+`2 ** missing_deeds` discount, which predicts ratios 1 : 2 : 4 across
+own0/own1/own2. Adding one clause does explain them exactly — that the
+"before" state contributes a monopoly term **only if the player already owns
+at least one deed of the group**. Marginal value is then
+
+    M / 2**missing_after  -  (M / 2**missing_before  if owned_before > 0 else 0)
+
+| | own0 | own1 | own2 |
+| --- | --- | --- | --- |
+| predicted ratio, 3-deed group | 1.00 | 1.00 | 2.00 |
+| **observed** | **1.00** | **1.00** | **1.90–1.92** |
+| predicted ratio, 2-deed group | 1.00 | 1.00 | — |
+| **observed** (brown, darkblue) | **1.00** | **1.05–1.13** | — |
+
+**Rule.** The monopoly term is gated on existing group presence, so the first
+deed of a group is valued as if the group opportunity did not previously
+exist. The residual 1.05–1.13 on two-deed groups is the base asset and
+short-rent terms, which differ slightly between the two deeds.
+**Confidence:** likely (the arithmetic matches to within the base-term
+residual across 22 configurations, but the clause is inferred from ratios
+rather than observed directly).
+**Evidence:** `p02_auction_ceiling.csv`.
+
+**Competitive note.** B3+B5 are an exploitable structural weakness, and they
+sharpen Phase 5 module 2 (denial trading). The teacher will not bid defensively
+for a group it has no presence in, and pays no premium for a second deed. An
+opponent can therefore acquire the first two deeds of a group cheaply and only
+faces competition on the third — by which point it holds the blocking
+position. Recorded for Phase 5.
+
+---
+
+## Group C — rollout vs value divergence (Experiment 8, pulled forward)
+
+Both variants are deterministic given a state — the rollout uses fixed
+common-random-number streams — so repeating a state cannot yield a new answer.
+The agreement rate is therefore estimated over a *population of constructed
+boundary states*, not over RNG draws.
+
+### C1. On boundary states the two variants disagree on a third of decisions
+**Observation.** Over 230 constructed boundary states:
+
+| category | n | diverge | rate | value s | rollout s | cost ratio |
+| --- | --- | --- | --- | --- | --- | --- |
+| auction | 56 | 53 | **94.6%** | 0.011 | 11.37 | 1035× |
+| build | 48 | 28 | **58.3%** | 0.049 | 22.60 | 464× |
+| buy | 112 | 0 | 0.0% | 0.043 | 4.78 | 112× |
+| trade | 14 | 0 | 0.0% | 0.029 | 8.89 | 309× |
+| **all** | **230** | **81** | **35.2%** | | | |
+
+95% Wilson CI on the overall rate: **[29.3%, 41.6%]**.
+**Rule.** Lookahead changes the decision often, but only in two families:
+auctions and building. It never changed a buy or trade decision in this
+corpus.
+**Confidence:** certain (both policies are deterministic given a state, so the
+null "rollout never changes the decision" is falsified outright).
+**Evidence:** `p08_rollout_divergence.csv` (230 rows, seed 20250811).
+
+### C2. Where they diverge, the rollout is systematically more liquidity-preserving
+**Observation.** Every one of the 53 auction divergences is bid-versus-bid:
+the value variant takes the largest increment (B2) while the rollout takes a
+smaller one — in the certification scenario, `+$100` versus `+$1` on the same
+state. The 28 build divergences fall into three patterns: `improve_house` vs
+`improve_house` on a different square (11), `END_TURN` vs `mortgage` (10), and
+`improve_house` vs `mortgage` (7) — the rollout raising cash where the value
+variant either builds or does nothing.
+**Rule.** Truncated lookahead consistently prefers holding liquidity: minimum
+viable bids instead of maximum ones, and mortgaging instead of building.
+**Confidence:** likely (the direction is consistent across all 81 divergences,
+but "preserving liquidity" is an interpretation of the action pattern).
+**Evidence:** `p08_rollout_divergence.csv`; corroborated independently by the
+certification scenarios (`probes/certification/certification_result.txt`),
+where 5 of 10 scenarios split value-vs-rollout in the same direction, and
+identically under both `core.py` versions.
+
+### C3. The earlier "10/10 agreement" was an artefact of ordinary play
+**Observation.** On ordinary seed-3 play the variants agreed on 10/10 early
+decisions; on constructed boundary states they disagree on 35.2%.
+**Rule.** Most decisions in ordinary play are lopsided, so agreement there says
+nothing about the value of lookahead. Divergence must be measured on states
+selected for closeness, not sampled.
+**Confidence:** certain.
+**Evidence:** `p08_rollout_divergence.csv` vs `DECISIONS.md` D0.6.
+
+---
+
 ## Status
 
 | experiment | status |
 | --- | --- |
+| 0. Audit-trail certification (added) | done — PASS, 6,314 decisions, 0 mismatches |
 | 1. Buy threshold curve | done — A1–A6 |
 | 1b. Rent-residual mechanism (added) | done — A4, A5 |
-| 2. Auction ceiling curve | not started |
+| 2. Auction ceiling curve | done — B1–B5 |
 | 3. Safety floor scaling | partial — floor located at $200 (A2); scaling with opponent development untested |
 | 4. Development order | not started |
 | 5. Mortgage / liquidation order | not started |
 | 6. Trade accept/decline surface | not started |
 | 7. Jail policy | not started |
-| 8. Rollout-variant divergence | not started; 10/10 agreement seen in ordinary play (`DECISIONS.md` D0.6) means this needs adversarial states |
+| 8. Rollout-variant divergence | done (pulled forward) — C1–C3 |
 
-**6 rules evidenced of the ≥25 required for Phase 1 acceptance.** Phase 1 is
-not complete.
+**14 rules evidenced** (A1–A6, B1–B5, C1–C3) of the ≥25 required for Phase 1
+acceptance. Experiments 3–7 remain.
+
+### Rules by confidence
+
+| confidence | rules |
+| --- | --- |
+| certain | A1, A2, A3, A4, A5, A6, B1, B2, B3, B4, C1, C3 |
+| likely | B5, C2 |
+| guess | — |
+
+No rule has yet been contradicted by a later probe.

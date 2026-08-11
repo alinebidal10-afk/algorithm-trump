@@ -220,3 +220,68 @@ per-game records to disk as they complete (`imap_unordered` + append) and
 support resuming by skipping seeds already present in the output file. Long
 benchmarks are then interruptible at no cost, and the Phase 4/5 head-to-head
 runs (≥300 and ≥500 games) inherit the same property.
+
+## D1.1 — Phase 4 gate: RESOLVED, and the layer is rescoped to two families
+
+The conditional gate was stated as: *Phase 4 is built only if the
+adversarial-state divergence rate is statistically distinguishable from zero;
+if divergence is negligible even on constructed states, Phase 4 is skipped and
+its time moves to Phase 5.*
+
+**Gate outcome: PASSED — Phase 4 proceeds.** Over 230 constructed boundary
+states the rollout changed the decision in 81 cases, a rate of **35.2%**
+(95% Wilson CI [29.3%, 41.6%]). Both policies are deterministic given a state,
+so the null "rollout never changes the decision" is not merely rejected at some
+confidence level — a single divergence falsifies it outright, and there are 81.
+
+**But the flat reading of the gate would have produced the wrong design.**
+Divergence is not spread evenly; it is almost entirely confined to two action
+families:
+
+| family | divergence | cost ratio |
+| --- | --- | --- |
+| auction | 94.6% | 1035× |
+| build | 58.3% | 464× |
+| buy | 0.0% | 112× |
+| trade | 0.0% | 309× |
+
+Wrapping *every* decision in rollout — the Phase 4 brief's default reading —
+would spend 112× on buy decisions and 309× on trade decisions to reproduce an
+answer the fast path already gives, in 126 of 126 cases tested.
+
+**Decision.** The Phase 4 rollout layer is applied **selectively**, gated on
+action family: auctions and build/improve decisions get lookahead; buy and
+trade decisions take the hybrid's answer directly. The K/M/P budget is then
+spent where it demonstrably changes outcomes, which also relieves the
+per-move time limit — the expensive path runs on a minority of decisions.
+
+This gate is re-checked, not assumed, once the clone exists: the divergence
+measurement above is between the *teacher's* two variants, and the clone's
+own value/rollout divergence profile could differ. `p08_rollout_divergence.py`
+is written to re-run against any policy pair.
+
+**Caveat on coverage.** The 0% buy/trade divergence is measured over 112 buy
+and 14 trade boundary states. The trade sample is small; before buy/trade are
+finally excluded from the rollout path, the trade-boundary population needs
+widening (Experiment 6 will produce it). Until then the exclusion is provisional
+and is recorded here so it is not mistaken for a settled result.
+
+## D1.2 — Two teacher weaknesses found in Phase 1, carried to Phase 5
+
+Recorded now so Phase 5 modules are aimed at measured gaps rather than
+assumed ones.
+
+1. **Rent projection is already sharp on the collection side** (A3–A6). The
+   teacher enumerates 2d6 complete-turn landings over opponents' *actual*
+   positions, including doubles-driven extra rolls, and prices deeds
+   accordingly. Phase 5 module 1 should therefore target rent *paid to*
+   opponents from their developed holdings, not rebuild the collection side.
+
+2. **The auction ceiling ignores group presence it does not already have**
+   (B3, B5). The teacher pays the same for the first deed of a colour group as
+   for the second, and escalates only on the completing deed. An opponent can
+   take the first two deeds of a group at ordinary prices and only meets
+   resistance on the third — by which point it holds the blocking position.
+   This is a direct opening for Phase 5 module 2 (denial-value trading), and
+   it is a weakness in the *teacher we are cloning*, so the clone will inherit
+   it unless the module explicitly overrides the auction ceiling.
