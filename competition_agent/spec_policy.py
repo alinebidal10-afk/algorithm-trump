@@ -160,9 +160,19 @@ class SpecPolicy:
         if not me.in_jail:
             return None
 
-        # G1 — in pre_roll the choice is deferred, never taken.
+        # G1 (revised) — in pre_roll the jail *exit* choice is deferred, but
+        # that is all that is deferred. The original reading of p07 was
+        # "END_TURN in pre_roll while jailed", which p07's setup supported
+        # because nothing else was worth doing there. The debt/jail evaluation
+        # set refutes it: over 250 jailed pre_roll states the teacher chose
+        # END_TURN in only 106, and spent the rest unmortgaging (63) and
+        # proposing trades (95). Returning END_TURN here short-circuited every
+        # later rule and cost unmortgage 0/63.
+        #
+        # Correct behaviour: being in jail suppresses no other rule. Fall
+        # through, and let END_TURN be reached as the pipeline default.
         if env.phase == "pre_roll":
-            return END_TURN if END_TURN in allowed else None
+            return None
         if env.phase != "post_roll" or env.has_rolled:
             return None
 

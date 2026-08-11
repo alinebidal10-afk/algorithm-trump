@@ -502,3 +502,81 @@ without touching held-out play, and held-out agreement stays an honest test.
 
 No further change to `_propose_trade` until that fit exists. The two previous
 attempts were both made without calibration data and both regressed.
+
+## D2.3 — Debt/jail evaluation set: G1 refuted, and rule interaction exposed
+
+`p10_debt_jail_eval.py` builds the population ordinary play never reaches —
+250 randomised debt boards (followed through the whole liquidation chain) and
+250 randomised jail boards, each swept in both phases. 1,508 decisions.
+
+| scenario | agree | n | rate |
+| --- | --- | --- | --- |
+| debt | 833 | 1040 | **80.1%** |
+| jail_post_roll | 157 | 218 | **72.0%** |
+| jail_pre_roll | 106 | 250 | 42.4% |
+
+Per family: `mortgage` 83.8% (980), `USE_GOOJ_CARD` 100% (53), `PAY_BAIL`
+78.6%, `sell_house` 33.3%, `ROLL_DICE` 61.6%.
+
+**F1–F5 and G2–G5 largely survive contact.** Liquidation at 80% and the jail
+exit choice at 72% are the first real validation these families have had;
+`USE_GOOJ_CARD` is perfect across 53 states. `sell_house` at 33% is a genuine
+ordering defect within F4.
+
+**G1 is refuted.** It was stated as "in pre_roll the teacher defers, choosing
+END_TURN" on the strength of p07's 224/224. This set shows that was p07's
+*setup*, not the rule: over 250 jailed pre_roll states the teacher chose
+END_TURN in only 106 and spent the rest unmortgaging (63) and proposing
+trades (95). Being in jail suppresses the exit decision, not every other rule.
+Recorded in SPEC as a contradiction, third one on the record.
+
+**Fixing G1 made the score worse, and that is the finding.** Letting the
+pipeline fall through dropped jail_pre_roll from 42.4% to 23.2% and the total
+from 72.7% to 69.5%, because the rules that now fire — trade proposal at 4%,
+unmortgage at 14% — are worse than doing nothing. G1's wrong rule was
+accidentally protective.
+
+The fix is kept anyway. Reverting would be tuning to a symptom: the pipeline
+would score better while containing a rule known to be false, and the debt
+figures would still be carried by `mortgage` alone. It does mean **the trade
+gate is a blocker, not an optimisation** — several families are held hostage
+to it.
+
+## D2.4 — Both trade fits FAIL, and they fail informatively
+
+`fit_trade.py`, split 60/40 by board, fixed before any search (240 train / 160
+held-out; 71 / 47 proposals).
+
+**Defect 2 — ranking.** 4,000 weight searches over
+(price, rent, mono, mortgaged) differences found **nothing better than the
+baseline**: train top-1 stayed 12.7%, held-out 8.5%. The optimum is the
+starting point.
+
+**Defect 1 — gate.** The best threshold scores 70.4% on train — *exactly* the
+never-propose baseline — and 70.6% held out. The fitted gate degenerates to
+"never propose anything".
+
+**Interpretation: the feature set is wrong, not the weights.** A search that
+cannot beat its own initialisation, and a threshold that collapses to a
+constant classifier, both say the same thing: these four features contain no
+signal about which exchange the teacher picks or whether it proposes at all.
+More search, more features of the same kind, or a smarter optimiser would all
+be wasted.
+
+**The likely omission is that every feature is one-sided.** They score the
+trade from our perspective only. The published description of the teacher
+requires proposer gain > 0, **recipient gain >= 0**, and *both* parties'
+safety gates — and Experiment 6 already demonstrated the recipient side
+behaviourally (H2: the accept region's upper edge is set by the
+counterparty's ability to pay, not by our valuation). If most high-gain-for-us
+candidates are infeasible for the recipient, the teacher's pick is the best
+*feasible* one, which a one-sided ranking cannot reproduce at any weighting.
+
+**Next step:** re-extract features with the recipient's valuation and both
+safety gates included, then re-fit on the same fixed split. If a two-sided
+feasibility filter alone lifts top-1 substantially, that confirms the
+diagnosis before any weight tuning. The split and the held-out play set both
+stay untouched so the check remains honest.
+
+**Phase 2 stays open.** Neither defect is closed, `sell_house` ordering is a
+known F4 defect, and G1's correction is net-negative until the gate lands.
