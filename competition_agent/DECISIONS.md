@@ -2462,7 +2462,7 @@ directions by field (ASU 39.3 -> 19.8 per game, weak 50.2 -> 54.5), so
 "proposes less" cannot be a general explanation of the gain. D7.7 measures
 that directly.
 
-## D7.7 — Gate versus ranking (PROVISIONAL, arm still running)
+## D7.7 — Gate versus ranking: the gate hypothesis is refuted
 
 The ranker proposes half as often as the shipped agent against ASU, so the
 +6.17pp was attributable to the ranking and the gate jointly. If the gain came
@@ -2483,13 +2483,16 @@ On the same states the ranker's gate proposes *more*, not less. The realised
 set by the threshold. Calibrating on propose rate rather than win rate keeps
 this off the test set.
 
-**Provisional, 454 of 600 paired games**, gate raised to 4.0077 with the frozen
-six-term scorer otherwise untouched:
+**567 of 600 paired games** (stopped by request once the direction was
+settled), gate raised to 4.0077 with the frozen six-term scorer otherwise
+untouched:
 
-    shipped     142/454  31.28%
-    gate only   111/454  24.45%
-    delta -6.83pp   discordant 43   z -4.73   p < 0.0001
-    propose/game 40.0 -> 29.5   accepted 2.8% -> 2.9%
+    shipped     173/567  30.51%  [26.86, 34.42]
+    gate only   132/567  23.28%  [19.99, 26.93]
+    delta -7.23pp   discordant 53 (shipped-only 47, gate-only 6)
+                    z -5.63   p < 0.0001
+    propose/game 39.4 -> 29.2   accepted 2.9% -> 3.0%
+    bankrupt     69.1% -> 76.4%
 
 Raising the gate **loses** 6.8 points, and does not improve proposal quality at
 all (acceptance 2.8% -> 2.9%, against the ranker's 8.6%). The gate hypothesis
@@ -2497,11 +2500,29 @@ is refuted in the direction opposite to the one it predicted. It also implies
 the ranking contribution exceeds +6.17pp, since Candidate D achieves that while
 also carrying a propose-rate reduction that is worth about -7pp on its own —
 but additivity is an assumption, recorded as such, and the rate-matched ranking
-arm measures it directly rather than inferring it.
+arm would have measured it directly. **That arm was not run** — the run was
+stopped once the gate direction was settled, so the size of the ranking
+contribution remains inferred rather than measured, and is labelled as such
+wherever it appears. What is measured is that the gate cannot explain the
+gain.
 
 Calibration drift is on the record: the arm was aimed at 19.8 proposals/game
-and realised 29.5, because changing the gate changes the trajectory. That makes
+and realised 29.2, because changing the gate changes the trajectory. That makes
 this an under-estimate of the gate penalty, not an over-estimate.
+
+Bankruptcy moves the same way — 69.1% to 76.4% — so the gate arm is not merely
+neutral-but-quieter; withholding proposals leaves the agent measurably worse
+off. Combined with acceptance staying flat (2.9% -> 3.0%) while the ranker
+tripled it, the two levers are doing different things entirely.
+
+**Ship decision: the network, not the number.** The one-number alternative was
+tested and is 7.2 points worse than doing nothing.
+
+Not measured, and open: the teacher's own win rate against the strong field.
+`field_ref.py` was written and queued for it (200 games, ~37 min at 9 workers,
+4 games already recorded) and stopped with the rest. Until it is run, 37.95%
+has no ceiling to be read against, and whether the strong-field null is a
+defect or a property of that field is unresolved.
 
 ## D7.8 — The regime-switched scorer was not built, and why
 
