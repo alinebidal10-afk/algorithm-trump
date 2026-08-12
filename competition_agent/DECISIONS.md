@@ -1760,3 +1760,57 @@ that the teacher pays the *same* for the first deed of a colour group as for
 the second (own1/own0 = 1.00 to the dollar, 18/18 cases) and never bids
 defensively for a group it has no presence in. The clone inherits that blind
 spot, and this term prices exactly it.
+
+## D5.2 — Endgame module OFF: the hypothesis survives, the implementation does not
+
+`BEYOND_ENDGAME` defaults to `0`. The code is kept, not deleted, and this entry
+exists so nobody rebuilds the same wrong version.
+
+### Result
+
+| configuration | win rate | n | vs baseline |
+| --- | --- | --- | --- |
+| baseline (both flags off) | 25.7% [21.1, 30.9] | 300 | — |
+| denial only | **31.0% [25.0, 37.7]** | 200 | +5.3pp |
+| denial + endgame | 22.0% [18.2, 26.3] | 400 | −3.7pp (z=−1.13, p=0.258) |
+
+Denial alone gains +5.3pp; adding endgame gives back that gain and more. The
+two do not add — they **conflict**.
+
+### The hypothesis was NOT refuted
+
+Bankruptcy is a real weakness and was correctly identified: **~88% for us
+against ~60% for the teacher**, unchanged by this module (88% with it enabled).
+Survival genuinely is where we lose. Nothing here argues otherwise.
+
+### What failed is seeking survival by widening the safety threshold
+
+The endgame term feeds `cushion_multiplier` into `gates_ok`, which scales the
+$200 floor with board development. That makes **every discretionary purchase
+harder** — and denial's entire mechanism is *"buy this deed to block an
+opponent"*. The second module could not get through the first module's gate.
+
+The prediction was recorded before the measurement:
+
+> Denial says "take this deed, don't let the opponent have it" while endgame
+> says "hold cash, don't spend". They may pull in opposite directions. If the
+> result is flat, that is the first place I will look.
+
+It came out worse than flat, and the bankruptcy rate confirms the mechanism:
+the module restricted spending without buying any survival. It made the agent
+poorer, not safer.
+
+### The likely correct form, for whoever picks this up
+
+**A change of objective, not a change of threshold.** Late in the game, score
+states by *"does an opponent go bankrupt before we do"* rather than by net
+worth — i.e. modify `state_value` itself, not the gate in front of it.
+
+That is deliberately **not attempted here**. `state_value` is the component
+four independent diagnoses have already shown to be wrong (D2.5, D2.6, D2.12,
+D4.4), so changing it opens a diagnosis round of uncertain length. With time as
+the binding constraint, confirming the one positive result the project has is
+worth more than starting that.
+
+**Do not re-implement survival as a wider cushion.** It has been measured and
+it costs more than it saves.

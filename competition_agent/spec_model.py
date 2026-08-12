@@ -223,8 +223,17 @@ def gates_ok(env, pid: int, spend: int, liq_delta: int = 0) -> bool:
     if cash_after < 0:
         return False
 
+    # Phase 5 module 3, off unless BEYOND_ENDGAME=1: the $200 floor is a
+    # constant but the danger it guards is not. Scales with board development.
+    floor = MIN_CASH
+    try:
+        from competition_agent.beyond.endgame import cushion_multiplier
+        floor = MIN_CASH * cushion_multiplier(env)
+    except Exception:                                      # noqa: BLE001
+        pass
+
     # SPEC A3/D1/D5 — gate 1 uses NET rent over the next complete turn
-    if cash_after + expected_rent_flow(env, pid, turns=1) < MIN_CASH:
+    if cash_after + expected_rent_flow(env, pid, turns=1) < floor:
         return False
 
     # SPEC D3/D7 — gate 2 uses gross income and POST-action liquidatable worth
