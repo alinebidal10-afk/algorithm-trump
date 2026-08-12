@@ -1882,3 +1882,56 @@ scope for this run.
 Deliverables complete: `bench.py`, `probes/` (14 experiments), `SPEC.md`
 (40 rules, 35 certain), `DECISIONS.md`, `spec_policy.py`, `hybrid_policy.py`,
 `rollout_policy.py`, `beyond/`, `final_agent.py`, `tests/`.
+
+## D6.1 — Absolute strength: the agent dominates the field, and Phase 6 is not needed
+
+Single command, 600 games (300 seeds x 2 seat arrangements via the new
+`--rotate`), the frozen `final_agent` against the three scripted opponents:
+
+    335/600 = 55.8%  [51.8, 59.8]
+    parity (1 seat of 4) = 25.0%
+    bankruptcy 16%
+    z = 17.4 vs parity, p ~ 0
+
+**This reframes every earlier number.** The same agent that bankrupts in ~87%
+of games against two ASU seats bankrupts in **16%** against ordinary
+opponents, and wins at 2.2x parity. The 87% was never evidence that the agent
+is broken — it is evidence that the frozen teacher is strong.
+
+| opponent | win rate | parity |
+| --- | --- | --- |
+| ASU teacher, 2v2 | 27.5% [23.9, 31.3] | 50.0% |
+| scripted field, 1v3 | **55.8% [51.8, 59.8]** | 25.0% |
+
+### Decision: do not enter Phase 6
+
+Phase 6 would rebuild `state_value` from evidence rather than the published
+formula. Four independent diagnoses (D2.5, D2.6, D2.12, D4.4) identify it as
+the root cause of the gap to the teacher, so the target is right. It is still
+the wrong thing to start now:
+
+1. The agent is **dominant on the field it will actually face** — 55.8%
+   against a 25% parity, with the interval nowhere near it.
+2. It is **absolutely sound**, not merely relatively weak: 16% bankruptcy,
+   games carried to 2,463 steps on average.
+3. The teacher it trails **cannot be entered** — competition rules exclude it.
+   Trailing an ineligible opponent is not a competitive deficit.
+4. Rebuilding the valuation is open-ended, and every prior attempt to improve
+   on `spec_policy` (learned head, rollout, endgame) measured neutral or
+   harmful. With time binding, shipping a measured agent beats starting an
+   uncertain round.
+
+### The caveat, stated so it is not lost
+
+`fixed-a/b/c` are scripted policies, not the real competition field. 55.8% is
+an upper bound on a weak field and 27.5% a lower bound against an unusually
+strong one; the true figure sits between them and is not measured.
+
+**The condition that would flip this decision:** if the competition field is
+known to play near ASU strength, then 27.5% is the operative number, the
+valuation is the binding constraint, and Phase 6 becomes necessary rather than
+optional. Recorded here so the trigger is explicit rather than a matter of
+later judgement.
+
+**Status: agent frozen and delivered.** `final_agent.py`, measured, with its
+limits on the record.

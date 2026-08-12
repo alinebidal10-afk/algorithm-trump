@@ -63,6 +63,11 @@ def _rollout_spec_factory(player_id: int, rng_seed: int):
     return RolloutPolicy(player_id, rng_seed)
 
 
+def _final_factory(player_id: int, rng_seed: int):
+    from competition_agent.final_agent import FinalAgent
+    return FinalAgent(player_id, rng_seed)
+
+
 def _hybrid_factory(player_id: int, rng_seed: int):
     from competition_agent.hybrid_policy import HybridPolicy
     return HybridPolicy(player_id, rng_seed)
@@ -71,6 +76,7 @@ def _hybrid_factory(player_id: int, rng_seed: int):
 REGISTRY: Dict[str, Callable[[int, int], object]] = {
     "spec": _spec_factory,
     "hybrid": _hybrid_factory,
+    "final": _final_factory,
     "rollout_spec": _rollout_spec_factory,
     # The frozen teacher, both variants. "teacher" aliases the value variant
     # because it is the Phase 2 agreement target.

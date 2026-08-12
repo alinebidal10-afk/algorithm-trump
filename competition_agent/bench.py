@@ -227,6 +227,12 @@ def main(argv=None) -> int:
     ap.add_argument("--output", type=str, default=None,
                     help="write full JSON record here; a .partial.jsonl "
                          "sidecar streams games as they finish")
+    ap.add_argument("--rotate", action="store_true",
+                    help="play every seed under BOTH seat arrangements "
+                         "(the given order and its rotation by one), so seat "
+                         "effects cancel in a single command. Seat effects "
+                         "are real here: identical policies have differed by "
+                         "7 points across arrangements.")
     ap.add_argument("--no-resume", action="store_true",
                     help="ignore an existing .partial.jsonl and replay all "
                          "seeds from scratch")
@@ -238,6 +244,9 @@ def main(argv=None) -> int:
                  f"got {len(policy_names)}")
 
     seeds = [args.seed + k for k in range(args.games)]
+    arrangements = [policy_names]
+    if args.rotate:
+        arrangements.append(policy_names[1:] + policy_names[:1])
 
     # Resume: a long run must survive interruption. Completed games are
     # streamed to a JSONL sidecar as they finish, and seeds already present
@@ -254,19 +263,24 @@ def main(argv=None) -> int:
             if not line.strip():
                 continue
             rec = json.loads(line)
-            if rec.get("policies") == policy_names:
+            if rec.get("policies") in arrangements:
                 records.append(rec)
-                done_seeds.add(rec["seed"])
+                done_seeds.add((rec["seed"], tuple(rec["policies"])))
         if done_seeds:
             print(f"resuming: {len(done_seeds)} game(s) already complete "
                   f"in {resume_path.name}")
 
-    todo = [s for s in seeds if s not in done_seeds]
-    jobs = [(s, policy_names, args.max_steps) for s in todo]
+    jobs = []
+    for arr in arrangements:
+        for s in seeds:
+            if (s, tuple(arr)) not in done_seeds:
+                jobs.append((s, arr, args.max_steps))
+    todo = jobs
 
     print(f"frozen_spec_hash: {FROZEN_SPEC_HASH[:16]}...")
     print(f"seats: {policy_names}   seeds: {seeds[0]}..{seeds[-1]}   "
-          f"workers: {args.workers}   to play: {len(todo)}")
+          f"workers: {args.workers}   to play: {len(todo)}"
+          + (f"   ({len(arrangements)} seat arrangements)" if args.rotate else ""))
 
     wall = time.perf_counter()
     sink = resume_path.open("a") if resume_path else None
