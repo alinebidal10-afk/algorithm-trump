@@ -277,6 +277,16 @@ def marginal_monopoly_value(env, pid: int, sq: int) -> float:
     return MONOPOLY_SCALE * (after - before)
 
 
+def _denial(env, pid, sq):
+    """Phase 5 module 2, off unless BEYOND_DENIAL=1. Import is local so the
+    default path costs nothing and the flag can be flipped per process."""
+    try:
+        from competition_agent.beyond.denial import denial_value
+        return denial_value(env, pid, sq)
+    except Exception:                                      # noqa: BLE001
+        return 0.0
+
+
 def deed_value(env, pid: int, sq: int) -> float:
     """What acquiring `sq` is worth to `pid` (SPEC B1-B5).
 
@@ -301,7 +311,8 @@ def deed_value(env, pid: int, sq: int) -> float:
     finally:
         prop.owner = saved_owner
 
-    return price + rent_flow + marginal_monopoly_value(env, pid, sq)
+    return (price + rent_flow + marginal_monopoly_value(env, pid, sq)
+            + _denial(env, pid, sq))
 
 
 def auction_ceiling(env, pid: int, sq: int) -> float:

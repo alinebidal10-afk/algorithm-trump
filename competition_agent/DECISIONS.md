@@ -1711,3 +1711,52 @@ sits at 40.0% against our 25.7%.
 **Standing scoreboard.** Best agent remains `spec_policy` at 25.7%. Neither a
 learned head (24.0%) nor lookahead (14.5%) improved on it. Both failures point
 at the same component.
+
+## D5.1 — Denial value: positive signal, NOT proven
+
+Phase 5 module 2 implemented as a **valuation term**, not a layer — D4.4
+identified the leaf valuation as the root cause for the fourth time, and
+Phase 4 demonstrated what layering on top of it costs.
+
+A/B on identical code via `BEYOND_DENIAL`, same seed base, seat-rotated:
+
+| | win rate | n |
+| --- | --- | --- |
+| `BEYOND_DENIAL=0` | 25.7% [21.1, 30.9] | 300 |
+| `BEYOND_DENIAL=1` | **31.0% [25.0, 37.7]** | 200 |
+
+    +5.3pp,  z = 1.30,  p = 0.192
+
+**This is the first change in the project to improve on `spec_policy`.**
+
+| attempt | delta | verdict |
+| --- | --- | --- |
+| learned head (Phase 3) | −1.7pp | no effect |
+| rollout (Phase 4) | −11.2pp | significantly harmful |
+| **denial (Phase 5-2)** | **+5.3pp** | **positive, unproven** |
+
+**Status: positive signal, not proven.** p = 0.192 does not support a claim,
+and this project's record on optimistic readings is three for three wrong
+(D2.10, D3.5, and the capture-ratio extrapolation). The number is recorded as
+suggestive and nothing downstream should treat +5.3pp as established.
+
+**Why the intermediate 400-game run was cancelled.** The closed arm is fixed
+at n=300, which caps the achievable z regardless of how far the open arm is
+extended:
+
+    open arm n=200 -> z=1.29
+    open arm n=400 -> z=1.54
+    open arm n=600 -> z=1.66
+
+None of those decides anything. If the true effect is +5.3pp, significance
+needs roughly **550 games per arm on both sides**. Spending 20 minutes to move
+z from 1.29 to 1.54 buys no decision, so the run was cancelled and the budget
+moved to module 3. One large measurement with both modules enabled is worth
+more than two underpowered ones.
+
+**Why this one has better prospects than the previous two attempts.** It has a
+measured basis rather than an architectural argument: SPEC B3/B5 established
+that the teacher pays the *same* for the first deed of a colour group as for
+the second (own1/own0 = 1.00 to the dollar, 18/18 cases) and never bids
+defensively for a group it has no presence in. The clone inherits that blind
+spot, and this term prices exactly it.
