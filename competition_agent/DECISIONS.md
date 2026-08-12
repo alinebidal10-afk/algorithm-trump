@@ -1634,3 +1634,80 @@ a candidate ranker, and ours is the component we distrust.** That is an
 argument about Phase 4's premise, and it is now concrete rather than
 speculative — but it is reasoning, not the measurement, and it is labelled as
 such.
+
+## D4.4 — Rollout over our own valuation makes the agent significantly WORSE
+
+Rerun after fixing both faults in D4.3 (horizon aligned to our own decisions;
+shortlist ranked by one-ply state value instead of stride-sampled).
+Seat-rotated, seeds 930000+, 200 games.
+
+| agent | win rate | n |
+| --- | --- | --- |
+| floor — proposals off | 18.3% [14.4, 23.1] | 300 |
+| **spec — best agent** | **25.7% [21.1, 30.9]** | 300 |
+| hybrid — learned head | 24.0% [18.6, 30.4] | 200 |
+| **rollout — lookahead over spec** | **14.5% [10.3, 20.0]** | 200 |
+| oracle — perfect trades | 40.0% | 120 |
+
+    rollout - spec   -11.2pp
+    z = -2.99, p = 0.003
+    intervals do NOT overlap (20.0 vs 21.1)
+    bankruptcy 92%
+
+**This is a real, significant, negative result** — not the broken 0/200 of the
+first attempt. Bankruptcy fell from 100% to 92%, the policy plays whole games,
+and the horizon artefact is gone. Rollout is now doing what it was asked to do
+and the answer is that it hurts.
+
+**Rollout is worse than the floor.** 14.5% against 18.3% for an agent that
+makes no trade proposals at all. Adding lookahead is worse than removing the
+feature the lookahead is searching over.
+
+### D4.2's claim is confirmed
+
+> If the leaf evaluation is the weak component, rollout over it does not repair
+> the weakness — it amplifies it, because every playout is scored by the same
+> faulty valuation.
+
+Stated before the measurement, and now measured at p = 0.003. The mechanism is
+visible in the design: `state_value` scores every leaf, and the shortlist is
+*also* ranked by it, so a wrong valuation is applied twice — once to choose
+what to consider and once to choose among them. Depth multiplies the error
+rather than averaging it away.
+
+### The fourth independent identification of the same root cause
+
+| # | finding | what it identified |
+| --- | --- | --- |
+| D2.5 | 4,000-weight search beat nothing; filter discarded half the teacher's picks | valuation, not weights |
+| D2.6 | monopoly-only reproduces combined exactly; removing it *improves* auction | valuation term wrong |
+| D2.12 | 23x score change, zero argmax change over 40/40 boards | valuation dominated by one wrong term |
+| **D4.4** | **lookahead over the valuation is significantly worse than no lookahead** | **valuation** |
+
+Four independent methods, four times the same component.
+
+### Recommendation, now on measurement rather than inference
+
+**Phase 4 is dead as scoped.** A rollout layer needs a leaf evaluator and a
+candidate ranker; ours is the same function for both, and it is measurably
+harmful when trusted more deeply. No K/M/P budget fixes that — the failure is
+not depth or variance, it is the thing being searched.
+
+**Phase 5's modules are also downstream of the valuation.** Denial-value
+trading needs to price what a deed denies an opponent; the endgame switch needs
+to compare survival against net worth. Both are new *terms in the valuation* —
+which is the right target, but they should be built and measured as valuation
+changes with the win-rate harness, not as standalone "modules" layered on top
+of a function measured wrong four times.
+
+**Concrete next step:** rebuild `state_value` against evidence rather than
+inheriting the published formula. B3/B4/B5 measured auction *ceilings*, which
+constrain the monopoly term only up to the additive company it keeps — the
+freedom that let a wrong term reproduce them (recorded in D2.6). A valuation
+fitted directly to win rate, or to the oracle's own action choices across all
+families, is the untried approach with the largest measured headroom: oracle
+sits at 40.0% against our 25.7%.
+
+**Standing scoreboard.** Best agent remains `spec_policy` at 25.7%. Neither a
+learned head (24.0%) nor lookahead (14.5%) improved on it. Both failures point
+at the same component.

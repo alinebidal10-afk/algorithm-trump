@@ -51,27 +51,52 @@ class RolloutPolicy:
         self.spec = SpecPolicy(player_id, rng_seed)
         self.K = int(os.environ.get("ROLLOUT_K", k or 4))
         self.M = int(os.environ.get("ROLLOUT_M", m or 3))
-        self.P = int(os.environ.get("ROLLOUT_P", p or 12))
+        self.P = int(os.environ.get("ROLLOUT_P", p or 6))  # OUR decisions, not plies
         self.rolled = 0
         self.changed = 0
         self.decisions = 0
 
     # ------------------------------------------------------------------
     def _shortlist(self, env, legal: List[int]) -> List[int]:
-        """Top-K by the fast policy: its own pick first, then nearby ids.
+        """Spec's pick, plus the best alternatives by one-ply state value.
 
-        The rule pipeline returns one action rather than a ranking, so the
-        shortlist is its choice plus a spread of other legal actions. A richer
-        shortlist would need a scoring function — which is precisely the
-        component under suspicion.
+        The first version padded with legal actions sampled by stride, which
+        injected candidates the rule pipeline would never consider — including
+        selling one's own deeds — and that is half of why the first run
+        produced 0/200 (D4.3).
+
+        Ranking by the immediate post-action state value is honest about what
+        is available: the valuation is the component under suspicion, so the
+        test becomes "does deepening THIS valuation help over the rules", which
+        is the actual Phase 4 question.
         """
         pick = self.spec.choose_action(env)
-        rest = [a for a in legal if a != pick]
-        step = max(1, len(rest) // max(self.K - 1, 1))
-        return [pick] + rest[::step][: self.K - 1]
+        scored = []
+        for a in legal:
+            if a == pick:
+                continue
+            try:
+                sim = copy.deepcopy(env)
+                sim.step(a)
+                scored.append((state_value(sim, self.player_id), a))
+            except Exception:                              # noqa: BLE001
+                continue
+        scored.sort(key=lambda t: (-t[0], t[1]))
+        return [pick] + [a for _, a in scored[: self.K - 1]]
 
     def _playout(self, env, action: int, seed: int) -> float:
-        """Apply `action`, play P plies with spec on all seats, score the leaf."""
+        """Apply `action`, then play until OUR seat has acted `P` more times.
+
+        Horizon alignment is the fix for D4.3. Scoring after a fixed number of
+        *plies* compared leaves at different points in the turn cycle: END_TURN
+        passes the turn so its plies are opponents acting, while sell_prop
+        retains it so its plies are ours. That rewarded any action keeping the
+        turn — including liquidating our own assets — and produced 0/200 with
+        100% bankruptcy.
+
+        Counting OUR OWN decisions instead puts every candidate's leaf at the
+        same point in the cycle, so the comparison is like-for-like.
+        """
         sim = copy.deepcopy(env)
         rng = random.Random(seed)
         try:
@@ -79,9 +104,11 @@ class RolloutPolicy:
         except Exception:                                  # noqa: BLE001
             return float("-inf")
         agents = {s: SpecPolicy(s) for s in range(len(sim.players))}
-        for _ in range(self.P):
+        our_turns, plies = 0, 0
+        while our_turns < self.P and plies < self.P * 12:
             if getattr(sim, "done", False):
                 break
+            plies += 1
             actor = sim.whose_turn()
             try:
                 a = int(agents[actor].choose_action(sim))
@@ -89,6 +116,8 @@ class RolloutPolicy:
                 if a not in legal:
                     a = rng.choice(legal)
                 sim.step(a)
+                if actor == self.player_id:
+                    our_turns += 1
             except Exception:                              # noqa: BLE001
                 break
         return state_value(sim, self.player_id)
