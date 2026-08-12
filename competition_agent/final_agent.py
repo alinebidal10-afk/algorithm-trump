@@ -59,11 +59,26 @@ alone — `core.py` and `evaluate.py` were never read.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 # Frozen configuration. Set before importing anything that reads these, since
 # the beyond/ modules latch their flags at import time.
 os.environ.setdefault("BEYOND_DENIAL", "1")     # +5.3pp, DECISIONS D5.1/D5.3
 os.environ.setdefault("BEYOND_ENDGAME", "0")    # conflicts with denial, D5.2
+
+# Candidate D — the learned trade-proposal ranker. Measured against every
+# field on paired seeds (D7.6): ASU 2v2 +6.17pp (p=0.0065), weak field
+# +7.90pp (p<0.0001), strong field +0.45pp which does not survive Bonferroni.
+# The alternative of simply proposing less often was tested and is 7.23pp
+# WORSE than doing nothing (D7.7), so the network is carrying the gain, not
+# the threshold.
+#
+# `spec_policy` resolves this path relative to the package and falls back to
+# the linear scorer if the checkpoint or torch is unavailable, so a broken
+# install costs the trade branch rather than the agent.
+os.environ.setdefault(
+    "TRADE_RANKER",
+    str(Path(__file__).resolve().parent / "probes" / "rank_gate_1000.json"))
 
 from competition_agent.spec_policy import SpecPolicy  # noqa: E402
 
@@ -77,7 +92,8 @@ class FinalAgent:
     """
 
     policy_id = "final_agent_v1"
-    config = {"BEYOND_DENIAL": "1", "BEYOND_ENDGAME": "0"}
+    config = {"BEYOND_DENIAL": "1", "BEYOND_ENDGAME": "0",
+              "TRADE_RANKER": "probes/rank_gate_1000.json"}
 
     def __init__(self, player_id: int, rng_seed: int = 0):
         self.player_id = player_id

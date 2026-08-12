@@ -92,26 +92,62 @@ EXT_FEATURES = (
 )
 
 
+HERE = Path(__file__).resolve().parent
+TRADE_RANKER_FAILED = False
+
+
+def _resolve(p) -> Path:
+    """Accept an absolute path, but fall back to this package directory.
+
+    The config files were written with absolute paths from the machine that
+    trained the model. A tournament entry that only runs from one checkout is
+    not an entry, so a stale absolute path degrades to a lookup by name next
+    to this file rather than an error.
+    """
+    q = Path(p)
+    if q.is_absolute() and q.exists():
+        return q
+    for cand in (HERE / q, HERE / q.name, HERE / "probes" / q.name):
+        if cand.exists():
+            return cand
+    return q
+
+
 def _load_ranker():
     """Deferred: torch is not imported unless a ranker is actually requested,
-    and pool workers each pay the load once rather than inheriting a tensor."""
-    global TRADE_RANKER, TRADE_RANKER_GATE
-    if TRADE_RANKER is not None or not TRADE_RANKER_PATH:
+    and pool workers each pay the load once rather than inheriting a tensor.
+
+    Returns None on any failure, having set `TRADE_RANKER_FAILED` so the
+    attempt is made once. The caller then uses the linear scorer. A missing
+    checkpoint or an unavailable torch must cost the trade branch, not the
+    whole agent: `FinalAgent` catches exceptions by returning the first legal
+    action, which would be catastrophic applied to every decision in a game.
+    """
+    global TRADE_RANKER, TRADE_RANKER_GATE, TRADE_RANKER_FAILED
+    if TRADE_RANKER is not None or TRADE_RANKER_FAILED:
         return TRADE_RANKER
-    import json as _j
+    if not TRADE_RANKER_PATH:
+        TRADE_RANKER_FAILED = True
+        return None
+    try:
+        import json as _j
 
-    import torch
+        import torch
 
-    from competition_agent.train_rank import RankHead
-    blob = _j.loads(Path(TRADE_RANKER_PATH).read_text())
-    ck = torch.load(blob["ckpt"], map_location="cpu", weights_only=False)
-    m = RankHead(ck.get("hidden", 256), ck.get("dropout", 0.2))
-    m.load_state_dict(ck["state_dict"])
-    m.eval()
-    torch.set_num_threads(1)
-    TRADE_RANKER = m
-    TRADE_RANKER_GATE = float(blob["gate"])
-    return m
+        from competition_agent.train_rank import RankHead
+        blob = _j.loads(_resolve(TRADE_RANKER_PATH).read_text())
+        ck = torch.load(_resolve(blob["ckpt"]), map_location="cpu",
+                        weights_only=False)
+        m = RankHead(ck.get("hidden", 256), ck.get("dropout", 0.2))
+        m.load_state_dict(ck["state_dict"])
+        m.eval()
+        torch.set_num_threads(1)
+        TRADE_RANKER = m
+        TRADE_RANKER_GATE = float(blob["gate"])
+        return m
+    except Exception:                                      # noqa: BLE001
+        TRADE_RANKER_FAILED = True
+        return None
 
 
 def rank_features(fr, fo) -> list:
@@ -437,10 +473,13 @@ class SpecPolicy:
 
         # Candidate D: one batched forward over the whole candidate set,
         # which is the operation the listwise loss trained.
-        if TRADE_RANKER_PATH:
+        if TRADE_RANKER_PATH and not TRADE_RANKER_FAILED:
+            model = _load_ranker()
+        else:
+            model = None
+        if model is not None:
             import numpy as _np
             import torch as _t
-            model = _load_ranker()
             obs = _np.asarray(env._get_state(pid), dtype=_np.float32)
             rows, acts = [], []
             for a in exch_actions:

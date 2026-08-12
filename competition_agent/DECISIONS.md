@@ -2583,3 +2583,64 @@ actual remaining steps over 499,321 states:
 `round_frac` is the best proxy and is directly readable from `env.round` at
 decision time. Recorded for whoever needs a game-progress signal later; it is
 not used by anything today.
+
+## D7.9 — Shipped. The agent is no longer the frozen v1.
+
+The decision in D7.7 was "the network, not the number", and until now it was
+only a decision: `TRADE_RANKER` defaulted off, so `FinalAgent` still ran the
+frozen v1 configuration and every measured gain required an environment
+variable set by hand.
+
+    FinalAgent.config = {"BEYOND_DENIAL": "1",
+                         "BEYOND_ENDGAME": "0",
+                         "TRADE_RANKER": "probes/rank_gate_1000.json"}
+
+Three defects were fixed on the way, all of which would have shipped:
+
+1. **The checkpoint path was absolute.** `rank_gate_1000.json` carried
+   `/Users/.../competition_agent/rank_head_1000.pt`, which resolves on exactly
+   one machine. Now stored as a bare name and resolved by `spec_policy._resolve`
+   against the package directory, with the absolute form still honoured when it
+   exists.
+2. **A missing checkpoint would have cost the whole agent, not the trade
+   branch.** `_load_ranker` raised, `SpecPolicy.choose_action` propagated, and
+   `FinalAgent` catches by returning the first legal action — applied to every
+   decision in the game, not just trades. It now returns None on any failure,
+   latches `TRADE_RANKER_FAILED`, and the linear scorer takes over.
+3. **`final_agent.py` named `state_value` as the leaf valuation and root
+   cause.** It is dead code in this agent (D7.8); corrected in place.
+
+Regression check, with no environment variable set: 500 weak-field games
+reproduce the measured arm on **500 of 500 seeds**, identical outcome and
+identical game length. The shipped default is byte-for-byte the configuration
+that was measured.
+
+    old frozen v1   275/500   55.00%
+    shipped v2      331/500   66.20%
+
+That +11.20pp is the first 500 seeds only and is **not** a new headline; the
+figure of record is +7.90pp at n=2,000. It is reported here solely as evidence
+that the default now runs what was measured.
+
+### The shipped agent, as measured
+
+| opponent | v1 (frozen) | v2 (shipped) | parity |
+| --- | --- | --- | --- |
+| ASU teacher, 2v2 | 30.33% | **36.50%** [32.74, 40.43] | 50% |
+| strong field ~1252 ELO | 37.95% | 38.40% [36.29, 40.55] | 25% |
+| weak field ~1103 ELO | 57.75% | **65.65%** [63.54, 67.70] | 25% |
+
+The strong-field figure is unchanged in any way that survives correction, and
+that is the field closest to the tournament. This is an improvement against
+opponents that trade and no improvement against opponents that do not.
+
+### Open, and stated so it is not mistaken for finished
+
+- **The teacher's own strong-field win rate is unmeasured.** `field_ref.py` is
+  written and 4 games are recorded; until it runs, 37.95% has no ceiling to be
+  read against and the strong-field null cannot be attributed.
+- **The ranking contribution's size is inferred, not measured.** The
+  rate-matched arm was not run. What is measured is that the gate cannot
+  explain the gain, and that raising it alone costs 7.23pp.
+- **`_trade_reply` is untouched** and is where a strong-field gain would have
+  to come from, since that field accepts 0.06% of what we propose.
