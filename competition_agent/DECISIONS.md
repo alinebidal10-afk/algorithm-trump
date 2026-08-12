@@ -2344,3 +2344,221 @@ cash position of the player being asked — which is a live hypothesis, since a
 proposal that is declined is worth nothing and the scorer has no notion of
 acceptance at all. `harvest_trades.py` now records a per-seat snapshot (cash,
 deeds, net worth, position) so the Part C corpus can answer it.
+
+---
+
+# Part C — the data-scale hypothesis, and what it overturned
+
+## D7.5 — Candidate D was starved, not wrong. D6.4 is overturned.
+
+`harvest_trades.py` was restructured to write one gzipped shard per game with
+atomic rename and existence-based resume, then run for 1,000 teacher-driven
+games (seeds 910000-910999, 9 workers, ~45 min):
+
+    96,668 decision states with >=2 exchange candidates
+    39,081 of them the teacher proposed in  (40.4%)
+    70 MB gzipped, 1,000 shards
+
+Determinism check: shard `g910000` reproduces the legacy single-file record
+exactly — 31 states, every field, every candidate set. The harvest's opponents
+(`TheHoarder`, `TheDealMaker`, `TheGambler`) contain no string-set iteration,
+so the D7.4 hash-seed defect does not touch this corpus.
+
+### The retrain
+
+Same architecture, same loss, same split rule, same seed. Only the corpus size
+changed — 3,589 training proposals became 27,789.
+
+| corpus | train proposals | held-out top-1 |
+| --- | --- | --- |
+| 120 games | 3,589 | 25.62% |
+| **1,000 games** | **27,789** | **35.82%** |
+
+Measured on the same 11,292 held-out states as every number below, and
+`fit_trade_v3.py` reports the hand-fitted models on those identical states:
+
+| model | held-out top-1 |
+| --- | --- |
+| shipped `TRADE_W` | 24.90% [24.11, 25.71] |
+| refit, same six features | 26.48% [25.67, 27.30] |
+| refit, + D7.3's ten features | 26.56% [25.75, 27.38] |
+| **Candidate D** | **35.82%** |
+| random | 1.50% |
+
+**+9.3 points over the best hand-fitted model.** D6.4's "Candidate D fails" and
+D7.2's softened "tied at this data scale" are both superseded: at 8x the data
+it wins outright. The claim that adding the 300-dim observation hurt, already
+withdrawn in D7.2, stays withdrawn — the observation is what carries the gain.
+
+Caveat kept on the record: `train_rank.py` checkpoints the best epoch by
+held-out top-1, which is model selection on the reported set and is optimistic
+by roughly a point. The final epoch's raw value is 34.82%. The conclusion does
+not depend on it — 34.82% still clears 26.48% by 8.3 points.
+
+### D7.3's feature list is refuted, its diagnosis is confirmed
+
+D7.3 concluded "re-weight before adding" and then listed ten features to add.
+At 8x data, on the same held-out states:
+
+    refit, same six features   26.48%   +178 net vs shipped, p < 0.0001
+    refit, + the ten features  26.56%   +9 net vs the refit, p = 0.6661
+
+Re-weighting is worth 1.58 points and highly significant. The features are
+worth nothing. At the small scale they had looked 3.9 points *worse*, and that
+gap closed to zero rather than turning positive — so the small-scale reading
+("they overfit") was right about the mechanism and wrong to treat the sign as
+informative.
+
+A methodological point that cost a wrong conclusion first time round: a
+maximum-likelihood fit is **not** a refit of `TRADE_W`. The shipped weights
+came from a direct top-1 search, and LBFGS on listwise log-likelihood converges
+to weights that score significantly *worse* top-1 (24.37% vs 24.90%,
+p = 0.0258). Both objectives are reported in `fit_trade_v3.py` so the surrogate
+gap stays visible.
+
+## D7.6 — Three fields. The headline is not "positive everywhere".
+
+Candidate D wired into `_propose_trade` behind `TRADE_RANKER`, with its gate
+re-derived on its own logit scale under the same accuracy-max convention the
+shipped 3.92 turns out to follow (`calibrate_rank_gate.py`; the grid search
+recovers 3.8942 for the shipped weights, which is how the convention was
+identified). Every arm paired by seed against the frozen agent.
+
+| field | parity | shipped | Candidate D | delta | p | games changed |
+| --- | --- | --- | --- | --- | --- | --- |
+| ASU, 2v2 | 50% | 30.33% [26.79, 34.13] | **36.50%** [32.74, 40.43] | +6.17pp | 0.0065 | 185/600 |
+| strong ~1252 ELO | 25% | 37.95% [35.85, 40.10] | 38.40% [36.29, 40.55] | +0.45pp | 0.0389 | **19/2000** |
+| weak ~1103 ELO | 25% | 57.75% [55.57, 59.90] | **65.65%** [63.54, 67.70] | +7.90pp | <0.0001 | 464/2000 |
+
+**Against the strong field there is no measurable effect.** 19 of 2,000 games
+changed, and at three tests Bonferroni requires p < 0.017, which +0.45pp does
+not meet. That field is the closest available proxy for the tournament; ASU
+cannot be entered, and the weak field is near-random. The honest summary is
+**large gains against ASU and the weak field, nothing on the strong field** —
+not "positive on all three".
+
+What is nonetheless solid: the pre-set criterion was no weak-field regression
+and the weak field gained 7.90 points; bankruptcy against ASU fell from 69.2%
+to 63.5%; and this is the first change in this project to beat the frozen agent
+on any field at all. Both win-rate conventions agree (decisive-only: weak
+78.55% -> 84.02%, strong 39.11% -> 39.34%).
+
+### The mechanism is measured, not inferred
+
+| field | proposals | accepted, shipped | accepted, Candidate D |
+| --- | --- | --- | --- |
+| ASU | 23,560 / 11,861 | 2.9% | **8.6%** |
+| weak | 100,479 / 108,890 | 2.9% | **5.2%** |
+| strong | 166,240 / 123,862 | **0.06%** | 0.02% |
+
+The strong field accepts 98 of 166,240 proposals. No ranking of proposals can
+pay off through a counterparty that declines essentially everything, which is
+why the strong-field result is not a failure of the ranker so much as a
+property of that field. It also means `_trade_reply` — the accept side — is
+where any strong-field gain would have to come from.
+
+Note against the earlier reading: the propose rate moves in *different*
+directions by field (ASU 39.3 -> 19.8 per game, weak 50.2 -> 54.5), so
+"proposes less" cannot be a general explanation of the gain. D7.7 measures
+that directly.
+
+## D7.7 — Gate versus ranking (PROVISIONAL, arm still running)
+
+The ranker proposes half as often as the shipped agent against ASU, so the
++6.17pp was attributable to the ranking and the gate jointly. If the gain came
+from proposing less, the fix would be one number rather than a 7 MB network.
+
+Calibrating the gate on the corpus does not work: the ranker proposes at a
+*higher* corpus rate (29.3% vs 22.9%) yet half as often in ASU play. The
+distribution the agent reaches is different, so `gate_probe.py` plays ASU games
+with the frozen agent and scores every trade-legal decision under **both**
+scorers without acting on either, giving the in-play score distribution. On
+those matched states:
+
+    shipped gate  3.92   -> propose 16.3% = 35.1/game
+    ranker gate -20.25   -> propose 19.2% = 41.2/game
+
+On the same states the ranker's gate proposes *more*, not less. The realised
+19.8/game is therefore downstream of the ranking changing the trajectory, not
+set by the threshold. Calibrating on propose rate rather than win rate keeps
+this off the test set.
+
+**Provisional, 454 of 600 paired games**, gate raised to 4.0077 with the frozen
+six-term scorer otherwise untouched:
+
+    shipped     142/454  31.28%
+    gate only   111/454  24.45%
+    delta -6.83pp   discordant 43   z -4.73   p < 0.0001
+    propose/game 40.0 -> 29.5   accepted 2.8% -> 2.9%
+
+Raising the gate **loses** 6.8 points, and does not improve proposal quality at
+all (acceptance 2.8% -> 2.9%, against the ranker's 8.6%). The gate hypothesis
+is refuted in the direction opposite to the one it predicted. It also implies
+the ranking contribution exceeds +6.17pp, since Candidate D achieves that while
+also carrying a propose-rate reduction that is worth about -7pp on its own —
+but additivity is an assumption, recorded as such, and the rate-matched ranking
+arm measures it directly rather than inferring it.
+
+Calibration drift is on the record: the arm was aimed at 19.8 proposals/game
+and realised 29.5, because changing the gate changes the trajectory. That makes
+this an under-estimate of the gate penalty, not an over-estimate.
+
+## D7.8 — The regime-switched scorer was not built, and why
+
+Two measurements, taken before building, closed it.
+
+**1. `state_value` is dead code in the shipped agent.**
+
+    spec_policy calls state_value : 0
+    spec_policy calls swap_delta  : 0
+    spec_policy calls deed_value  : 2   (both inside _trade_reply)
+
+`state_value`'s only callers are `swap_delta` (used by `test_joint_ranking.py`
+alone) and `rollout_policy` (a separate policy, measured at -11.2pp and not
+shipped). Switching it by regime would have changed nothing measurable.
+`final_agent.py`'s docstring calling it "the leaf valuation" is wrong and is
+corrected there.
+
+**2. D6.2's slice table does not survive a solvency control.**
+
+`regime_probe.py` reproduces D6.2 exactly on the held-out split — 0.766 /
+0.709 / 0.633 / 0.495 on n = 7,500 / 15,000 / 22,500 / 106,318 — and then adds
+the column that matters: the same slices restricted to states where **all four
+seats are still solvent**.
+
+| remaining steps | n | AUC all | n solvent | AUC solvent |
+| --- | --- | --- | --- | --- |
+| 0-50 | 7,500 | 0.766 | **78** | 0.927 |
+| 50-150 | 15,000 | 0.709 | 1,912 | 0.745 |
+| 150-300 | 22,500 | 0.633 | 9,200 | **0.556** |
+| 300+ | 106,318 | 0.495 | 96,842 | 0.477 |
+
+Only 78 of the 7,500 states in the strongest slice have four solvent seats: the
+0.766 is very largely the network reading bankruptcies off a board where the
+game is already decided, and a scorer that is accurate once nothing can be
+changed has no decision value. At the 150-300 boundary proposed as the switch
+point, 0.633 becomes 0.556 on live boards — indistinguishable from the 0.495
+that closed Phase 6. Saturation is not the problem (sd of p on solvent boards
+is 0.218 / 0.168 / 0.153 / 0.127); discrimination is.
+
+The one regime where the network survives the control is 50-150 remaining steps
+(0.745 on 1,912 states, 1.3% of held-out).
+
+An in-sample version of this table was computed first and reported AUC 0.916 /
+0.899 / 0.864 / 0.748. That was an error — the network overfits hard, as D6.2
+recorded, and in-sample AUC runs ~0.15 high. Noted because the corrected table
+is the one that refutes the premise, and the wrong one would have supported it.
+
+**Q1 was answered on the way past.** Observable proxies, Spearman against
+actual remaining steps over 499,321 states:
+
+    round_frac       -0.7644     <- obs[278], = env.round / max_rounds
+    deeds_owned      -0.7260
+    houses_on_board  -0.7111
+    monopoly_deeds   -0.6982
+    n_bankrupt       -0.5552
+    cash_spread      +0.0654
+
+`round_frac` is the best proxy and is directly readable from `env.round` at
+decision time. Recorded for whoever needs a game-progress signal later; it is
+not used by anything today.

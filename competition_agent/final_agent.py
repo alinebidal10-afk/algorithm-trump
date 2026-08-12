@@ -41,11 +41,13 @@ Known limits, stated plainly
   The measured ceiling for perfect trade decisions alone is 40.0%, and for
   perfect trade proposals *and* replies 45.8% — parity is not reachable by
   trade work alone.
-- The leaf valuation (`spec_model.state_value` / `deed_value`) is the
-  identified root cause of the remaining gap, by four independent diagnoses
-  (D2.5, D2.6, D2.12, D4.4). It was inherited from the published formula
-  rather than fitted to evidence, and rebuilding it is the largest untried
-  lever.
+- The leaf valuation was long recorded here as the root cause of the remaining
+  gap, by four independent diagnoses (D2.5, D2.6, D2.12, D4.4). **Corrected in
+  D7.8:** `spec_model.state_value` is never called by this agent — its only
+  callers are `swap_delta` (used by a test) and `rollout_policy` (not shipped).
+  The one valuation this agent uses is `deed_value`, and only inside
+  `_trade_reply`. Any work aimed at "the leaf valuation" has to target that
+  call site or it changes nothing measurable.
 - Denial's +5.3pp is the project's only positive result; its confirmation
   status is recorded in DECISIONS D5.3.
 
