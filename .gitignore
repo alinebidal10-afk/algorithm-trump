@@ -32,3 +32,6 @@ teacher-data/
 # so results stay reproducible without shipping the corpus.
 competition_agent/probes/trade_harvest.jsonl
 competition_agent/probes/*.partial.jsonl
+# DAgger corpora: 100MB+, regenerable via distill_collect.py, and the trained
+# checkpoint (trade_head.pt) is what downstream code actually needs.
+competition_agent/probes/dagger/*.jsonl
