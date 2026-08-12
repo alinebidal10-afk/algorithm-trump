@@ -35,3 +35,5 @@ competition_agent/probes/*.partial.jsonl
 # DAgger corpora: 100MB+, regenerable via distill_collect.py, and the trained
 # checkpoint (trade_head.pt) is what downstream code actually needs.
 competition_agent/probes/dagger/*.jsonl
+# Phase 6 outcome corpus: hundreds of MB, regenerable via collect_outcomes.py
+competition_agent/probes/outcomes/
