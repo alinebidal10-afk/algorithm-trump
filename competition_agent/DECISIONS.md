@@ -1578,3 +1578,59 @@ rollout using its own evaluation, and measure divergence and win rate on the
 same seeds. If our leaf evaluation is the weak component, rollout over it
 amplifies the weakness rather than repairing it — that is a testable claim and
 it costs one bench run, not a phase.
+
+## D4.3 — The rollout test is INVALID: horizon misalignment, not a finding
+
+The rollout probe returned **0/200 wins, 100% bankruptcy on both spec seats**.
+That is not "rollout amplifies a weak valuation"; a policy that never wins a
+single game in 200 is broken, and reporting it as evidence would have been
+wrong.
+
+**Diagnosis.** Tracing the divergences, `RolloutPolicy` consistently prefers
+`sell_prop` / `mortgage` where `spec_policy` chooses `END_TURN`:
+
+    spec=END_TURN   rollout=sell_prop(sq=8)
+    spec=END_TURN   rollout=mortgage(sq=8)          (repeatedly)
+
+The cause is in `_playout`, not in the valuation. Each candidate is scored by
+applying it and then running a **fixed 12 plies**. But `END_TURN` passes the
+turn, so those 12 plies are mostly *opponents* acting, while `sell_prop` keeps
+the turn, so its 12 plies are mostly *ours*. The two leaves are sampled at
+different points in the turn cycle and are not comparable. The comparison
+therefore rewards any action that retains the turn, and liquidating one's own
+assets retains the turn — hence a policy that mortgages and sells itself into
+bankruptcy in 100% of games.
+
+This is a textbook truncated-rollout error: the horizon must be aligned to a
+common decision point (e.g. "until control returns to us N times", or a fixed
+number of *our own turns*), not to a fixed number of plies.
+
+**What this does and does not tell us.**
+
+- It does **not** test the D4.2 claim that rollout over our leaf evaluation
+  would amplify its weakness. That claim remains untested.
+- It does **not** say anything about the valuation, which was never reached:
+  the selection was decided by the horizon artefact before the valuation
+  mattered.
+- It **does** show the diagnostic was cheap and caught quickly — 200 games and
+  one trace — which is the argument for running it before committing to
+  Phase 4 rather than after.
+
+**The 0.0% figure must not be cited.** It is an artefact of a broken harness
+and is recorded here only so it is not mistaken later for a measurement.
+
+**To make the test valid**, two changes are needed:
+
+1. align the horizon — run each playout until our seat has acted N times, so
+   every candidate's leaf sits at the same point in the turn cycle;
+2. fix the shortlist — `_shortlist` currently pads with arbitrary legal
+   actions sampled by stride, which injects candidates the rule pipeline would
+   never consider. A shortlist needs a ranking, and the only ranking available
+   is the valuation under suspicion, which is a genuine design problem for
+   this experiment rather than a coding one.
+
+Point 2 is the harder issue and worth stating plainly: **a rollout layer needs
+a candidate ranker, and ours is the component we distrust.** That is an
+argument about Phase 4's premise, and it is now concrete rather than
+speculative — but it is reasoning, not the measurement, and it is labelled as
+such.
