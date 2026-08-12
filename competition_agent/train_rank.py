@@ -42,6 +42,8 @@ Split by game seed. Decisions inside one game share a board and would leak.
 from __future__ import annotations
 
 import argparse
+import gzip
+import io
 import json
 import os
 import random
@@ -97,24 +99,42 @@ class RankHead(nn.Module):
         return self.net(x).squeeze(-1)
 
 
-def load():
+def sources(pattern=None):
+    """Prefer the sharded corpus when it exists; fall back to the single file.
+
+    Part C replaced the single 120-game file with one gzipped shard per game so
+    a 1,000-game collection could stream and resume. The feature set below is
+    unchanged, so a run over the shards differs from the original only in how
+    much data it sees — which is the variable Part C tests.
+    """
+    if pattern:
+        return sorted(Path().glob(pattern)) or [Path(pattern)]
+    shards = sorted((SRC.parent / "trade_shards").glob("*.jsonl.gz"))
+    return shards if shards else [SRC]
+
+
+def load(pattern=None):
     """States where the teacher proposed -> (obs, candidate matrix, target)."""
     states = []
-    for line in SRC.open():
-        if not line.strip():
-            continue
-        r = json.loads(line)
-        if "obs" not in r or not r["proposed"]:
-            continue
-        cands, tgt = [], -1
-        for i, c in enumerate(r["cands"]):
-            cands.append(cand_features(c))
-            if c["a"] == r["chosen"]:
-                tgt = i
-        if tgt < 0 or len(cands) < 2:
-            continue
-        states.append((r["seed"], np.asarray(r["obs"], np.float32),
-                       np.asarray(cands, np.float32), tgt))
+    for p in sources(pattern):
+        fh = (io.TextIOWrapper(gzip.open(p, "rb")) if p.suffix == ".gz"
+              else p.open())
+        with fh:
+            for line in fh:
+                if not line.strip():
+                    continue
+                r = json.loads(line)
+                if "obs" not in r or not r["proposed"]:
+                    continue
+                cands, tgt = [], -1
+                for i, c in enumerate(r["cands"]):
+                    cands.append(cand_features(c))
+                    if c["a"] == r["chosen"]:
+                        tgt = i
+                if tgt < 0 or len(cands) < 2:
+                    continue
+                states.append((r["seed"], np.asarray(r["obs"], np.float32),
+                               np.asarray(cands, np.float32), tgt))
     return states
 
 
@@ -132,14 +152,21 @@ def top1(model, states, bs_states=64):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--src", type=str, default=None,
+                    help="harvest glob; defaults to the sharded "
+                         "corpus, then the single legacy file")
     ap.add_argument("--epochs", type=int, default=15)
     ap.add_argument("--lr", type=float, default=1e-3)
     ap.add_argument("--hidden", type=int, default=256)
     ap.add_argument("--dropout", type=float, default=0.2)
+    ap.add_argument("--ckpt", type=str, default=str(CKPT),
+                    help="where to write; the default would "
+                         "overwrite the 120-game checkpoint that "
+                         "D7.2 is measured against")
     args = ap.parse_args()
 
     torch.manual_seed(20250811)
-    states = load()
+    states = load(args.src)
     seeds = sorted({s[0] for s in states})
     random.Random(20250811).shuffle(seeds)
     tr = set(seeds[: int(0.7 * len(seeds))])
@@ -177,7 +204,10 @@ def main() -> int:
             best = acc
             torch.save({"state_dict": model.state_dict(),
                         "hidden": args.hidden, "dropout": args.dropout,
-                        "held_top1": acc, "n_held": n}, CKPT)
+                        "held_top1": acc, "n_held": n,
+                        "n_train": len(train), "n_proposals": len(states),
+                        "corpus": args.src or "trade_shards"},
+                       Path(args.ckpt))
         if ep % 3 == 0 or ep == 1:
             th, tn = top1(model, train[:400])
             print(f"  ep {ep:>2}  train top-1 {100*th/tn:5.2f}%  "
