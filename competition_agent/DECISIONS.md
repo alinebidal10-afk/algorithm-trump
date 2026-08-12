@@ -2059,6 +2059,13 @@ uses a different signal entirely — the teacher's revealed preferences
 
 ## D6.4 — Candidate D fails; Phase 6 closes and the agent stays frozen
 
+> **RETRACTED IN PART by D7.2 (2026-08-12).** The 29.86% anchor used below was
+> measured on the *original* harvest, not on the corpus Candidate D trained on.
+> Replayed on Candidate D's own corpus and split, the hand-fitted ranker scores
+> **26.07%**, and the paired difference is −0.45pp (McNemar p = 0.70).
+> Candidate D **tied** the hand-fitted ranker; it did not fall 4.2 points short.
+> The sections below are left as written; read them against D7.2.
+
 Revealed-preference ranking over the teacher's own trade choices. Data
 re-harvested from 120 teacher-driven games **with the 300-dim observation**
 this time — the previous harvest carried only hand-picked deed features, which
@@ -2129,3 +2136,211 @@ The agent stays frozen exactly as it was:
     vs ASU teacher (2v2)          27.5% [23.9, 31.3]   n=550
     vs strong field (~1252 ELO)   34.2% [30.5, 38.1]   n=600
     vs weak field  (~1103 ELO)    55.8% [51.8, 59.8]   n=600
+
+---
+
+# Step 0 — is bankruptcy a cause or a symptom?
+
+## D7.1 — The survival oracle recovers nothing. Bankruptcy is a symptom.
+
+Two weaknesses were on the table before any new module: survival (27.8%
+bankruptcy against the strong field, 87% against the teacher) and trade
+(+19.2pp when pinned, of which the hand-fitted ranker captures 20–34%).
+Trade's value was measured; survival's was not. So survival got the same
+treatment: pin it to the teacher and read the win-rate recovery.
+
+`survival_ablation.py`, 2,000 games per arm against the strong field
+(`fixed-b`, `fixed-d`, `fixed-e`, ~1252 ELO). Paired: both arms play the same
+seeds with the agent in the same seat (`seat = seed % 4`, so all four seats
+are covered while every game remains an independent board). The pin is on the
+**state** — `env.debt_player == pid` — which is exactly the forced
+debt-resolution menu: which house to sell, which deed to mortgage, in what
+order, and whether to declare bankruptcy.
+
+| arm | leader rate | decisive | bankrupt | oracle |
+| --- | --- | --- | --- | --- |
+| none | 759/2000 **38.0%** [35.8, 40.1] | 39.1% | 24.6% | — |
+| survival | 758/2000 **37.9%** [35.8, 40.0] | 39.2% | 24.6% | fired 6,226 / overrode **1,743** |
+
+    delta                 -0.05pp
+    two-proportion z      -0.03   p = 0.9740
+    McNemar (paired)      none-only 2, survival-only 1, z = -0.58, p = 0.5637
+    bankruptcy rate       24.6% -> 24.6%   (z = 0.00, p = 1.0000)
+
+### Why this is stronger than "not significant"
+
+An unpaired z-test at n=2,000 would only bound the effect to about ±3pp. The
+paired design bounds it far tighter: **1,743 debt actions were actually
+overridden by a stronger player across 2,000 games, and the outcome changed in
+3 of them.** Even taking the upper end of the 95% interval on that discordant
+rate, the effect is bounded within ±0.44pp. The bankruptcy rate itself does not
+move at all, which rules out the reading that the oracle helped survival but
+the win rate failed to follow.
+
+"Oracle fired" is reported alongside "actually overrode" deliberately. 6,226
+fires sounds like a large intervention; 72% of them are decisions where the
+agent already picks what the teacher picks, because most debt menus have one or
+two items. The arm's real content is the 1,743, and stating only the larger
+number would have overstated the test.
+
+### Reconciliation with D5.2
+
+D5.2 measured the `liquidation` family at +0.0pp against the *teacher* with a
+*bare `spec_policy`* baseline, and that null was discounted at the time because
+against a player that strong the agent's own survival may be irrelevant. All
+three of those differences are now closed — strong scripted field, frozen agent
+baseline, state-based rather than action-family pin — and the null is
+unchanged. Two independent measurements, same answer.
+
+### Branch taken: trade
+
+Bankruptcy is downstream of decisions made long before the debt. Rebuilding the
+endgame module would optimise the point at which the game is already decided.
+**`BEYOND_ENDGAME` stays disabled and no survival module is built.** All
+remaining effort goes to trade.
+
+The hypothesis is not merely unproven — it is bounded. Anyone revisiting
+survival should not re-test debt handling; they should test whether the agent
+*enters* debt more than it needs to, which is a different family (purchase,
+development, unmortgage) and a different measurement.
+
+### One number changed on the way past
+
+The `none` arm is the frozen agent against the strong field, and at n=2,000
+with full four-seat rotation it scores **38.0% [35.8, 40.1]**, against the
+**34.2% [30.5, 38.1]** on the record from a 600-game run that placed the agent
+in only two of the four seats. Seat effects of ~7 points are documented in this
+project, so the fuller rotation is the better estimate and it supersedes 34.2%.
+This was not the run's purpose and the two intervals overlap; recorded because
+it would otherwise look like an unexplained discrepancy later.
+
+## D7.2 — Correction: Candidate D tied the hand-fitted ranker, it did not fail
+
+D6.4 concluded Candidate D failed on 25.62% held-out top-1 against a
+"hand-fitted anchor" of 29.86%. **Those two numbers were never measured on the
+same data.** 29.86% is from D2.9, fitted and evaluated on the *original*
+harvest (2,508 proposals, 60 games). 25.62% is from the 120-game re-harvest
+(4,916 proposals) that Candidate D was trained on. This is the same error as
+the Phase 4 oracle-ceiling mismatch — caught there, repeated here.
+
+`rank_anchor.py` replays `spec_policy.TRADE_W` over Candidate D's corpus under
+Candidate D's own split, then scores the checkpoint on the identical states:
+
+| model | held-out top-1 | 95% CI |
+| --- | --- | --- |
+| hand-fitted ranker | **26.07%** | [23.78, 28.50] |
+| Candidate D | **25.62%** | [23.35, 28.04] |
+| random | 1.46% | — |
+
+    paired on the same 1,327 states
+      fitted-only right 127   Candidate-D-only right 121   both/neither 1,079
+      McNemar z = -0.38   p = 0.7032   difference -0.45pp
+
+A tie, not a 4.2-point loss. Note also that the fitted ranker scores 20.62% on
+the *train* seeds and 26.07% on the *held-out* seeds — both out-of-sample for
+it, since its weights come from a corpus that no longer exists — so the
+held-out subset is simply the easier one, and Candidate D's number has to be
+read against that subset rather than against the corpus average of 22.09%.
+
+**Consequences.** Two claims in D6.4 no longer stand:
+
+1. "Candidate D failed" becomes *Candidate D matched the hand-fitted ranker at
+   this data scale*, with the training curve (train 20% → 54.75% while held-out
+   sat at 19–22%) pointing at data starvation rather than at a verdict on
+   revealed preference.
+2. "Adding the 300-dim observation made the model worse" is **withdrawn**. 314
+   input dimensions on 3,589 rows cannot test that claim; the comparison it
+   rested on was against the mis-attributed 29.86%.
+
+D6.4's closing paragraph — that anyone attacking this again should not expect
+the representation to be the binding constraint — is withdrawn with it. The
+data scale is the untested variable, and D7.4 tests it.
+
+## D7.3 — Part B: the trade scorer is over-committed, not blind
+
+`analyze_trade_errors.py` replays the fitted scorer over all 4,916 harvested
+proposals, isolates the 3,830 where it puts something other than the teacher's
+choice on top, and reports what separates the two picks. No feature was
+proposed in advance — D2.6 records what that costs.
+
+### Where the teacher's pick sits in our ranking
+
+    rank 1   22.09%      rank <=5    50.65%
+    rank 2   11.31%      rank <=10   66.44%
+    rank 3    7.30%      rank 21+    16.21%
+
+Half the time the teacher's choice is already in our top five out of ~68. The
+scorer is directionally right with a heavy tail, not blind.
+
+### Which term steers us wrong
+
+The scorer is linear in six weighted terms, so the gap between our pick and the
+teacher's decomposes exactly. Mean gap 1.430 over the disagreements:
+
+| term | contribution | share of the gap |
+| --- | --- | --- |
+| `completes` | +0.986 | **68.9%** |
+| `d_ours` | +0.308 | **21.5%** |
+| `d_rent` | +0.129 | 9.0% |
+| `off_mort` | +0.008 | 0.6% |
+| `d_price` | −0.001 | −0.1% |
+| `d_houses` | +0.000 | 0.0% |
+
+**Ninety per cent of the error comes from two terms already in the model.**
+`d_price`, `d_houses` and `off_mort` are dead weight — they contribute nothing
+to any disagreement, so removing them costs nothing and adding features
+alongside them is not where the gain is.
+
+### What the picks look like, against the population
+
+Our pick is an argmax and is therefore extreme by construction on whatever the
+scorer weights, so the mean over *all* candidates in the same states is shown
+as a third column. Without it the table cannot say which side is the outlier.
+
+| quantity | our pick | teacher | all candidates | Cohen d |
+| --- | --- | --- | --- | --- |
+| `off_breaks_ours` (give away a deed from a group we hold ≥2 of) | 0.01 | 0.24 | 0.51 | +0.77 |
+| `off_rent_if_ours` | 4.16 | 7.86 | 11.23 | +0.70 |
+| `off_price` | 126 | 171 | 187 | +0.64 |
+| `mutual_swap` (both sides complete) | 0.39 | 0.13 | 0.03 | −0.60 |
+| `req_completes_ours` | 0.59 | 0.31 | 0.10 | −0.60 |
+| `off_group_size` | 2.65 | 2.96 | 2.91 | +0.58 |
+| `req_price` | 196 | 236 | 213 | +0.55 |
+| `req_theirs_in_group` | 1.55 | 1.78 | 2.21 | +0.24 |
+
+The third column changes the reading. On every one of these the teacher sits
+**between** our pick and the population, and our pick sits at the extreme:
+`mutual_swap` 0.39 against a 0.03 base rate, `off_price` $126 against a $187
+base rate. The teacher likes the same things we like — it just does not
+insist on them.
+
+### The evidenced list
+
+1. **Re-weight before adding.** `completes` (3.47) and `d_ours` (0.505) carry
+   90% of the error and both push the same way. Shrinking them is the first
+   test and it costs one fit.
+2. **Absolute value surrendered.** The scorer sees only differences, so it
+   cannot express "this deed is cheap". We give away $126 deeds where the
+   teacher gives away $171 against a $187 field. `off_price` and
+   `off_rent_if_ours` are not derivable from any existing term.
+3. **`off_breaks_ours`.** Currently reachable only implicitly through `d_ours`,
+   and the implicit version is far too strong: we do it in 1% of picks where
+   the teacher does it in 24%.
+4. **`req_theirs_in_group`.** We ask for deeds in groups opponents are *less*
+   close to completing than average (1.55 vs 2.21). Denial logic says the
+   opposite, and `denial.py` already prices this for purchases but nothing
+   feeds it into trade.
+5. **Drop `d_price`, `d_houses`, `off_mort`.** Zero contribution to any
+   disagreement.
+
+Nothing here is shipped on this evidence. Each item is a hypothesis with a
+measured separation behind it rather than a plausible story, and a win rate
+still decides.
+
+### The limit of this analysis
+
+The harvest recorded no counterparty state, so nothing above can speak to the
+cash position of the player being asked — which is a live hypothesis, since a
+proposal that is declined is worth nothing and the scorer has no notion of
+acceptance at all. `harvest_trades.py` now records a per-seat snapshot (cash,
+deeds, net worth, position) so the Part C corpus can answer it.

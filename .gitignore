@@ -38,3 +38,8 @@ competition_agent/probes/dagger/*.jsonl
 # Phase 6 outcome corpus: hundreds of MB, regenerable via collect_outcomes.py
 competition_agent/probes/outcomes/
 competition_agent/probes/trade_harvest.jsonl
+
+# Part C's 1,000-game harvest, sharded and gzipped (~80 MB across 1,000
+# files). Same rule as the corpora above: derived artifacts are committed,
+# the corpus is regenerable from harvest_trades.py with its seed base.
+competition_agent/probes/trade_shards/
