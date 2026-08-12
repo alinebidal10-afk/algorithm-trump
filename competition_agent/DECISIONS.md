@@ -1518,3 +1518,63 @@ project's record on this is now three for three: every time agreement was used
 to predict strength (D2.10, D3.5, and the capture-ratio extrapolation itself),
 the prediction failed. Win rate must be measured directly, and no further
 agreement-based projection should be treated as load-bearing.
+
+## D4.1 — Which oracle ceiling applies where: a correction
+
+D2.17 through D3.6 quoted **40.0%** as "the oracle ceiling" for every capture
+calculation. That is right for one comparison and wrong for the other.
+
+**The ceiling has to match what the arm actually changes.**
+
+| comparison | what it changes | correct ceiling | capture |
+| --- | --- | --- | --- |
+| floor → **fitted** | proposals only — `TRADE_W`/`TRADE_GATE` live only inside `_propose_trade`, and the floor (`TRADE_GATE=1e9`) disables only proposals | `trade_proposal` = **40.0%** | +7.4 / +21.7 = **34.1%** |
+| floor → **hybrid** | proposals **and** replies — `HybridPolicy`'s scope is `buy/sell/exch_trade` **plus ACCEPT/DECLINE** | `trade_both` = **45.8%** | +5.7 / +27.5 = **20.7%** |
+
+So the hand-fitted number (34.1%, previously quoted 33.8%) is essentially
+unchanged, but **the hybrid's capture was overstated**: measured against its
+own ceiling it captures **20.7%**, not the ~28% implied by dividing into 40.0%.
+
+**This strengthens the negative conclusion rather than softening it.** The
+learned head owns a *larger* share of the decision space than the hand-fitted
+ranker and converts a *smaller* fraction of it. D3.6's finding stands and is
+worse than reported.
+
+## D4.2 — Experiment 8 was run; what it does and does not license for Phase 4
+
+Experiment 8 (rollout-variant divergence) was completed early and is recorded
+as SPEC C1–C3. `probes/p08_rollout_divergence.csv`, 230 constructed boundary
+states:
+
+| category | n | divergence | rollout cost |
+| --- | --- | --- | --- |
+| auction | 56 | **94.6%** | 11.37 s |
+| build | 48 | **58.3%** | 22.60 s |
+| buy | 112 | 0.0% | 4.78 s |
+| trade | 14 | 0.0% | 8.89 s |
+
+**Two caveats that bear directly on the Phase 4 decision.**
+
+1. **The trade cell is stale and known wrong.** 0/14 was overturned by
+   Experiment 6, which measured **92.6%** divergence over 54 trade states on a
+   wider board population (D1.3). The CSV still holds the superseded number;
+   SPEC C1 carries the contradiction. Any Phase 4 scoping must use 92.6%.
+
+2. **It measures the wrong pair for Phase 4.** p08 compares `ASUValueV1`
+   against `ASURolloutV1` — the *teacher's* two variants. Phase 4 would wrap
+   *our* policy in rollout, and our policy is not the teacher: it agrees with
+   it 77.5% overall and 8% on trade proposals. That the teacher's lookahead
+   changes the teacher's decisions 35% of the time does not establish that
+   lookahead over *our* leaf evaluation would help — our leaf evaluation is
+   the component measured wrong three separate times (D2.5, D2.6, D2.12).
+
+**Neither of the two questions is settled, so no Phase 4/5 decision is taken
+here.** What is now on the record: the correct ceilings, the corrected capture
+ratios, and the fact that Experiment 8's evidence is about the teacher's
+internals rather than about our agent's headroom.
+
+The cheap experiment that *would* settle it: wrap `spec_policy` in a truncated
+rollout using its own evaluation, and measure divergence and win rate on the
+same seeds. If our leaf evaluation is the weak component, rollout over it
+amplifies the weakness rather than repairing it — that is a testable claim and
+it costs one bench run, not a phase.
