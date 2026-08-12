@@ -1814,3 +1814,71 @@ worth more than starting that.
 
 **Do not re-implement survival as a wider cushion.** It has been measured and
 it costs more than it saves.
+
+## D5.3 — Denial validated to n=550: positive signal, NOT statistically confirmed
+
+Both arms extended to 550 games on the same seed base (930000+), seat-rotated,
+run through the **same harness** (`bench.py`) so the only difference is one
+environment variable. The earlier baseline came from `pinned_ablation`, and
+mixing harnesses has misled this project once already.
+
+| | wins | win rate |
+| --- | --- | --- |
+| `BEYOND_DENIAL=0` | 135/550 | 24.5% [21.1, 28.3] |
+| `BEYOND_DENIAL=1` | 151/550 | **27.5% [23.9, 31.3]** |
+
+    difference  +2.9pp
+    z = 1.10,  p = 0.2714      NOT significant
+    intervals overlap
+
+**The effect shrank with sample size: +5.3pp at n=200 became +2.9pp at
+n=550.** That is regression to the mean — the small sample overestimated it,
+which is the outcome the validation existed to detect. The pre-registered
+power note said +5.3pp would land at z≈1.98, a knife edge; the realised effect
+was smaller and it did not come close.
+
+**Ships anyway, labelled.** +2.9pp remains the best measured point estimate
+available, the sign has been positive in both independent measurements, and
+the mechanism has a probe-established basis (SPEC B3/B5: the teacher pays the
+same for the first deed of a colour group as for the second, 18/18 cases to
+the dollar, and never bids defensively for a group it has no presence in). But
+the honest label is:
+
+> **positive signal, not statistically confirmed at n=550 (p = 0.271).**
+
+Nothing downstream should treat +2.9pp as established. Confirming an effect
+this size would need roughly 1,900 games per arm.
+
+**Baseline cross-check.** The rerun baseline (24.5% [21.1, 28.3], n=550) agrees
+with the independent `pinned_ablation` measurement (25.7% [21.1, 30.9], n=300)
+across two harnesses and two runs. The measurement infrastructure is
+consistent; the uncertainty is in the effect, not the instrument.
+
+## D5.4 — Agent frozen
+
+`competition_agent/final_agent.py` is the deliverable.
+
+    spec_policy  +  BEYOND_DENIAL=1  +  BEYOND_ENDGAME=0
+
+Selection record — every entry a head-to-head win rate against `ASUValueV1`,
+seat-rotated on a common seed base, never an agreement score or a projection:
+
+| configuration | win rate | n | outcome |
+| --- | --- | --- | --- |
+| floor (no trade proposals) | 18.3% [14.4, 23.1] | 300 | — |
+| spec_policy baseline | 24.5% [21.1, 28.3] | 550 | — |
+| + learned trade head | 24.0% [18.6, 30.4] | 200 | rejected |
+| + rollout layer | 14.5% [10.3, 20.0] | 200 | rejected, p=0.003 harmful |
+| + denial + endgame | 22.0% [18.2, 26.3] | 400 | rejected, modules conflict |
+| **+ denial only** | **27.5% [23.9, 31.3]** | **550** | **shipped, unconfirmed** |
+
+Known ceiling: perfect trade *proposals* reach 40.0%, perfect proposals **and**
+replies 45.8%, parity is 50.0%. Trade work alone cannot reach parity, and the
+leaf valuation is the identified root cause of the remainder (D2.5, D2.6,
+D2.12, D4.4) — inherited from the published formula rather than fitted to
+evidence. Rebuilding it is the largest untried lever and is explicitly out of
+scope for this run.
+
+Deliverables complete: `bench.py`, `probes/` (14 experiments), `SPEC.md`
+(40 rules, 35 certain), `DECISIONS.md`, `spec_policy.py`, `hybrid_policy.py`,
+`rollout_policy.py`, `beyond/`, `final_agent.py`, `tests/`.
