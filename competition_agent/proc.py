@@ -43,6 +43,43 @@ import subprocess
 import sys
 
 
+def ensure_hash_seed(value: str = "0") -> None:
+    """Re-exec with a fixed PYTHONHASHSEED so games are reproducible.
+
+    `monopoly_game_engine/agents_fixed.py:616` iterates `_TARGET_COLORS`, a
+    class-level **set of strings**, inside `TheBuilder` (`fixed-d`). Python
+    randomises string hashing per process, so that set's iteration order — and
+    therefore TheBuilder's choice among its two target colours — differs
+    between runs of the same seed. Measured on seed 960127: the same game
+    yielded 744 or 748 decisions depending only on the interpreter's hash seed.
+
+    Only `TheBuilder` is affected; a static scan of the module found no other
+    iteration over a string set. That still covers the whole strong field
+    (`fixed-b`, `fixed-d`, `fixed-e`), which is what every field benchmark and
+    the paired survival ablation run against, so it has to be pinned rather
+    than noted.
+
+    The seed is fixed at interpreter start and cannot be changed from inside
+    the process, so this re-execs once. Pool workers are forked and inherit the
+    environment, so they need no separate handling.
+
+    Call it from `main()`, not at import time: re-executing as a side effect of
+    an import would break any caller that imports the module for one function,
+    and `python -c` cannot be re-executed at all because the source is not in
+    `sys.argv`. In that case it warns rather than failing.
+    """
+    if os.environ.get("PYTHONHASHSEED") == value:
+        return
+    if not sys.argv or not os.path.isfile(sys.argv[0]):
+        print(f"warning: PYTHONHASHSEED is not {value} and cannot be pinned "
+              f"from this entry point; games involving fixed-d will not be "
+              f"reproducible. Re-run as a script or set it in the environment.",
+              file=sys.stderr)
+        return
+    os.environ["PYTHONHASHSEED"] = value
+    os.execv(sys.executable, [sys.executable] + sys.argv)
+
+
 @contextlib.contextmanager
 def managed_pool(workers: int, **kwargs):
     """A multiprocessing Pool whose workers die with the parent.

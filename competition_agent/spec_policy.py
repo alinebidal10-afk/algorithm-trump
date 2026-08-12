@@ -25,6 +25,7 @@ from the teacher's source or from `decide()`'s internals.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import List, Optional
 
 from monopoly_game_engine.actions import (
@@ -52,6 +53,59 @@ TRADE_W = {
     "d_houses": -3.5409761941310096
 }
 TRADE_GATE = float(os.environ.get("TRADE_GATE", "3.92"))
+
+# Optional override, for A/B-ing a re-fitted scorer against the shipped one
+# without editing the frozen agent. Points at a JSON file holding
+# {"weights": {feature: weight, ...}, "gate": <float>}; any feature named in
+# `EXT_FEATURES` may appear and anything omitted weighs zero.
+#
+# When it is unset the ORIGINAL six-term expression runs verbatim. That
+# duplication is deliberate: computing the general form always would give the
+# same value only up to floating-point summation order, and an exact tie
+# resolved differently would move the frozen agent's argmax. The frozen path
+# stays byte-for-byte what it was.
+TRADE_WEIGHTS_PATH = os.environ.get("TRADE_WEIGHTS", "")
+TRADE_W_EXT = None
+TRADE_GATE_EXT = None
+if TRADE_WEIGHTS_PATH:
+    import json as _json
+    _blob = _json.loads(Path(TRADE_WEIGHTS_PATH).read_text())
+    TRADE_W_EXT = dict(_blob["weights"])
+    TRADE_GATE_EXT = float(_blob.get("gate", TRADE_GATE))
+
+# Order and units must match `fit_trade_v3.features()` exactly, or a weight
+# vector fitted there means something different here.
+EXT_FEATURES = (
+    "d_rent", "d_price", "completes", "d_ours", "off_mort", "d_houses",
+    "off_price", "off_rent", "off_breaks_ours", "req_theirs",
+    "off_group_size", "mutual_swap", "req_price", "req_mort",
+    "off_completes_theirs", "req_base_rent",
+)
+
+
+def ext_features(fr, fo) -> dict:
+    """The extended candidate features, from the same per-deed facts the
+    shipped scorer already builds (plus `theirs` and `base_rent`)."""
+    completes = 1.0 if fr["ours"] == fr["size"] - 1 else 0.0
+    off_completes = 1.0 if fo["theirs"] == fo["size"] - 1 else 0.0
+    return {
+        "d_rent": fr["rent"] - fo["rent"],
+        "d_price": (fr["price"] - fo["price"]) / 100.0,
+        "completes": completes,
+        "d_ours": float(fr["ours"] - fo["ours"]),
+        "off_mort": 1.0 if fo["mort"] else 0.0,
+        "d_houses": float(fr["houses"] - fo["houses"]),
+        "off_price": fo["price"] / 100.0,
+        "off_rent": fo["rent"] / 10.0,
+        "off_breaks_ours": 1.0 if fo["ours"] >= 2 else 0.0,
+        "req_theirs": float(fr["theirs"]),
+        "off_group_size": float(fo["size"]),
+        "mutual_swap": completes * off_completes,
+        "req_price": fr["price"] / 100.0,
+        "req_mort": 1.0 if fr["mort"] else 0.0,
+        "off_completes_theirs": off_completes,
+        "req_base_rent": fr["base_rent"] / 10.0,
+    }
 
 DO_NOTHING = int(ActionType.DO_NOTHING)
 END_TURN = int(ActionType.END_TURN)
@@ -320,6 +374,14 @@ class SpecPolicy:
                     "mort": prop.mortgaged,
                     "houses": prop.houses,
                 }
+                if TRADE_W_EXT is not None:
+                    # Only the override path needs these, and each costs a
+                    # scan of the group, so they are not paid for by the
+                    # frozen agent.
+                    facts[sq]["theirs"] = sum(
+                        1 for t in group
+                        if env.properties[t].owner not in (None, pid))
+                    facts[sq]["base_rent"] = PROPERTIES[sq]["rent"][0]
             return facts[sq]
 
         best_action, best_score = None, None
@@ -333,6 +395,12 @@ class SpecPolicy:
             if p_idx >= len(others):
                 continue
             fo, fr = f(PROPERTY_IDS[off_idx]), f(PROPERTY_IDS[req_idx])
+            if TRADE_W_EXT is not None:
+                ft = ext_features(fr, fo)
+                sc = sum(TRADE_W_EXT.get(k, 0.0) * ft[k] for k in EXT_FEATURES)
+                if best_score is None or sc > best_score:
+                    best_action, best_score = a, sc
+                continue
             sc = (TRADE_W["d_rent"] * (fr["rent"] - fo["rent"])
                   + TRADE_W["d_price"] * ((fr["price"] - fo["price"]) / 100.0)
                   + TRADE_W["completes"] * (1.0 if fr["ours"] == fr["size"] - 1
@@ -346,7 +414,8 @@ class SpecPolicy:
         # I6 — the propose/don't gate. The teacher proposed in 2,508 of 6,032
         # states where an exchange was legal (41.6%), so firing on every
         # positive score is wrong; TRADE_GATE is the score floor.
-        if best_score is None or best_score < TRADE_GATE:
+        gate = TRADE_GATE if TRADE_GATE_EXT is None else TRADE_GATE_EXT
+        if best_score is None or best_score < gate:
             return None
         return best_action
 

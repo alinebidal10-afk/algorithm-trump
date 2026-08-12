@@ -45,7 +45,7 @@ from ASU_FROZEN_TEACHER import ASUValueV1  # noqa: E402
 from ASU_FROZEN_TEACHER.evaluate import _new_seeded_game  # noqa: E402
 from monopoly_game_engine.actions import OFFSETS, action_to_description  # noqa: E402
 
-from competition_agent.proc import managed_pool  # noqa: E402
+from competition_agent.proc import ensure_hash_seed, managed_pool  # noqa: E402
 from competition_agent.spec_policy import SpecPolicy  # noqa: E402
 
 FAMILY_SETS = {
@@ -151,6 +151,9 @@ def _game(args):
 
 
 def main() -> int:
+    # The strong field contains `fixed-d`, whose colour-target set
+    # iterates in hash order. Pin it before any game is played.
+    ensure_hash_seed()
     ap = argparse.ArgumentParser()
     ap.add_argument("--games", type=int, default=20,
                     help="games per seat arrangement (x2 arrangements)")

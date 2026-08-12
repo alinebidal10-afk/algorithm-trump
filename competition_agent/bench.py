@@ -62,7 +62,7 @@ if str(ROOT) not in sys.path:
 from ASU_FROZEN_TEACHER.evaluate import _new_seeded_game  # noqa: E402
 from ASU_FROZEN_TEACHER.spec import FROZEN_SPEC_HASH  # noqa: E402
 from competition_agent.policies import build_policy  # noqa: E402
-from competition_agent.proc import managed_pool  # noqa: E402
+from competition_agent.proc import ensure_hash_seed, managed_pool  # noqa: E402
 
 NUM_SEATS = 4
 
@@ -213,6 +213,9 @@ def print_report(summary: Dict[str, Any], policy_names: Sequence[str]) -> None:
 
 
 def main(argv=None) -> int:
+    # The strong field contains `fixed-d`, whose colour-target set
+    # iterates in hash order. Pin it before any game is played.
+    ensure_hash_seed()
     ap = argparse.ArgumentParser(description="Monopoly policy benchmark")
     ap.add_argument("--games", type=int, default=50)
     ap.add_argument("--seed", type=int, default=0,

@@ -73,11 +73,18 @@ from ASU_FROZEN_TEACHER import ASUValueV1  # noqa: E402
 from ASU_FROZEN_TEACHER.evaluate import _new_seeded_game  # noqa: E402
 
 from competition_agent.policies import build_policy  # noqa: E402
-from competition_agent.proc import managed_pool  # noqa: E402
+from competition_agent.proc import ensure_hash_seed, managed_pool  # noqa: E402
 
 # ~1252 ELO per the user-supplied tournament logs. Not the weak
 # fixed-a/b/c field, which the agent already beats at 55.8%.
 STRONG_FIELD = ("fixed-b", "fixed-d", "fixed-e")
+
+# `none2` is an exact duplicate of `none`. With PYTHONHASHSEED pinned it must
+# come out byte-identical, which is the harness's own self-test; with the seed
+# left random it measures how many games the OPPONENTS alone flip, i.e. the
+# noise floor any paired comparison on this field sits on. Without that number
+# "3 of 2,000 games changed" cannot be attributed to the pin.
+ARM_PINS = {"none": False, "none2": False, "survival": True}
 ARMS = ("none", "survival")
 
 
@@ -174,7 +181,7 @@ def _game(job):
     field = list(STRONG_FIELD)
     for s in range(4):
         if s == seat:
-            agents[s] = SurvivalPinned(s, arm == "survival", seed * 4 + s)
+            agents[s] = SurvivalPinned(s, ARM_PINS[arm], seed * 4 + s)
         else:
             agents[s] = build_policy(field.pop(0), s, seed * 4 + s)
 
@@ -201,13 +208,13 @@ def _game(job):
     }
 
 
-def report(rows):
-    by = {a: [r for r in rows if r["arm"] == a] for a in ARMS}
+def report(rows, arms=ARMS):
+    by = {a: [r for r in rows if r["arm"] == a] for a in arms}
     print(f"\n{'arm':<10}{'leader rate':>26}{'decisive':>11}"
           f"{'bankrupt':>11}{'oracle fired':>20}")
     print("-" * 78)
     stat = {}
-    for a in ARMS:
+    for a in arms:
         sub = by[a]
         n = len(sub)
         k = sum(1 for r in sub if r["leader_win"])
@@ -225,7 +232,7 @@ def report(rows):
               f"{f'{100*dk/max(dn,1):5.1f}%':>11}"
               f"{f'{100*bk/max(n,1):5.1f}%':>11}"
               f"{f'{fired}/{tot} = {100*fired/max(tot,1):.2f}%':>20}")
-        if a == "survival":
+        if ARM_PINS[a]:
             print(f"{'':<10}{'':>26}{'':>11}{'':>11}"
                   f"{f'(actually overridden: {changed} = '
                     f'{100*changed/max(fired,1):.1f}% of fires)':>20}")
@@ -233,23 +240,26 @@ def report(rows):
             print(f"{'':<10}{'':>26}{'':>11}{'':>11}"
                   f"{f'(debt states seen: {debt})':>20}")
 
-    (k0, n0, b0, p0), (k1, n1, b1, p1) = stat["none"], stat["survival"]
+    base, test = arms[0], arms[-1]
+    if base == test:
+        return
+    (k0, n0, b0, p0), (k1, n1, b1, p1) = stat[base], stat[test]
     z, pv = two_prop_z(k0, n0, k1, n1)
-    print(f"\ndelta (survival - none)   {100*(p1-p0):+.2f}pp")
+    print(f"\ndelta ({test} - {base})   {100*(p1-p0):+.2f}pp")
     print(f"  two-proportion z = {z:+.2f}   p = {pv:.4f}   "
           f"{'SIGNIFICANT' if pv < 0.05 else 'not significant'}")
 
-    idx = {r["seed"]: r for r in by["none"]}
+    idx = {r["seed"]: r for r in by[base]}
     pairs = [(idx[r["seed"]]["leader_win"], r["leader_win"])
-             for r in by["survival"] if r["seed"] in idx]
+             for r in by[test] if r["seed"] in idx]
     b, c, zm, pm = mcnemar(pairs)
-    print(f"  McNemar (paired, n={len(pairs)}): none-only {b}, "
-          f"survival-only {c}, z = {zm:+.2f}, p = {pm:.4f}   "
+    print(f"  McNemar (paired, n={len(pairs)}): {base}-only {b}, "
+          f"{test}-only {c}, z = {zm:+.2f}, p = {pm:.4f}   "
           f"{'SIGNIFICANT' if pm < 0.05 else 'not significant'}")
 
     zb, pb = two_prop_z(b0, n0, b1, n1)
-    print(f"\nbankruptcy rate  none {100*b0/max(n0,1):.1f}%  -> "
-          f"survival {100*b1/max(n1,1):.1f}%   "
+    print(f"\nbankruptcy rate  {base} {100*b0/max(n0,1):.1f}%  -> "
+          f"{test} {100*b1/max(n1,1):.1f}%   "
           f"(z = {zb:+.2f}, p = {pb:.4f})")
     print("  If the oracle does not even lower the bankruptcy rate, the pin "
           "is not reaching the mechanism.")
@@ -262,10 +272,21 @@ def main() -> int:
     ap.add_argument("--seed-base", type=int, default=960000)
     ap.add_argument("--max-steps", type=int, default=3000)
     ap.add_argument("--workers", type=int, default=9)
+    ap.add_argument("--arms", type=str, default=",".join(ARMS),
+                    help="two arms to compare; `none,none2` is the null "
+                         "control")
+    ap.add_argument("--hash-seed", type=str, default="0",
+                    help="PYTHONHASHSEED to pin. Pass 'random' to leave it "
+                         "randomised, which is what the noise-floor control "
+                         "needs.")
     ap.add_argument("--tag", type=str, default="")
     ap.add_argument("--no-resume", action="store_true")
     ap.add_argument("--report-only", action="store_true")
     args = ap.parse_args()
+    # The strong field contains `fixed-d`, whose colour-target set iterates in
+    # hash order. Pin it before any game is played.
+    ensure_hash_seed(args.hash_seed)
+    arms = tuple(a.strip() for a in args.arms.split(","))
 
     stem = "survival_ablation" + (f"_{args.tag}" if args.tag else "")
     out = Path(__file__).resolve().parent / "probes" / f"{stem}.json"
@@ -273,7 +294,7 @@ def main() -> int:
     out.parent.mkdir(parents=True, exist_ok=True)
 
     jobs = [(args.seed_base + k, arm, args.max_steps)
-            for arm in ARMS for k in range(args.games)]
+            for arm in arms for k in range(args.games)]
 
     done = {}
     if partial.exists() and not args.no_resume:
@@ -304,8 +325,9 @@ def main() -> int:
                           f"ETA {(len(todo)-i)/max(rate,1e-9):.1f} min",
                           flush=True)
 
+    rows = [r for r in rows if r["arm"] in arms]
     out.write_text(json.dumps(rows, indent=1))
-    report(rows)
+    report(rows, arms)
     print(f"\nwrote {out}")
     return 0
 
