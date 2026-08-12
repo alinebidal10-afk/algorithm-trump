@@ -2644,3 +2644,52 @@ opponents that trade and no improvement against opponents that do not.
   explain the gain, and that raising it alone costs 7.23pp.
 - **`_trade_reply` is untouched** and is where a strong-field gain would have
   to come from, since that field accepts 0.06% of what we propose.
+
+## D7.10 — The teacher answers an offer by making one of its own
+
+Run as a screening probe before committing to `_trade_reply` work, to check
+that the accept side fires at all against a field that accepts 0.06% of what we
+propose. It fires constantly, and the probe found something else.
+
+    strong field, 1,279 states where ACCEPT and DECLINE are both legal
+
+      teacher chose DECLINE_TRADE   716   56.0%
+      teacher chose exch_trade      488   38.2%   <- a counter-proposal
+      teacher chose sell_trade       45    3.5%
+      teacher chose ACCEPT_TRADE     21    1.6%
+      teacher chose buy_trade         9    0.7%
+
+    weak field, 379 states
+      DECLINE 74.9%   exch_trade 16.1%   buy_trade 9.0%
+
+Offered a trade, the teacher responds with a proposal of its own **42.4%** of
+the time on the strong field. Our agent does this in **0 of 974** observed
+states: it always answers yes or no.
+
+### The cause is rule ordering, not valuation
+
+`SpecPolicy.choose_action` consults `_trade_reply` before `_propose_trade`, and
+the first rule to return an action wins. So the moment ACCEPT/DECLINE are legal
+the pipeline halts at the reply and the proposal branch is never reached. The
+change to test is one line: when `_trade_reply` would decline, return `None`
+and let `_propose_trade` try, declining only if nothing clears the gate.
+
+No network, no training, no new parameter. It is the cheapest untested change
+on the board and it targets the branch that D7.6 identified as the only route
+to a strong-field gain.
+
+### How it was found, because the route matters
+
+The probe first reported 6.7% / 1.2% acceptance with 62.3% agreement. That is
+arithmetically impossible: if both sides only ever answer ACCEPT or DECLINE,
+agreement cannot fall below 100 - 6.7 - 1.2 = 92.1%. Chasing the contradiction
+is what surfaced the third action. A menu check confirmed it — of 974 such
+states, **none** had a menu of exactly {ACCEPT, DECLINE}; 384 were
+{ACCEPT, DECLINE, END_TURN} and the rest ran to 18-25 options, all in
+`out_of_turn`. Our agent picked a reply in all 974.
+
+**SPEC H1-H4 are built on an assumption that does not hold.** They describe the
+incoming-offer decision as accept-or-decline. The teacher treats it as a full
+decision point. The rules are not wrong about what they cover; they are
+incomplete about what the decision *is*, and the confidence tag should read
+that way rather than staying at `certain`.

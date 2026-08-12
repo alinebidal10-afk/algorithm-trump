@@ -699,6 +699,17 @@ is offered, which is requested, and a cash sweetener from −$400 (seat 0 pays)
 to +$400 (seat 0 is paid) in $25 steps. Monotonicity is verified with
 `scan_flip`, not assumed (D6).
 
+> **SCOPE CORRECTED — D7.10 (2026-08-13), confidence downgraded to `partial`.**
+> H1-H4 describe the incoming-offer decision as a choice between ACCEPT and
+> DECLINE. Measured on real play, that is not the decision the teacher faces.
+> Of 974 states where both were legal, **none** had a menu of exactly
+> {ACCEPT, DECLINE}, and on the strong field the teacher answered with a trade
+> proposal of its own 42.4% of the time (`exch_trade` 38.2%, `sell_trade` 3.5%,
+> `buy_trade` 0.7%) against ACCEPT 1.6%. These probes were run on a synthetic
+> two-option surface, so what they measured — the shape of the accept region
+> — is not refuted; it is a slice through a wider decision. Nothing built on
+> H1-H4 should assume the reply is binary.
+
 ### H1. The accept surface is narrow and *not* monotone in the sweetener
 **Observation.** Accept/decline across the sweetener grid
 (`A` = accept, `.` = decline; leftmost = we pay $400, rightmost = we receive
