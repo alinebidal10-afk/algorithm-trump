@@ -37,3 +37,4 @@ competition_agent/probes/*.partial.jsonl
 competition_agent/probes/dagger/*.jsonl
 # Phase 6 outcome corpus: hundreds of MB, regenerable via collect_outcomes.py
 competition_agent/probes/outcomes/
+competition_agent/probes/trade_harvest.jsonl

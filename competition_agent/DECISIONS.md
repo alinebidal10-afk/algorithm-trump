@@ -2056,3 +2056,76 @@ can be learned from the game's outcome:
 Neither escapes the wall A hit, so neither is worth its cost. The next attempt
 uses a different signal entirely — the teacher's revealed preferences
 (Candidate D).
+
+## D6.4 — Candidate D fails; Phase 6 closes and the agent stays frozen
+
+Revealed-preference ranking over the teacher's own trade choices. Data
+re-harvested from 120 teacher-driven games **with the 300-dim observation**
+this time — the previous harvest carried only hand-picked deed features, which
+is the cap D2.5 and the Phase 3 head both hit.
+
+    proposals 4,916   train 3,589 / held-out 1,327   (split by game seed)
+    mean candidates per state 68.4  ->  random top-1 1.46%
+
+    best held-out top-1   25.62%
+
+Listwise softmax over each state's candidate set, chosen over Bradley-Terry
+because it trains exactly the operation the policy performs (argmax over one
+state's candidates), because pairwise expansion is quadratic in a 68-candidate
+set, and because it isolates the variable under test — the Phase 3 head used
+the same loss and only its inputs differed.
+
+### The comparison, with one anchor corrected
+
+| model | top-1 | task |
+| --- | --- | --- |
+| random | 1.46% | 68-way |
+| **Candidate D** | **25.62%** | 68-way ranking |
+| hand-fitted ranker | 29.86% | 68-way ranking |
+| Phase 3 head | 38.51% | mixed — **not comparable** |
+
+**The 38.51% anchor should not be used here.** The Phase 3 head also scored
+`ACCEPT`/`DECLINE`, which are two-way choices; including them inflates top-1
+relative to a pure ~65-way ranking. The honest comparison is against the
+hand-fitted ranker's 29.86%, measured on the same task — and Candidate D is
+**4.2 points below it**.
+
+Training is unstable: train climbs 20% → 54.75% while held-out oscillates
+19–22%. 3,589 states over a 314-dim input overfits, and adding the observation
+made the model worse rather than better, despite the observation being the
+thing D2.5 blamed for the previous cap.
+
+### Phase 6 closes
+
+Per the pre-set rule, no fifth valuation variant is started. Every cheap route
+into the valuation has now been measured:
+
+| candidate | approach | result |
+| --- | --- | --- |
+| Phase 6 A | outcome label, plain / discounted | worse than a constant (log-loss 0.672 vs 0.618) |
+| Phase 6 A′ | filter / downweight noisy rows | 0.584 full AUC, target 0.65 missed |
+| **D** | revealed preference over trades | 25.62% vs hand-fitted 29.86% |
+| B, C | short-horizon targets, TD | skipped — share the assumption A refuted |
+
+**The closure is itself the finding.** Two independent signals were tried —
+the game's outcome and the teacher's preferences — with three
+representations between them, and neither beat the hand-written valuation
+this project has been trying to replace since D2.5. That valuation is
+demonstrably wrong (four diagnoses) and still better than everything learned
+against it.
+
+The stratified table from D6.2 remains the sharpest artefact: signal exists at
+short horizon (AUC 0.766 in the last 50 steps) and vanishes beyond 300
+(0.495). Anyone attacking this again should start there, and should expect the
+representation not to be the binding constraint — adding the full observation
+to the ranker made it worse.
+
+### Final state
+
+The agent stays frozen exactly as it was:
+
+    spec_policy  +  BEYOND_DENIAL=1  +  BEYOND_ENDGAME=0
+
+    vs ASU teacher (2v2)          27.5% [23.9, 31.3]   n=550
+    vs strong field (~1252 ELO)   34.2% [30.5, 38.1]   n=600
+    vs weak field  (~1103 ELO)    55.8% [51.8, 59.8]   n=600
