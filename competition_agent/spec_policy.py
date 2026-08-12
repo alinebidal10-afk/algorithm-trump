@@ -64,6 +64,15 @@ TRADE_GATE = float(os.environ.get("TRADE_GATE", "3.92"))
 # same value only up to floating-point summation order, and an exact tie
 # resolved differently would move the frozen agent's argmax. The frozen path
 # stays byte-for-byte what it was.
+# Candidate D: a trained ranker replacing the linear scorer for the proposal
+# choice only. Everything else in the policy is untouched, so a win-rate A/B
+# isolates the ranking. Set TRADE_RANKER to a JSON holding {"ckpt": path,
+# "gate": float}; the gate must be calibrated on the ranker's own score scale
+# (calibrate_rank_gate.py), because a threshold is meaningless across scales.
+TRADE_RANKER_PATH = os.environ.get("TRADE_RANKER", "")
+TRADE_RANKER = None
+TRADE_RANKER_GATE = None
+
 TRADE_WEIGHTS_PATH = os.environ.get("TRADE_WEIGHTS", "")
 TRADE_W_EXT = None
 TRADE_GATE_EXT = None
@@ -81,6 +90,48 @@ EXT_FEATURES = (
     "off_group_size", "mutual_swap", "req_price", "req_mort",
     "off_completes_theirs", "req_base_rent",
 )
+
+
+def _load_ranker():
+    """Deferred: torch is not imported unless a ranker is actually requested,
+    and pool workers each pay the load once rather than inheriting a tensor."""
+    global TRADE_RANKER, TRADE_RANKER_GATE
+    if TRADE_RANKER is not None or not TRADE_RANKER_PATH:
+        return TRADE_RANKER
+    import json as _j
+
+    import torch
+
+    from competition_agent.train_rank import RankHead
+    blob = _j.loads(Path(TRADE_RANKER_PATH).read_text())
+    ck = torch.load(blob["ckpt"], map_location="cpu", weights_only=False)
+    m = RankHead(ck.get("hidden", 256), ck.get("dropout", 0.2))
+    m.load_state_dict(ck["state_dict"])
+    m.eval()
+    torch.set_num_threads(1)
+    TRADE_RANKER = m
+    TRADE_RANKER_GATE = float(blob["gate"])
+    return m
+
+
+def rank_features(fr, fo) -> list:
+    """`train_rank.cand_features` in the policy's own units.
+
+    Kept byte-identical to the training-time function, including the divisors.
+    A mismatch here would not raise; it would just feed the network a different
+    input than it was trained on and look like a weak model.
+    """
+    return [
+        fr["price"] / 400.0, fo["price"] / 400.0,
+        fr["rent"] / 100.0, fo["rent"] / 100.0,
+        fr["ours"] / 3.0, fo["ours"] / 3.0,
+        fr["theirs"] / 3.0, fo["theirs"] / 3.0,
+        1.0 if fr["ours"] == fr["size"] - 1 else 0.0,
+        1.0 if fo["mort"] else 0.0,
+        1.0 if fr["mort"] else 0.0,
+        fr["houses"] / 5.0, fo["houses"] / 5.0,
+        fr["base_rent"] / 50.0,
+    ]
 
 
 def ext_features(fr, fo) -> dict:
@@ -374,7 +425,7 @@ class SpecPolicy:
                     "mort": prop.mortgaged,
                     "houses": prop.houses,
                 }
-                if TRADE_W_EXT is not None:
+                if TRADE_W_EXT is not None or TRADE_RANKER_PATH:
                     # Only the override path needs these, and each costs a
                     # scan of the group, so they are not paid for by the
                     # frozen agent.
@@ -383,6 +434,36 @@ class SpecPolicy:
                         if env.properties[t].owner not in (None, pid))
                     facts[sq]["base_rent"] = PROPERTIES[sq]["rent"][0]
             return facts[sq]
+
+        # Candidate D: one batched forward over the whole candidate set,
+        # which is the operation the listwise loss trained.
+        if TRADE_RANKER_PATH:
+            import numpy as _np
+            import torch as _t
+            model = _load_ranker()
+            obs = _np.asarray(env._get_state(pid), dtype=_np.float32)
+            rows, acts = [], []
+            for a in exch_actions:
+                loc = a - OFFSETS["exch_trade"]
+                p_idx = loc // (n * (n - 1))
+                rem = loc % (n * (n - 1))
+                off_idx = rem // (n - 1)
+                req_raw = rem % (n - 1)
+                req_idx = req_raw if req_raw < off_idx else req_raw + 1
+                if p_idx >= len(others):
+                    continue
+                fo, fr = f(PROPERTY_IDS[off_idx]), f(PROPERTY_IDS[req_idx])
+                rows.append(rank_features(fr, fo))
+                acts.append(a)
+            if not rows:
+                return None
+            cf = _np.asarray(rows, dtype=_np.float32)
+            x = _np.concatenate(
+                [_np.repeat(obs[None, :], len(cf), 0), cf], axis=1)
+            with _t.no_grad():
+                sc = model(_t.from_numpy(x)).numpy()
+            k = int(sc.argmax())
+            return acts[k] if float(sc[k]) >= TRADE_RANKER_GATE else None
 
         best_action, best_score = None, None
         for a in exch_actions:

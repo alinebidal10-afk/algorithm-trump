@@ -1,0 +1,8 @@
+{
+  "ckpt": "/Users/alinebidal/Projects/DeepRL_Monopoly/competition_agent/rank_head_1000.pt",
+  "gate": -20.254900783022542,
+  "mode": "accuracy",
+  "held_agreement": 0.675480090369952,
+  "held_propose_rate": 0.2931728325331827,
+  "held_top1": 0.35821820758058803
+}
