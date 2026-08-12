@@ -1935,3 +1935,72 @@ later judgement.
 
 **Status: agent frozen and delivered.** `final_agent.py`, measured, with its
 limits on the record.
+
+## D6.2 — Phase 6 Part B: the value network fails, and the stratified AUC says why
+
+500 teacher-vs-teacher games, 499,321 states, split by game (348k train /
+151k held out).
+
+**Both label variants are worse than a constant.**
+
+| model | held-out log-loss | AUC |
+| --- | --- | --- |
+| constant (p = 0.314) | **0.6177** | 0.500 |
+| network, plain label | 0.7156 | 0.573 |
+| network, discounted label | 0.6720 | 0.575 |
+
+Best held-out log-loss occurs at **epoch 1** for both variants and degrades
+monotonically after (plain: 0.716 → 2.754 by epoch 12). Single hand-picked
+features do no better — own cash AUC 0.490, own position 0.493 — which rules
+out a training bug: the network and the raw features hit the same wall.
+
+### Stratified by remaining steps, the picture inverts
+
+| bucket | n | win rate | AUC plain | AUC discounted |
+| --- | --- | --- | --- | --- |
+| last 50 steps | 7,500 | 0.448 | 0.739 | **0.766** |
+| 50–150 | 15,000 | 0.434 | 0.682 | **0.709** |
+| 150–300 | 22,500 | 0.355 | 0.608 | **0.633** |
+| **300+** | **106,318** | 0.271 | 0.508 | 0.495 |
+| all | 151,318 | 0.308 | 0.573 | 0.575 |
+
+Read against the criterion fixed **before** the measurement — late-game AUC
+above 0.65 with early-game near 0.5 means the signal exists and credit
+assignment is the problem:
+
+**That is the result.** 0.766 in the last 50 steps against 0.495 beyond 300,
+decaying monotonically in between (0.77 → 0.71 → 0.63 → 0.49).
+
+### What this establishes
+
+**The 300-dim observation is not the limitation.** The same vector predicts the
+winner well when the horizon is short. The limitation is the label: a binary
+end-of-game outcome carries almost no information about a state 300+ decisions
+from the end, and **70% of the corpus (106,318 of 151,318 rows) sits in that
+bucket**. Training is dominated by rows that are close to pure noise, which is
+why the overall figure sits at 0.57 and why log-loss cannot beat a constant.
+
+The discounted label behaves exactly as designed — better than plain in every
+late bucket (0.766/0.709/0.633 vs 0.739/0.682/0.608), worse in the 300+ bucket
+where it deliberately shrinks toward the base rate. It softens the label but
+does not change which rows dominate the loss, so it could not rescue the
+aggregate.
+
+### Consequence
+
+Phase 6 is **not** closed. The alternative outcome — flat ~0.5 in every bucket,
+meaning the game itself is unpredictable from an instantaneous state — did not
+occur, and it is worth stating that it was the outcome expected as likely.
+A learned value function is not impossible here; it was attempted with the
+wrong training scheme.
+
+The diagnosis points at three fixes, in ascending cost:
+
+1. **Sample weighting / filtering** — drop or downweight the 300+ bucket so
+   training is not dominated by unlearnable rows. Almost no new code.
+2. **Short-horizon targets** — predict "ahead in n steps" rather than "wins",
+   which is the regime already scoring 0.63–0.77.
+3. **TD learning** — bootstrap from the next state's estimate instead of
+   propagating the outcome 1,000 decisions back.
+
+No projection is made from any AUC to win rate. Part C remains the arbiter.
