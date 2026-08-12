@@ -2004,3 +2004,55 @@ The diagnosis points at three fixes, in ascending cost:
    propagating the outcome 1,000 decisions back.
 
 No projection is made from any AUC to win rate. Part C remains the arbiter.
+
+## D6.3 — Candidate A (sample weighting) fails: the problem is not row dominance
+
+D6.2 attributed the failure to 70% of the corpus sitting in the unlearnable
+300+ bucket and dominating the loss. Candidate A tests that directly — drop or
+downweight those rows, retrain the same network, change nothing else.
+
+**AUC is reported on the FULL held-out set in every row.** Evaluating a
+filtered model on a filtered held-out set would move the goalposts and break
+comparability with the 0.575 baseline; the agent still has to act in those
+states at play time.
+
+| configuration | train n | last 50 | 50–150 | 150–300 | 300+ | **full AUC** |
+| --- | --- | --- | --- | --- | --- | --- |
+| all rows | 348,003 | 0.680 | 0.661 | 0.595 | 0.479 | 0.540 |
+| filter < 300 remaining | 105,000 | 0.718 | 0.669 | 0.579 | 0.511 | 0.569 |
+| **filter < 150 remaining** | 52,500 | **0.751** | **0.701** | 0.612 | 0.518 | **0.584** |
+| weight 300+ × 0.2 | 348,003 | 0.708 | 0.646 | 0.554 | 0.474 | 0.530 |
+| weight 300+ × 0.05 | 348,003 | 0.725 | 0.692 | 0.595 | 0.500 | 0.556 |
+
+Prior anchors: plain 0.573, discounted 0.575. **Target was 0.65+.**
+
+**Best is 0.584 — the target is missed by a wide margin,** and weighting did
+worse than filtering.
+
+### What this corrects in D6.2
+
+D6.2's diagnosis was half right. Removing the noisy rows *does* improve the
+late buckets — last-50 AUC rises 0.680 → 0.751 despite training on 85% fewer
+rows — so credit assignment is a genuine problem. But the 300+ bucket stays
+pinned at 0.47–0.52 in **every** configuration, and it is 70% of the held-out
+set, so the full AUC cannot move.
+
+The correct statement is therefore stronger than D6.2's: **early states are
+unpredictable because of the states, not because noisy rows dominate
+training.** No reweighting of the outcome signal reaches them, because the
+information is not there to be reweighted.
+
+### Consequence for Candidates B and C
+
+Both share the assumption Candidate A just tested — that a useful valuation
+can be learned from the game's outcome:
+
+- **TD learning (C)** redistributes the variance of that same outcome signal
+  through bootstrapping. It does not add information about early states.
+- **Short-horizon targets (B)** predict something the decision path does not
+  need; the ranker must compare candidate actions, not forecast a position n
+  steps out.
+
+Neither escapes the wall A hit, so neither is worth its cost. The next attempt
+uses a different signal entirely — the teacher's revealed preferences
+(Candidate D).

@@ -138,6 +138,13 @@ def _play(seed_maxsteps):
                                  "off": f(off), "req": f(req)})
                 if rows:
                     out.append({
+                        # Full 300-dim observation, added for Candidate D: the
+                        # previous harvest carried only hand-picked deed
+                        # features, which is the cap D2.5 and the Phase 3 head
+                        # both ran into. One vector per STATE, not per
+                        # candidate - candidates share the state.
+                        "obs": [round(float(x), 4)
+                                for x in env._get_state(0).tolist()],
                         "seed": seed, "step": steps,
                         "phase": env.phase,
                         "round": int(getattr(env, "round", -1)),
